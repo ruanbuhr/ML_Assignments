@@ -10,6 +10,16 @@
 | A8      | - Outliers<br>- Extreme Right Skewed                                                          | - DQR, Box<br>- Hist                                            |
 | A9      | - Missing Values<br>- Outliers<br>- Left Skew                                                 | - DQR<br>- DQR, Box<br>- Hist                                   |
 | A10     | - Invalid Value<br>- Missing Values<br>- Outliers<br>- Right Skew<br>**Mention Special Care** | - Saved as object, 'a' appears<br>- DQR<br>- DQR, Box<br>- Hist |
+| A11     | - Outliers<br>- Normal Dist                                                                   | - Box, DQR<br>- Hist                                            |
+| A12     | - Missing Values<br>- Outliers<br>- Right Skew                                                | - DQR<br>- DQR, Box<br>- Hist                                   |
+| A13     | - Missing Values<br>- Binary                                                                  | - DQR<br>- DQR                                                  |
+| A14     | - Binary<br>- Imbalanced                                                                      | - DQR<br>- DQR - Mean, hist                                     |
+| A15     | - Binary                                                                                      |                                                                 |
+| A16     | - Cardinality of 1<br>- Missing Values                                                        | - DQR                                                           |
+| A17     | - Cardinality of 1                                                                            |                                                                 |
+| A18     | - Missing Values<br>- Categorical, 3<br>- Extreme imbalance                                   | -<br>- <br>- DQR, quartiles                                     |
+| A19     | - Binary                                                                                      |                                                                 |
+| A20     | - Missing values<br>- Imbalance                                                               | -<br>- DQR - Mean, hist                                         |
 |         |                                                                                               |                                                                 |
 |         |                                                                                               |                                                                 |
 |         |                                                                                               |                                                                 |
