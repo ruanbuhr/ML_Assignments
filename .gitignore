@@ -209,3 +209,45 @@ cython_debug/
 marimo/_static/
 marimo/_lsp/
 __marimo__/
+
+# LaTeX
+*.aux
+*.acn
+*.acr
+*.alg
+*.bbl
+*.blg
+*.dvi
+*.fls
+*.fdb_latexmk
+*.ilg
+*.ind
+*.idx
+*.lof
+*.log
+*.lot
+*.out
+*.toc
+*.synctex.gz
+
+# minted package for code highlighting
+_minted*
+*.pyg
+
+# Beamer class for presentations
+*.nav
+*.snm
+*.vrb
+
+# Biber (alternative to BibTeX)
+*.bcf
+*.run.xml
+
+# Temporary/backup files from various editors
+*~
+*.bak
+*.swp
+.*.swp
+
+# macOS
+.DS_Store
