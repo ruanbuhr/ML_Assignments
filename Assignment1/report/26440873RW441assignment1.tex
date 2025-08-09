@@ -3,6 +3,7 @@
 \usepackage{graphicx}
 \usepackage{amsmath}
 \usepackage{booktabs}
+\usepackage{longtable}
 \usepackage{float}
 \usepackage[a4paper, top=2.5cm, bottom=2.5cm, left=2.5cm, right=2.5cm]{geometry}
 
@@ -127,27 +128,57 @@ that are heavily skewed to toward the lower end of its range.
 
 \section*{Task 2: Data Quality Issues}
 
-\begin{table}[H]
-\centering
+\begin{longtable}{lp{5cm}p{8cm}}
+
 \caption{Identified Data Quality Issues.}
-\label{tab:data_quality_issues}
-\resizebox{\textwidth}{!}{%
-\begin{tabular}{lp{5cm}p{8cm}}
+\label{tab:data_quality_issues} \\
 \toprule
 \textbf{Feature} & \textbf{Data Quality Issue} & \textbf{Justification} \\
 \midrule
-A1 & Outliers & A1 has outliers on the lower and upper end of its distribution. The gap between the first quartile (3104928.15) and the minimum (2054845.65) is larger than the gap between the first quartile and the median (3311628.60). The gap between the maximum (4264440.30) and the third quartile (3496222.05) is also larger than the gap between the median and the third quartile. Figure~\ref{fig:a1_boxplot} confirms this finding.\\
-\addlinespace 
-A2 & Missing Values &  A2 is missing 0.51\% of its values. \\
-\addlinespace
-A3 & High Cardinality &  A3 contains 576099 unique values, which is very close to the number of instances. Figure~\ref{fig:correlation_with_T} shows that A3 exhibits a correlation of 0.017 with the response. This coupled with the fact that it has high cardinality means feature A3 probably provides minimal predictive power.  \\
-\addlinespace
-A3 & Perfect Positive Correlation with A2 & Figure~\ref{fig:A2_vs_A3_scatterplot} shows that A3 has a perfect positive linear correlation with A2. The correlation coefficient between A2 and A3 is exactly 1, supporting the findings in this scatter plot. \\
-\addlinespace
+\endfirsthead
+
+\caption[]{Identified Data Quality Issues (continued).} \\
+\toprule
+\textbf{Feature} & \textbf{Data Quality Issue} & \textbf{Justification} \\
+\midrule
+\endhead
+
+\midrule
+\multicolumn{3}{r}{\textit{Continued on next page}} \\
+\endfoot
+
 \bottomrule
-\end{tabular}
-}
-\end{table}
+\endlastfoot
+
+A1 & Outliers & A1 has outliers on the lower and upper end of its distribution. The gap between the first quartile (3104928.15) and the minimum (2054845.65) is larger than the gap between the first quartile and the median (3311628.60). The gap between the maximum (4264440.30) and the third quartile (3496222.05) is also larger than the gap between the median and the third quartile. Figure~\ref{fig:a1_boxplot} confirms this finding.\\ 
+\midrule
+A2 & Missing Values &  A2 is missing 0.51\% of its values. \\
+\midrule
+A3 & High Cardinality &  A3 contains 576099 unique values, which is very close to the number of instances. Figure~\ref{fig:correlation_with_T} shows that A3 exhibits a correlation of 0.017 with the response. This coupled with the fact that it has high cardinality means feature A3 probably provides minimal predictive power.  \\
+\midrule
+A3 & Perfect Positive Correlation with A2 & Figure~\ref{fig:A2_vs_A3_scatterplot} shows that A3 has a perfect positive linear correlation with A2. The correlation coefficient between A2 and A3 is exactly 1, supporting the findings in this scatterplot. \\
+\midrule
+A4 & Missing Values &  A2 is missing 0.05\% of its values. \\
+\midrule
+A4 & Outliers &  A4 has outliers in the upper range of its distribution. The gap between the maximum (66) and the third quartile (18) is larger than the gap between the median (13) and the third quartile. The boxplot in figure~\ref{fig:a4_boxplot} also shows that A4 has outliers in the upper range of its distribution. \\
+\midrule
+A5 & Missing Values &  A5 is missing 0.51\% of its values. \\
+\midrule
+A5 & Outliers & A5 has outliers in the lower and upper ends of its distribution. Figure~\ref{fig:a5_boxplot} shows a boxplot that confirms the fact that A5 contains outliers. \\
+\midrule
+A6 & High Cardinality & A6 contains 581012 unique values, which is exactly the number of instances in the dataset. Figure~\ref{fig:correlation_with_T} shows that A6 exhibits a correlation of 0.082 with the response. This coupled with the fact that it has extremely high cardinality means feature A6 provides minimal predictive power. \\
+\midrule
+A6 & Outliers & A6 has outliers in the lower and upper ends of its distribution. Figure~\ref{fig:a6_boxplot} shows a boxplot that confirms this. \\
+\midrule
+A7 & Missing Values & A7 is missing 0.51\% of its values. \\
+\midrule
+A7 & High Cardinality & A7 contains 577988 unique values, which is very close to the number of instances. Figure~\ref{fig:correlation_with_T} shows that A7 exhibits a correlation of 0 with the response. This coupled with the fact that it has high cardinality means feature A7 probably provides minimal predictive power. \\
+\midrule
+A7 & Uniform Variable & Figure~\ref{fig:a7_histplot} shows the distribution of A7. It indicates that A7 has a uniform distribution over the range [-1, 1]. Since it has low correlation with the response and high cardinality it most likely provides no useful information. A7 is most likely just a uniformly generated random variable over the range [-1, 1]. \\
+\midrule
+A8 & Outliers & A8 contains a few extremely high value outliers in the upper end of its distribution. The maximum value of A8 is 510165098, which is much larger than the third quartile (3328). The boxplot in figure~\ref{fig:a8_boxplot} and the histogram in figure~\ref{fig:a8_histplot} both indicate how these outliers greatly skew the distribution of A8 to the right. \\
+\end{longtable}
+
 
 % Figures and discussion
 
@@ -172,10 +203,62 @@ Figure~\ref{fig:correlation_with_T} illustrates the Pearson correlation coeffici
 \begin{figure}[H]
     \centering
     \includegraphics[width=0.6\textwidth]{images/A2_vs_A3_scatterplot.pdf}
-    \caption{Scatter plot of A2 vs A3.}
+    \caption{Scatterplot of A2 vs A3.}
     \label{fig:A2_vs_A3_scatterplot}
 \end{figure}
 
 Figure~\ref{fig:A2_vs_A3_scatterplot} shows that there is an extremely strong, positive, and linear relationship between A2 and A3. The line appears to start at the origin which indicates that A3 is just be a scaled version of A2. This means that the two variables are redundant and including both in the dataset does not provide any new information.
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.6\textwidth]{images/A4_boxplot.pdf}
+    \caption{Boxplot of A4.}
+    \label{fig:a4_boxplot}
+\end{figure}
+
+The boxplot in figure~\ref{fig:a4_boxplot} shows that A4 has outliers in the upper range of its distribution.
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.6\textwidth]{images/A5_boxplot.pdf}
+    \caption{Boxplot of A5.}
+    \label{fig:a5_boxplot}
+\end{figure}
+
+The boxplot in figure~\ref{fig:a5_boxplot} shows that A5 has outliers in the lower and upper range of its distribution. A5 has quite a lot of outliers on the upper end compared to only a few on the lower end.
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.6\textwidth]{images/A6_boxplot.pdf}
+    \caption{Boxplot of A6.}
+    \label{fig:a6_boxplot}
+\end{figure}
+
+The plot boxplot in figure~\ref{fig:a6_boxplot} shows that A6 has quite a few outliers, in both the lower and upper ends of its distribution.
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.6\textwidth]{images/A7_histplot.pdf}
+    \caption{Histogram of A7.}
+    \label{fig:a7_histplot}
+\end{figure}
+
+The histogram in figure~\ref{fig:a7_histplot} shows the distribution of A7. It indicates that A7 has an approximately uniform distribution over the range [-1, 1]. Since it also has high cardinality and a correlation of 0 with the response, feature A7 likely does not provide any useful information and including it in this dataset will likely harm any model trained on this dataset.
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.6\textwidth]{images/A8_boxplot.pdf}
+    \caption{Boxplot of A8.}
+    \label{fig:a8_boxplot}
+\end{figure}
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.6\textwidth]{images/A8_histplot.pdf}
+    \caption{Histogram of A8.}
+    \label{fig:a8_histplot}
+\end{figure}
+
+The boxplot in figure~\ref{fig:a8_boxplot} shows the extreme outliers in the higher end of the distribution of A8. The boxplot and the histogram in figure~\ref{fig:a8_histplot} show that these outliers cause A8 to have an extremely right skewed distribution. Although there are only a few outliers, they drastically affect the distribution of A8.
 
 \end{document}
