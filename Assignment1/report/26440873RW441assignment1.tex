@@ -1,9 +1,9 @@
 \documentclass[11pt]{report}
 \usepackage[utf8]{inputenc}
 \usepackage{graphicx}
-\usepackage{mathastext}
 \usepackage{amsmath}
 \usepackage{booktabs}
+\usepackage{float}
 \usepackage[a4paper, top=2.5cm, bottom=2.5cm, left=2.5cm, right=2.5cm]{geometry}
 
 \title{
@@ -25,14 +25,10 @@
 
 The \texttt{badDataSet.csv} data set contains 581012 instances, with 62 descriptive features and a single response.
 
-
-
-
-\begin{table}[h]
+\begin{table}[H]
 \centering
-\caption{Data Quality Report for Descriptive Features.}
+\caption{Data Quality Report for the Descriptive Features.}
 \label{tab:data_quality_report_des_feat}
-
 \resizebox{\textwidth}{!}{
     \begin{tabular}{lrrrrrrrrrr}
 \toprule
@@ -104,5 +100,31 @@ A62 & 581012 & 0.00 & 1 & 1.00 & 1.00 & 1.00 & 1.00 & 1.00 & 1.00 & 0.00 \\
 \end{tabular}
 }
 \end{table}
+
+Based on the data quality report in table~\ref{tab:data_quality_report_des_feat}. the 62 descriptive features exhibit highly varied characteristics,
+from features with a significant percentage of missing values like A21 (70.16\%) to constant features with no variance like A17 and A62.
+
+Task 2 and 3 will further analyze these findings and address the identified data quality issues.
+
+\begin{table}[H]
+\centering
+\caption{Data Quality Report for the Response Feature.}
+\label{tab:data_quality_report_res_feat}
+\resizebox{\textwidth}{!}{
+\begin{tabular}{lrrrrrrrrrr}
+\toprule
+Feature & Count & \% Miss. & Card. & Min. & 1st Qrt. & Mean & Median & 3rd Qrt. & Max. & Std. Dev. \\
+\midrule
+T & 580952 & 0.01 & 7 & 1.00 & 1.00 & 2.05 & 2.00 & 2.00 & 7.00 & 1.40 \\
+\bottomrule
+\end{tabular}
+}
+\end{table}
+
+The data quality report for the response feature T, shown in table~\ref{tab:data_quality_report_res_feat}, indicates that it is an almost complete and discrete variable containing seven unique values
+that are heavily skewed to toward the lower end of its range.
+
+
+\section*{Task 2: Data Quality Issues}
 
 \end{document}
