@@ -127,4 +127,55 @@ that are heavily skewed to toward the lower end of its range.
 
 \section*{Task 2: Data Quality Issues}
 
+\begin{table}[H]
+\centering
+\caption{Identified Data Quality Issues.}
+\label{tab:data_quality_issues}
+\resizebox{\textwidth}{!}{%
+\begin{tabular}{lp{5cm}p{8cm}}
+\toprule
+\textbf{Feature} & \textbf{Data Quality Issue} & \textbf{Justification} \\
+\midrule
+A1 & Outliers & A1 has outliers on the lower and upper end of its distribution. The gap between the first quartile (3104928.15) and the minimum (2054845.65) is larger than the gap between the first quartile and the median (3311628.60). The gap between the maximum (4264440.30) and the third quartile (3496222.05) is also larger than the gap between the median and the third quartile. Figure~\ref{fig:a1_boxplot} confirms this finding.\\
+\addlinespace 
+A2 & Missing Values &  A2 is missing 0.51\% of its values. \\
+\addlinespace
+A3 & High Cardinality &  A3 contains 576099 unique values, which is very close to the number of instances. Figure~\ref{fig:correlation_with_T} shows that A3 exhibits a correlation of 0.017 with the response. This coupled with the fact that it has high cardinality means feature A3 probably provides minimal predictive power.  \\
+\addlinespace
+A3 & Perfect Positive Correlation with A2 & Figure~\ref{fig:A2_vs_A3_scatterplot} shows that A3 has a perfect positive linear correlation with A2. The correlation coefficient between A2 and A3 is exactly 1, supporting the findings in this scatter plot. \\
+\addlinespace
+\bottomrule
+\end{tabular}
+}
+\end{table}
+
+% Figures and discussion
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.6\textwidth]{images/A1_boxplot.pdf}
+    \caption{Boxplot of A1.}
+    \label{fig:a1_boxplot}
+\end{figure}
+
+The boxplot in figure~\ref{fig:a1_boxplot} provides a visual confirmation of the outliers in feature A1. The central box represents the interquartile range (IQR), containing the middle 50\% of the data. The points extending far below and above the whiskers of the box are individual data points identified as outliers. This visualization clearly shows that a significant number of outliers exist at both the lower and upper ends of the distribution.
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.6\textwidth]{images/correlation_with_T.pdf}
+    \caption{Correlation of Each Predictor with Response Variable.}
+    \label{fig:correlation_with_T}
+\end{figure}
+
+Figure~\ref{fig:correlation_with_T} illustrates the Pearson correlation coefficient, which measures the linear relationship between each predictor and the response. The analysis shows that most features have a weak to moderate correlation with the response, with all values falling between -0.27 and 0.29. This indicates that no single feature is a dominant predictor, suggesting that an effective model will need to leverage a combination of multiple features.
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.6\textwidth]{images/A2_vs_A3_scatterplot.pdf}
+    \caption{Scatter plot of A2 vs A3.}
+    \label{fig:A2_vs_A3_scatterplot}
+\end{figure}
+
+Figure~\ref{fig:A2_vs_A3_scatterplot} shows that there is an extremely strong, positive, and linear relationship between A2 and A3. The line appears to start at the origin which indicates that A3 is just be a scaled version of A2. This means that the two variables are redundant and including both in the dataset does not provide any new information.
+
 \end{document}

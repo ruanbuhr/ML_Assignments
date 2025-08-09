@@ -1,6 +1,7 @@
 # Custom
 data/
 *.pdf
+!Assignment1/report/images/*.pdf
 
 # Byte-compiled / optimized / DLL files
 __pycache__/
