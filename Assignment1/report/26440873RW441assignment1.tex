@@ -177,6 +177,22 @@ A7 & High Cardinality & A7 contains 577988 unique values, which is very close to
 A7 & Uniform Variable & Figure~\ref{fig:a7_histplot} shows the distribution of A7. It indicates that A7 has a uniform distribution over the range [-1, 1]. Since it has low correlation with the response and high cardinality it most likely provides no useful information. A7 is most likely just a uniformly generated random variable over the range [-1, 1]. \\
 \midrule
 A8 & Outliers & A8 contains a few extremely high value outliers in the upper end of its distribution. The maximum value of A8 is 510165098, which is much larger than the third quartile (3328). The boxplot in figure~\ref{fig:a8_boxplot} and the histogram in figure~\ref{fig:a8_histplot} both indicate how these outliers greatly skew the distribution of A8 to the right. \\
+\midrule
+A9 & Missing Values & A9 is missing 0.51\% of its values. \\
+\midrule
+A9 & Outliers & A9 has outliers in the lower end of its distribution. Figure~\ref{fig:a9_boxplot} shows that A9 has a bunch of outliers in the lower end of its distribution.
+\midrule
+A10 & Invalid Values & The entries in A10 are all numeric except some entries that take on a value of \textit{a}. This creates a mixed-type feature that compromises data integrity. When loading the \texttt{badDataSet.csv} into a Pandas dataframe, all features are saved as integers or floats, except for A10. It is saved as an object since it contains integer values as well as \textit{a}. \\
+\midrule
+A10 & Missing Values & A10 is missing 0.51\% of its values. \\
+\midrule
+A10 & Outliers & Figure~\ref{fig:a10_boxplot} shows that A10 has numerous outliers in the lower range of its distribution.
+\midrule
+A11 & Outliers & Figure~\ref{fig:a11_boxplot} shows that A11 contains a bunch of outliers in the lower and upper ends of its distribution. \\
+\midrule
+A12 & Missing Values & A12 is missing 0.51\% of its values \\
+\midrule
+A12 & Outliers & Figure~\ref{fig:a12_boxplot} shows that A12 contains a bunch of outliers in the upper end of its distribution. \\
 \end{longtable}
 
 
@@ -260,5 +276,41 @@ The histogram in figure~\ref{fig:a7_histplot} shows the distribution of A7. It i
 \end{figure}
 
 The boxplot in figure~\ref{fig:a8_boxplot} shows the extreme outliers in the higher end of the distribution of A8. The boxplot and the histogram in figure~\ref{fig:a8_histplot} show that these outliers cause A8 to have an extremely right skewed distribution. Although there are only a few outliers, they drastically affect the distribution of A8.
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.6\textwidth]{images/A9_boxplot.pdf}
+    \caption{Boxplot of A9.}
+    \label{fig:a9_boxplot}
+\end{figure}
+
+The boxplot in figure~\ref{fig:a9_boxplot} shows that A9 has a bunch of outliers in the lower end of its distribution.
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.6\textwidth]{images/A10_boxplot.pdf}
+    \caption{Boxplot of A10.}
+    \label{fig:a10_boxplot}
+\end{figure}
+
+The boxplot in figure~\ref{fig:a10_boxplot} was drawn after preprocessing A10, and treating all instances that are not numeric, meaning all instances of \textit{a}, as missing values. This plot shows that A10 has outliers in the lower end of its distribution.
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.6\textwidth]{images/A11_boxplot.pdf}
+    \caption{Boxplot of A11.}
+    \label{fig:a11_boxplot}
+\end{figure}
+
+The boxplot in figure~\ref{fig:a11_boxplot} shows that A11 has numerous outliers in both the lower and upper ranges of its distribution.
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.6\textwidth]{images/A12_boxplot.pdf}
+    \caption{Boxplot of A12.}
+    \label{fig:a12_boxplot}
+\end{figure}
+
+The boxplot in figure~\ref{fig:a12_boxplot} indicates that A12 has numerous outliers in the upper end of its distribution.
 
 \end{document}
