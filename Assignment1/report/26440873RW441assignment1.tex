@@ -151,7 +151,7 @@ that are heavily skewed to toward the lower end of its range.
 
 A1 & Outliers & A1 has outliers on the lower and upper end of its distribution. The gap between the first quartile (3104928.15) and the minimum (2054845.65) is larger than the gap between the first quartile and the median (3311628.60). The gap between the maximum (4264440.30) and the third quartile (3496222.05) is also larger than the gap between the median and the third quartile. Figure~\ref{fig:a1_boxplot} confirms this finding.\\ 
 \midrule
-A2 & Missing Values &  A2 is missing 0.51\% of its values. \\
+A2 & Systematic Missing Values &  A2 is missing 0.51\% of its values. It was found that features A2, A5, A7, A9, A10, A12, A13, A16, and A18 each have missing values when at least one of them do. To confirm that these missing values are co-located, programmatic analysis was done to count the number of observations containing a missing value in at least one of the features. This was then compared to the number of observations where all the features contained missing values. These two counts were both found to be 2943, 0.51\% of the 581012 observations. This provided definitive proof that the missing data are co-located. \\
 \midrule
 A3 & High Cardinality &  A3 contains 576099 unique values, which is very close to the number of instances. Figure~\ref{fig:correlation_with_T} shows that A3 exhibits a correlation of 0.017 with the response. This coupled with the fact that it has high cardinality means feature A3 probably provides minimal predictive power.  \\
 \midrule
@@ -161,7 +161,7 @@ A4 & Missing Values &  A2 is missing 0.05\% of its values. \\
 \midrule
 A4 & Outliers &  A4 has outliers in the upper range of its distribution. The gap between the maximum (66) and the third quartile (18) is larger than the gap between the median (13) and the third quartile. The boxplot in figure~\ref{fig:a4_boxplot} also shows that A4 has outliers in the upper range of its distribution. \\
 \midrule
-A5 & Missing Values &  A5 is missing 0.51\% of its values. \\
+A5 & Systematic Missing Values &  A5 is missing 0.51\% of its values. Refer to table entry A2 for more detail. \\
 \midrule
 A5 & Outliers & A5 has outliers in the lower and upper ends of its distribution. Figure~\ref{fig:a5_boxplot} shows a boxplot that confirms the fact that A5 contains outliers. \\
 \midrule
@@ -169,7 +169,7 @@ A6 & High Cardinality & A6 contains 581012 unique values, which is exactly the n
 \midrule
 A6 & Outliers & A6 has outliers in the lower and upper ends of its distribution. Figure~\ref{fig:a6_boxplot} shows a boxplot that confirms this. \\
 \midrule
-A7 & Missing Values & A7 is missing 0.51\% of its values. \\
+A7 & Systematic Missing Values & A7 is missing 0.51\% of its values.  Refer to table entry A2 for more detail. \\
 \midrule
 A7 & High Cardinality & A7 contains 577988 unique values, which is very close to the number of instances. Figure~\ref{fig:correlation_with_T} shows that A7 exhibits a correlation of 0 with the response. This coupled with the fact that it has high cardinality means feature A7 probably provides minimal predictive power. \\
 \midrule
@@ -177,33 +177,33 @@ A7 & Uniform Variable & Figure~\ref{fig:a7_histplot} shows the distribution of A
 \midrule
 A8 & Outliers & A8 contains a few extremely high value outliers in the upper end of its distribution. The maximum value of A8 is 510165098, which is much larger than the third quartile (3328). The boxplot in figure~\ref{fig:a8_boxplot} and the histogram in figure~\ref{fig:a8_histplot} both indicate how these outliers greatly skew the distribution of A8 to the right. \\
 \midrule
-A9 & Missing Values & A9 is missing 0.51\% of its values. \\
+A9 & Systematic Missing Values & A9 is missing 0.51\% of its values.  Refer to table entry A2 for more detail. \\
 \midrule
 A9 & Outliers & A9 has outliers in the lower end of its distribution. Figure~\ref{fig:a9_boxplot} shows that A9 has a bunch of outliers in the lower end of its distribution. \\
 \midrule
 A10 & Invalid Values & The entries in A10 are all numeric except some entries that take on a value of \textit{a}. This creates a mixed-type feature that compromises data integrity. When loading the \texttt{badDataSet.csv} into a Pandas dataframe, all features are saved as integers or floats, except for A10. It is saved as an object since it contains integer values as well as \textit{a}. \\
 \midrule
-A10 & Missing Values & A10 is missing 0.51\% of its values. \\
+A10 & Systematic Missing Values & A10 is missing 0.51\% of its values.  Refer to table entry A2 for more detail. \\
 \midrule
 A10 & Outliers & Figure~\ref{fig:a10_boxplot} shows that A10 has numerous outliers in the lower range of its distribution. \\
 \midrule
 A11 & Outliers & Figure~\ref{fig:a11_boxplot} shows that A11 contains a bunch of outliers in the lower and upper ends of its distribution. \\
 \midrule
-A12 & Missing Values & A12 is missing 0.51\% of its values \\
+A12 & Systematic Missing Values & A12 is missing 0.51\% of its values.  Refer to table entry A2 for more detail. \\
 \midrule
 A12 & Outliers & Figure~\ref{fig:a12_boxplot} shows that A12 contains a bunch of outliers in the upper end of its distribution. \\
 \midrule
 A13-A15, \& A19-A60 & Binary Cardinality & These features all have a cardinality of two. A13-A15 \& A19-A60 are two separate groups of one-hot encoding features of original categorical features. The heatmap in figure~\ref{fig:binary_heatmap} clearly shows two distinct regions where the entries are negatively correlated with one another. This is a strong suggestion that the two groups represent binary one-hot encoded features of original categorical features. \\
 \midrule
-A13 & Missing Values & A13 is missing 0.51\% of its values. \\
+A13 & Systematic Missing Values & A13 is missing 0.51\% of its values.  Refer to table entry A2 for more detail. \\
 \midrule
-A16 & Missing Values & A16 is missing 0.51\% of its values. \\
+A16 & Systematic Missing Values & A16 is missing 0.51\% of its values.  Refer to table entry A2 for more detail. \\
 \midrule
 A16 & Low Cardinality & A16 has a cardinality of one. All instances of A16 take on a value of 0. This means A16 is a constant value and provides no predictive power, since the value never changes. \\
 \midrule
 A17 & Low Cardinality & A17 has a cardinality of one. All instances of A17 take on a value of 0. Just like A16, this means that A17 provides no predictive power since it is a constant feature. \\ 
 \midrule
-A18 & Missing Values & A18 is missing 0.51\% of its values. \\
+A18 & Systematic Missing Values & A18 is missing 0.51\% of its values.  Refer to table entry A2 for more detail. \\
 \midrule
 A18 & Low Cardinality & A18 has a cardinality of three. All instances of A18 take on values of 0, 1, or 2 meaning that A18 likely represents a three-level categorical feature. \\
 \midrule
@@ -347,9 +347,9 @@ The boxplot in figure~\ref{fig:a12_boxplot} indicates that A12 has numerous outl
 
 The heatmap in figure~\ref{fig:binary_heatmap} strongly suggests the presence of two groups of one-hot encoded variables. Binary one-hot encoded features created from the same original categorical variable are inherently negatively correlated. This means that distinct blocks of blue (negatively correlated) squares in the heatmap in figure~\ref{fig:binary_heatmap} correspond to encodings of a distinct original categorical variable. A13, A14, \& A15 are the first group, since they are all negatively correlated with one another. A19-A60 is another group of one-hot encoded variables as they are also negatively correlated with one another. There is correlation present between the variables in the first and second group, which also strongly suggests that these are groups of two distinct one-hot encoded categorical features.
 
-\section*{Addressing The Data Quality Issues}
+\section*{Task 3: Addressing The Data Quality Issues}
 
-\begin{longtable}{lp{4.5cm}p{3.5cm}p{5cm}}
+\begin{longtable}{lp{4cm}p{4cm}p{5cm}}
 
 \caption{Addressing Data Quality Issues.}
 \label{tab:address_data_quality_issues} \\
@@ -370,8 +370,13 @@ The heatmap in figure~\ref{fig:binary_heatmap} strongly suggests the presence of
 \bottomrule
 \endlastfoot
 
-A1 & Outliers & A1 has outliers on the lower and upper end of its distribution. The gap between the first quartile (3104928.15) and the minimum (2054845.65) is larger than the gap between the first quartile and the median (3311628.60). The gap between the maximum (4264440.30) and the third quartile (3496222.05) is also larger than the gap between the median and the third quartile. Figure~\ref{fig:a1_boxplot} confirms this finding.\\ 
-
+A1 & Outliers & h & h \\
+\midrule
+A2 & Systematic Missing Values & Remove observations with missing values. & Features A2, A5, A7, A9, A10, A12, A13, A16, and A18 each have missing values when at least one of them do. To confirm that these missing values are co-located, programmatic analysis was done to count the number of observations containing a missing value in at least one of the features. This was then compared to the number of observations where all the features contained missing values. These two counts were both found to be 2943, 0.51\% of the 581012 observations. This provided definitive proof that the missing data occurs in the same observations. Since the 2943 observations are all missing a large portion of their data, and they make up a small percentage of all observations it is best to remove them from the dataset. \\
+\midrule
+A3 & High Cardinality & Remove A3 from the dataset. & A3 has a cardinality of 576099, which is very close to the number of observations, 581012. This coupled with the fact that A3 has a correlation of 0.017 with the response variable strongly suggests that A3 is a useless feature that will most likely just cause any model to overfit.\\
+\midrule
+A3 & Perfect Positive Correlation with A2 & Remove A3 from the dataset. & Figure~\ref{fig:A2_vs_A3_scatterplot} shows that A3 has a perfect positive correlation with A2. The line starts at (0, 0) which means that A3 is likely just a scaled version of A2. This means that including both A2 and A3 in the dataset is redundant and does not provide any new information. \\
 \end{longtable}
 
 \end{document}
