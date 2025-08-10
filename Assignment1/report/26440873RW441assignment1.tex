@@ -102,7 +102,7 @@ A62 & 581012 & 0.00 & 1 & 1.00 & 1.00 & 1.00 & 1.00 & 1.00 & 1.00 & 0.00 \\
 }
 \end{table}
 
-Based on the data quality report in table~\ref{tab:data_quality_report_des_feat}. the 62 descriptive features exhibit highly varied characteristics,
+Based on the data quality report in table~\ref{tab:data_quality_report_des_feat}, the 62 descriptive features exhibit highly varied characteristics,
 from features with a significant percentage of missing values like A21 (70.16\%) to constant features with no variance like A17 and A62.
 
 Task 2 and 3 will further analyze these findings and address the identified data quality issues.
@@ -130,14 +130,14 @@ that are heavily skewed to toward the lower end of its range.
 
 \begin{longtable}{lp{5cm}p{8cm}}
 
-\caption{Identified Data Quality Issues.}
+\caption{Data Quality Issues.}
 \label{tab:data_quality_issues} \\
 \toprule
 \textbf{Feature} & \textbf{Data Quality Issue} & \textbf{Justification} \\
 \midrule
 \endfirsthead
 
-\caption[]{Identified Data Quality Issues (continued).} \\
+\caption[]{Data Quality Issues (continued).} \\
 \toprule
 \textbf{Feature} & \textbf{Data Quality Issue} & \textbf{Justification} \\
 \midrule
@@ -206,11 +206,23 @@ A17 & Low Cardinality & A17 has a cardinality of one. All instances of A17 take 
 \midrule
 A18 & Missing Values & A18 is missing 0.51\% of its values. \\
 \midrule
-A18 & Low Cardinality & A18 has a cardinality of three. All instances of A18 take on values of 0, 1, or 2 meaning that A18 likely represents a three-level categorical feature.
+A18 & Low Cardinality & A18 has a cardinality of three. All instances of A18 take on values of 0, 1, or 2 meaning that A18 likely represents a three-level categorical feature. \\
+\midrule
+A20 & Missing Values & A20 is missing 0.59\% of its values. \\
+\midrule
+A21 & Extreme Missing Values & A21 is missing 70.16\% of its values. This means that for over two thirds of the observations, there is no recorded value of A21. The vast majority of the feature is missing. \\
+\midrule
+A61 & High Cardinality & A61 contains 581012 unique values, which is exactly the same as the number of observations. A61 is most likely a unique identifier for each observation. The values range from 1 to 581012. The value of the first quartile is 145253.75. Pandas, which is a Python package to wrangle data, uses the following formula to calculate the position of the quartiles: $Position = 1 + \frac{k}{4} \times (N - 1)$. If one plugs the quantities $k = 1$ and $N = 581012$ then the calculated position for the first quartile is 145253.75, which is exactly the observed value of the 1st quartile of A61. The same holds for the median and the 3rd quartile. Also for any uniformly increasing sequence the average is the midpoint between the first and last numbers, this means if A61 is a uniformly increasing unique identifier for each row then the average should be $\frac{(1 + 581012)}{2} = 290506.5$, which is the value observed for the mean. The statistical properties of A61 perfectly match those of a simple uniformly increasing sequence from 1 to 581012. This clearly indicates that A61 is a unique identifier for each observation and does not have any predictive power. \\
+\midrule
+A62 & Low Cardinality & A62 has a cardinality of one. All instances of A62 take on a value of 1. This means A62 is a constant value and provides no predictive power, since the value never changes. \\
+\midrule
+T & Missing Values & T is missing 0.01\% of its values. \\
 \end{longtable}
 
 
-% Figures and discussion
+\subsection*{Supporting Figures}
+
+The following subsection contains figures and discussions that support the data quality issues mentioned in table~\ref{tab:data_quality_issues}.
 
 \begin{figure}[H]
     \centering
