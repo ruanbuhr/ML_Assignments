@@ -143,7 +143,6 @@ that are heavily skewed to toward the lower end of its range.
 \midrule
 \endhead
 
-\midrule
 \multicolumn{3}{r}{\textit{Continued on next page}} \\
 \endfoot
 
@@ -347,5 +346,32 @@ The boxplot in figure~\ref{fig:a12_boxplot} indicates that A12 has numerous outl
 \end{figure}
 
 The heatmap in figure~\ref{fig:binary_heatmap} strongly suggests the presence of two groups of one-hot encoded variables. Binary one-hot encoded features created from the same original categorical variable are inherently negatively correlated. This means that distinct blocks of blue (negatively correlated) squares in the heatmap in figure~\ref{fig:binary_heatmap} correspond to encodings of a distinct original categorical variable. A13, A14, \& A15 are the first group, since they are all negatively correlated with one another. A19-A60 is another group of one-hot encoded variables as they are also negatively correlated with one another. There is correlation present between the variables in the first and second group, which also strongly suggests that these are groups of two distinct one-hot encoded categorical features.
+
+\section*{Addressing The Data Quality Issues}
+
+\begin{longtable}{lp{4.5cm}p{3.5cm}p{5cm}}
+
+\caption{Addressing Data Quality Issues.}
+\label{tab:address_data_quality_issues} \\
+\toprule
+\textbf{Feature} & \textbf{Data Quality Issue} & \textbf{Handling Strategy} & \textbf{Justification} \\
+\midrule
+\endfirsthead
+
+\caption[]{Addressing Data Quality Issues (continued).} \\
+\toprule
+\textbf{Feature} & \textbf{Data Quality Issue} & \textbf{Handling Strategy} & \textbf{Justification} \\
+\midrule
+\endhead
+
+\multicolumn{4}{r}{\textit{Continued on next page}} \\
+\endfoot
+
+\bottomrule
+\endlastfoot
+
+A1 & Outliers & A1 has outliers on the lower and upper end of its distribution. The gap between the first quartile (3104928.15) and the minimum (2054845.65) is larger than the gap between the first quartile and the median (3311628.60). The gap between the maximum (4264440.30) and the third quartile (3496222.05) is also larger than the gap between the median and the third quartile. Figure~\ref{fig:a1_boxplot} confirms this finding.\\ 
+
+\end{longtable}
 
 \end{document}
