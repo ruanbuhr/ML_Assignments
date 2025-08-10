@@ -157,7 +157,7 @@ A3 & High Cardinality &  A3 contains 576099 unique values, which is very close t
 \midrule
 A3 & Perfect Positive Correlation with A2 & Figure~\ref{fig:A2_vs_A3_scatterplot} shows that A3 has a perfect positive linear correlation with A2. The correlation coefficient between A2 and A3 is exactly 1, supporting the findings in this scatterplot. \\
 \midrule
-A4 & Missing Values &  A2 is missing 0.05\% of its values. \\
+A4 & Missing Values &  A4 is missing 0.05\% of its values. \\
 \midrule
 A4 & Outliers &  A4 has outliers in the upper range of its distribution. The gap between the maximum (66) and the third quartile (18) is larger than the gap between the median (13) and the third quartile. The boxplot in figure~\ref{fig:a4_boxplot} also shows that A4 has outliers in the upper range of its distribution. \\
 \midrule
@@ -173,7 +173,7 @@ A7 & Systematic Missing Values & A7 is missing 0.51\% of its values.  Refer to t
 \midrule
 A7 & High Cardinality & A7 contains 577988 unique values, which is very close to the number of instances. Figure~\ref{fig:correlation_with_T} shows that A7 exhibits a correlation of 0 with the response. This coupled with the fact that it has high cardinality means feature A7 probably provides minimal predictive power. \\
 \midrule
-A7 & Uniform Variable & Figure~\ref{fig:a7_histplot} shows the distribution of A7. It indicates that A7 has a uniform distribution over the range [-1, 1]. Since it has low correlation with the response and high cardinality it most likely provides no useful information. A7 is most likely just a uniformly generated random variable over the range [-1, 1]. \\
+A7 & Uniform Distribution & Figure~\ref{fig:a7_histplot} shows the distribution of A7. It indicates that A7 has a uniform distribution over the range [-1, 1]. Since it has low correlation with the response and high cardinality it most likely provides no useful information. A7 is most likely just a uniformly generated random variable over the range [-1, 1]. \\
 \midrule
 A8 & Outliers & A8 contains a few extremely high value outliers in the upper end of its distribution. The maximum value of A8 is 510165098, which is much larger than the third quartile (3328). The boxplot in figure~\ref{fig:a8_boxplot} and the histogram in figure~\ref{fig:a8_histplot} both indicate how these outliers greatly skew the distribution of A8 to the right. \\
 \midrule
@@ -209,7 +209,7 @@ A18 & Low Cardinality & A18 has a cardinality of three. All instances of A18 tak
 \midrule
 A20 & Missing Values & A20 is missing 0.59\% of its values. \\
 \midrule
-A21 & Extreme Missing Values & A21 is missing 70.16\% of its values. This means that for over two thirds of the observations, there is no recorded value of A21. The vast majority of the feature is missing. \\
+A21 & Missing Values & A21 is missing 70.16\% of its values. This means that for over two thirds of the observations, there is no recorded value of A21. The vast majority of the feature is missing. \\
 \midrule
 A61 & High Cardinality & A61 contains 581012 unique values, which is exactly the same as the number of observations. A61 is most likely a unique identifier for each observation. The values range from 1 to 581012. The value of the first quartile is 145253.75. Pandas, which is a Python package to wrangle data, uses the following formula to calculate the position of the quartiles: $Position = 1 + \frac{k}{4} \times (N - 1)$. If one plugs the quantities $k = 1$ and $N = 581012$ then the calculated position for the first quartile is 145253.75, which is exactly the observed value of the 1st quartile of A61. The same holds for the median and the 3rd quartile. Also for any uniformly increasing sequence the average is the midpoint between the first and last numbers, this means if A61 is a uniformly increasing unique identifier for each row then the average should be $\frac{(1 + 581012)}{2} = 290506.5$, which is the value observed for the mean. The statistical properties of A61 perfectly match those of a simple uniformly increasing sequence from 1 to 581012. This clearly indicates that A61 is a unique identifier for each observation and does not have any predictive power. \\
 \midrule
@@ -377,6 +377,64 @@ A2 & Systematic Missing Values & Remove observations with missing values. & Feat
 A3 & High Cardinality & Remove A3 from the dataset. & A3 has a cardinality of 576099, which is very close to the number of observations, 581012. This coupled with the fact that A3 has a correlation of 0.017 with the response variable strongly suggests that A3 is a useless feature that will most likely just cause any model to overfit.\\
 \midrule
 A3 & Perfect Positive Correlation with A2 & Remove A3 from the dataset. & Figure~\ref{fig:A2_vs_A3_scatterplot} shows that A3 has a perfect positive correlation with A2. The line starts at (0, 0) which means that A3 is likely just a scaled version of A2. This means that including both A2 and A3 in the dataset is redundant and does not provide any new information. \\
+\midrule
+A4 & Missing Values & Impute missing values with the median of A4. & A4 is missing only 0.05\% of its values, which is not a lot. Imputing the missing values in this case will not introduce any bias in the dataset. Since A4 contains outliers in the upper range of its distribution it is better to impute the missing values of A4 with the median. \\
+\midrule
+A4 & Outliers & h & h \\
+\midrule
+A5 & Systematic Missing Values & Remove observations with missing values. & Refer to table entry A2 for more detail. \\
+\midrule
+A5 & Outliers & h & h \\
+\midrule
+A6 & High Cardinality & Remove A6 from the dataset. & A6 has a cardinality of 581012, which is exactly the number of observations in the dataset. This coupled with the fact that A6 has a correlation of 0.082 with the response variable strongly suggests that A6 is a useless feature that will most likely just cause any model to overfit. \\
+\midrule
+A6 & Outliers & h & h \\
+\midrule
+A7 & Systematic Missing Values & Remove observations with missing values. & Refer to table entry A2 for more detail. \\
+\midrule
+A7 & High Cardinality & Remove A7 from the dataset. & A7 has a cardinality of 577988, which is very close to the number of observation in the dataset. This coupled with the fact that A6 has a correlation of 0 with the response variable strongly suggests that A7 is a useless feature that will most likely just cause any model to overfit. \\
+\midrule
+A7 & Uniform Distribution & Remove A7 from the dataset & Figure~\ref{fig:a7_histplot} shows that A7 has an approximately uniform distribution over the range [-1, 1]. Since it has low correlation with the response and high cardinality A7 is most likely just a uniformly generated random variable over the range [-1, 1], and removing it from the dataset will not result in a loss of information. \\
+\midrule
+A8 & Outliers & h & h \\
+\midrule
+A9 & Systematic Missing Values & Remove observations with missing values. & Refer to table entry A2 for more detail. \\
+\midrule
+A10 & Systematic Missing Values & Remove observations with missing values. & Refer to table entry A2 for more detail. \\
+\midrule
+A10 & Invalid Values & Treat invalid values as missing values and impute with median. & A10 entries are all numeric, except some entries that have a value of \textit{a}. To handle this the best strategy is to treat the entries with observed values \textit{a} as missing values and impute them with the median of A10. This is because A10 has outliers in the lower range of its distribution. \\
+\midrule
+A10 & Outliers & h & h \\
+\midrule
+A11 & Outliers & h & h \\
+\midrule
+A12 & Systematic Missing Values & Remove observations with missing values. & Refer to table entry A2 for more detail. \\
+\midrule
+A12 & Outliers & h & h \\
+\midrule
+A13-A15, \& A19-A60 & Binary Cardinality & Treat these features as one-hot encoded features & As mentioned in table~\ref{tab:data_quality_report_res_feat} features A13-A15 \& A19-A60 form two distinct groups of one-hot encoded features of two distinct original categorical features. The A19-A60 is a one-hot encoding of a 42 level categorical variable and using this in certain machine learning contexts might lead to overfitting. Whether it is better to keep these variables one-hot encoded or revert back to the original categorical representation is completely dependent on the original values of the feature and the machine learning model to use. \\
+\midrule
+A13 & Systematic Missing Values & Remove observations with missing values. & Refer to table entry A2 for more detail. \\
+\midrule
+A16 & Systematic Missing Values & Remove observations with missing values. & Refer to table entry A2 for more detail. \\
+\midrule
+A16 & Low Cardinality & Remove A16 from the dataset. & A16 is a constant feature, all observations take on a value of 0. This means A16 is a constant feature and provides no predictive power. Including A16 in the dataset will lead to an increase in complexity without adding any information. \\
+\midrule
+A17 & Low Cardinality & Remove A17 from the dataset. & Just like A16, A17 is a constant feature, all observations also take on a value of 0. Including A17 in the dataset adds complexity without adding any new information. \\
+\midrule
+A18 & Systematic Missing Values & Remove observations with missing values. & Refer to table entry A2 for more detail. \\
+\midrule
+A18 & Low Cardinality & Treat A18 as a three-level categorical feature. & All instances of A18 take on values of 0, 1, or 2 meaning that A18 likely represents a hashed version of some original categorical feature. \\
+\midrule
+A20 & Missing Values & Impute with 0. & A20 has a cardinality of 2, and it is part of the A19-A60 one-hot encoded feature group. Because A20 is part of this large group of encoded features, its mean is 0.01 which means that 99\% of the non-missing values are 0. This overwhelming imbalance makes imputing the missing values with 0 the most logical choice. Further, imputing the missing 0.59\% of the values with 0 will have negligible impact on the feature's already skewed distribution. \\
+\midrule
+A21 & Missing Values & Remove A21 from the dataset. & Feature A21 is missing 70.16\%. This means the vast majority of the feature is missing. The best course of action is to remove the feature from the dataset, because A21 carries very little reliable information, and has low predictive power. Also imputing the missing values would fabricate 70.16\% of the values of the feature, which would introduce extreme bias in the feature, which will harm any models performance. \\
+\midrule
+A61 & High Cardinality & Remove A61 from the dataset. & A21 contains 581012 unique values, which is exactly the same as the number of observations in the dataset. As mentioned in table~\ref{tab:data_quality_report_res_feat}, A61 is almost certainly a unique identifier for each observation in the dataset and including it in the dataset will not provide any useful information about the response. \\
+\midrule
+A62 & Low Cardinality & Remove A62 from the dataset. & A62 is a constant feature, with all observations taking on a value of 1. This means it provides no information about the response and has no predictive power. Including A62 in the dataset will lead to an increase in complexity without adding any new information. \\
+\midrule
+T & Missing Values & Replace with mode. & T is known to be a seven-level categorical variable. It is only missing 0.01\% of its values, so imputing these values with the mode, which is 2, will not negatively impact the distribution of T. \\
 \end{longtable}
 
 \end{document}
