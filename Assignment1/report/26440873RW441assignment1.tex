@@ -112,18 +112,17 @@ Task 2 and 3 will further analyze these findings and address the identified data
 \caption{Data Quality Report for the Response Feature.}
 \label{tab:data_quality_report_res_feat}
 \resizebox{\textwidth}{!}{
-\begin{tabular}{lrrrrrrrrrr}
+\begin{tabular}{lrrrrrrrrr}
 \toprule
-Feature & Count & \% Miss. & Card. & Min. & 1st Qrt. & Mean & Median & 3rd Qrt. & Max. & Std. Dev. \\
+Feature & Count & \% Miss. & Card. & Mode & Mode Freq. & Mode \% & 2nd Mode & 2nd Mode Freq. & 2nd Mode \% \\
 \midrule
-T & 580952 & 0.01 & 7 & 1.00 & 1.00 & 2.05 & 2.00 & 2.00 & 7.00 & 1.40 \\
+T & 580952 & 0.01 & 7 & 2.00 & 283269 & 48.76 & 1.00 & 211815 & 36.46 \\
 \bottomrule
 \end{tabular}
 }
 \end{table}
 
-The data quality report for the response feature T, shown in table~\ref{tab:data_quality_report_res_feat}, indicates that it is an almost complete and discrete variable containing seven unique values
-that are heavily skewed to toward the lower end of its range.
+The data quality report for the response feature T, shown in table~\ref{tab:data_quality_report_res_feat}, indicates that it is an almost complete and highly imbalanced categorical feature.
 
 
 \section*{Task 2: Data Quality Issues}
@@ -211,11 +210,15 @@ A20 & Missing Values & A20 is missing 0.59\% of its values. \\
 \midrule
 A21 & Missing Values & A21 is missing 70.16\% of its values. This means that for over two thirds of the observations, there is no recorded value of A21. The vast majority of the feature is missing. \\
 \midrule
+A21 & Perfect Positive Correlation with A20 & Figure~\ref{fig:binary_heatmap} shows that A21 has a perfect positive correlation with A20. To confirm this programmatically, analysis was done to compare the number of non-missing values of A21 with the number of entries where A20 and A21 have the same value. It was found that A20 and A21 each have a value of \textit{0} in 172455 rows, and a value of \textit{1} in 900 rows. The sum of these two numbers (173355) is exactly the number of non-missing entries in A21, which means that for the observations where A21 is recorded, it is a duplicate of A20, hence the correlation coefficient of 1. This does not reflect what is expected of one-hot encoded variables from a single original categorical feature which strongly suggests a data error in A21. \\
+\midrule
 A61 & High Cardinality & A61 contains 581012 unique values, which is exactly the same as the number of observations. A61 is most likely a unique identifier for each observation. The values range from 1 to 581012. The value of the first quartile is 145253.75. Pandas, which is a Python package to wrangle data, uses the following formula to calculate the position of the quartiles: $Position = 1 + \frac{k}{4} \times (N - 1)$. If one plugs the quantities $k = 1$ and $N = 581012$ then the calculated position for the first quartile is 145253.75, which is exactly the observed value of the 1st quartile of A61. The same holds for the median and the 3rd quartile. Also for any uniformly increasing sequence the average is the midpoint between the first and last numbers, this means if A61 is a uniformly increasing unique identifier for each row then the average should be $\frac{(1 + 581012)}{2} = 290506.5$, which is the value observed for the mean. The statistical properties of A61 perfectly match those of a simple uniformly increasing sequence from 1 to 581012. This clearly indicates that A61 is a unique identifier for each observation and does not have any predictive power. \\
 \midrule
 A62 & Low Cardinality & A62 has a cardinality of one. All instances of A62 take on a value of 1. This means A62 is a constant value and provides no predictive power, since the value never changes. \\
 \midrule
 T & Missing Values & T is missing 0.01\% of its values. \\
+\midrule
+T & Imbalanced Class Distribution & The first mode (2) and the second mode (1) appear in 85.22\% of the observed values of T. The histogram of T in figure~\ref{fig:t_histplot} provides a visual confirmation of this result. It can be seen that 1 and 2 absolutely dominate the minority classes.
 \end{longtable}
 
 \section*{Task 3: Addressing The Data Quality Issues}
@@ -303,11 +306,15 @@ A20 & Missing Values & Impute with 0. & A20 has a cardinality of 2, and it is pa
 \midrule
 A21 & Missing Values & Remove A21 from the dataset. & Feature A21 is missing 70.16\%. This means the vast majority of the feature is missing. The best course of action is to remove the feature from the dataset, because A21 carries very little reliable information, and has low predictive power. Also imputing the missing values would fabricate 70.16\% of the values of the feature, which would introduce extreme bias in the feature, which will harm any models performance. \\
 \midrule
+A21 & Perfect Positive Correlation with A20 & Remove A21 from the dataset. & Figure~\ref{fig:binary_heatmap} shows that A20 and A21 have a perfect positive correlation. All instances where A21 is not missing a value have the same value as A20. This means that A21 is essentially a duplicate of A20 and does not provide any new information, hence it is wise to remove A21 from the dataset. \\
+\midrule
 A61 & High Cardinality & Remove A61 from the dataset. & A21 contains 581012 unique values, which is exactly the same as the number of observations in the dataset. As mentioned in table~\ref{tab:data_quality_report_res_feat}, A61 is almost certainly a unique identifier for each observation in the dataset and including it in the dataset will not provide any useful information about the response. \\
 \midrule
 A62 & Low Cardinality & Remove A62 from the dataset. & A62 is a constant feature, with all observations taking on a value of 1. This means it provides no information about the response and has no predictive power. Including A62 in the dataset will lead to an increase in complexity without adding any new information. \\
 \midrule
 T & Missing Values & Replace with mode. & T is known to be a seven-level categorical variable. It is only missing 0.01\% of its values, so imputing these values with the mode, which is 2, will not negatively impact the distribution of T. \\
+\midrule
+T & Imbalanced Class Distribution & Over sample minority class using SMOTE and under sample majority class using Tomek Links. & The dataset does not contain enough data about the minority classes, while it contains too much data about the majority classes. This will cause any machine learning model fit on this dataset to be biased toward predicting the majority classes. To combat this SMOTE can be used to over sample the minority classes. It creates new synthetic examples of minority class observations and provides the model with more data to learn from. Tomek links can also by used to combat the class imbalance by under sampling the majority classes. Tomek links remove majority class observations, making the majority class less dominant thereby making the model less biased to predicting the majority classes. \\
 \end{longtable}
 
 
@@ -496,5 +503,14 @@ The boxplot in figure~\ref{fig:a12_boxplot} indicates that A12 has numerous outl
 \end{figure}
 
 The heatmap in figure~\ref{fig:binary_heatmap} strongly suggests the presence of two groups of one-hot encoded variables. Binary one-hot encoded features created from the same original categorical variable are inherently negatively correlated. This means that distinct blocks of blue (negatively correlated) squares in the heatmap in figure~\ref{fig:binary_heatmap} correspond to encodings of a distinct original categorical variable. A13, A14, \& A15 are the first group, since they are all negatively correlated with one another. A19-A60 is another group of one-hot encoded variables as they are also negatively correlated with one another. There is correlation present between the variables in the first and second group, which also strongly suggests that these are groups of two distinct one-hot encoded categorical features.
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.6\textwidth]{images/T_histplot.pdf}
+    \caption{Histogram of T.}
+    \label{fig:t_histplot}
+\end{figure}
+
+The histogram in figure~\ref{fig:t_histplot} above shows the distribution of the categorical response feature T over its 7 values. It is highly imbalanced. 2 is the mode and 1 is the second mode. They dominate the other values and represent 85.22\% of the observed values of T. This is a problem because any machine learning model trained on this data with T as a response will likely become biased towards predicting the majority classes, because it can achieve high accuracy by just guessing them. This means the model will perform poorly when it needs to identify instances of the minority classes. To combat this one could over sample the minority classes, by using a method such as SMOTE, and under sample the majority classes, using Tomek links.
 
 \end{document}
