@@ -128,7 +128,7 @@ that are heavily skewed to toward the lower end of its range.
 
 \section*{Task 2: Data Quality Issues}
 
-\begin{longtable}{lp{5cm}p{8cm}}
+\begin{longtable}{lp{4cm}p{7cm}}
 
 \caption{Data Quality Issues.}
 \label{tab:data_quality_issues} \\
@@ -163,7 +163,7 @@ A4 & Outliers &  A4 has outliers in the upper range of its distribution. The gap
 \midrule
 A5 & Systematic Missing Values &  A5 is missing 0.51\% of its values. Refer to table entry A2 for more detail. \\
 \midrule
-A5 & Outliers & A5 has outliers in the lower and upper ends of its distribution. Figure~\ref{fig:a5_boxplot} shows a boxplot that confirms the fact that A5 contains outliers. \\
+A5 & Outliers & A5 has outliers in the lower and upper ends of its distribution. Figure~\ref{fig:a5_boxplot} shows a boxplot that confirms the fact that A5 contains outliers. Figure~\ref{fig:a5_histplot} shows that A5 has a right-skewed distribution with the overwhelming majority of the values larger than zero. The fact that all negative values are also outliers suggests that they are data errors. \\
 \midrule
 A6 & High Cardinality & A6 contains 581012 unique values, which is exactly the number of instances in the dataset. Figure~\ref{fig:correlation_with_T} shows that A6 exhibits a correlation of 0.082 with the response. This coupled with the fact that it has extremely high cardinality means feature A6 provides minimal predictive power. \\
 \midrule
@@ -175,7 +175,7 @@ A7 & High Cardinality & A7 contains 577988 unique values, which is very close to
 \midrule
 A7 & Uniform Distribution & Figure~\ref{fig:a7_histplot} shows the distribution of A7. It indicates that A7 has a uniform distribution over the range [-1, 1]. Since it has low correlation with the response and high cardinality it most likely provides no useful information. A7 is most likely just a uniformly generated random variable over the range [-1, 1]. \\
 \midrule
-A8 & Outliers & A8 contains a few extremely high value outliers in the upper end of its distribution. The maximum value of A8 is 510165098, which is much larger than the third quartile (3328). The boxplot in figure~\ref{fig:a8_boxplot} and the histogram in figure~\ref{fig:a8_histplot} both indicate how these outliers greatly skew the distribution of A8 to the right. \\
+A8 & Outliers & A8 contains a few extremely high value outliers in the upper end of its distribution. The maximum value of A8 is 510165098, which is much larger than the third quartile (3328). The boxplot in figure~\ref{fig:a8_boxplot} and the histogram in figure~\ref{fig:a8_histplot} both indicate how these outliers greatly skew the distribution of A8 to the right. The fact that the outliers are so much larger than the rest of the recorded value strongly suggest that they are errors. \\
 \midrule
 A9 & Systematic Missing Values & A9 is missing 0.51\% of its values.  Refer to table entry A2 for more detail. \\
 \midrule
@@ -218,8 +218,100 @@ A62 & Low Cardinality & A62 has a cardinality of one. All instances of A62 take 
 T & Missing Values & T is missing 0.01\% of its values. \\
 \end{longtable}
 
+\section*{Task 3: Addressing The Data Quality Issues}
 
-\subsection*{Supporting Figures}
+\begin{longtable}{p{2cm}p{3cm}p{4cm}p{6cm}}
+
+\caption{Addressing Data Quality Issues.}
+\label{tab:address_data_quality_issues} \\
+\toprule
+\textbf{Feature} & \textbf{Data Quality Issue} & \textbf{Handling Strategy} & \textbf{Justification} \\
+\midrule
+\endfirsthead
+
+\caption[]{Addressing Data Quality Issues (continued).} \\
+\toprule
+\textbf{Feature} & \textbf{Data Quality Issue} & \textbf{Handling Strategy} & \textbf{Justification} \\
+\midrule
+\endhead
+
+\multicolumn{4}{r}{\textit{Continued on next page}} \\
+\endfoot
+
+\bottomrule
+\endlastfoot
+
+A1 & Outliers & Keep outliers but mitigate their influence using a clamp transformation. & Figure~\ref{fig:a1_boxplot} shows that A1 has a lot of outliers on the upper and lower ends of its distribution. They appear as dense clusters outside the whiskers, suggesting they might be part of the natural tails of the distribution rather than data entry errors. Removing them would result in a loss of information and might harm a models performance. The best option to deal with the outliers present in A1 is to keep them and use a clamp transformation. A good approach is to set all values above the 99th percentile to the value of the 99th percentile, and the value below the 1st percentile to the 1st percentile. This doesn't discard any data, it simply reduces the influence of the most extreme values. \\
+\midrule
+A2 & Systematic Missing Values & Remove observations with missing values. & Features A2, A5, A7, A9, A10, A12, A13, A16, and A18 each have missing values when at least one of them do. To confirm that these missing values are co-located, programmatic analysis was done to count the number of observations containing a missing value in at least one of the features. This was then compared to the number of observations where all the features contained missing values. These two counts were both found to be 2943, 0.51\% of the 581012 observations. This provided definitive proof that the missing data occurs in the same observations. Since the 2943 observations are all missing a large portion of their data, and they make up a small percentage of all observations it is best to remove them from the dataset. \\
+\midrule
+A3 & High Cardinality & Remove A3 from the dataset. & A3 has a cardinality of 576099, which is very close to the number of observations, 581012. This coupled with the fact that A3 has a correlation of 0.017 with the response variable strongly suggests that A3 is a useless feature that will most likely just cause any model to overfit.\\
+\midrule
+A3 & Perfect Positive Correlation with A2 & Remove A3 from the dataset. & Figure~\ref{fig:A2_vs_A3_scatterplot} shows that A3 has a perfect positive correlation with A2. The line starts at (0, 0) which means that A3 is likely just a scaled version of A2. This means that including both A2 and A3 in the dataset is redundant and does not provide any new information. \\
+\midrule
+A4 & Missing Values & Impute missing values with the median of A4. & A4 is missing only 0.05\% of its values, which is not a lot. Imputing the missing values in this case will not introduce any bias in the dataset. Since A4 contains outliers in the upper range of its distribution it is better to impute the missing values of A4 with the median. \\
+\midrule
+A4 & Outliers & Transform A4 to reduce its skewness. & Figure~\ref{fig:a4_boxplot} shows that A4 has a right-skewed distribution with numerous outliers in the upper range of its distribution. These outliers form a natural part of the distribution of A4, and should not be removed as that will result in a loss of information. The best way to deal with outliers due to a skew distribution is to transform the feature to reduce skewness. By making A4 more symmetrical the influence of the outliers is reduced. Applying a $log(x+1)$ or a $sqrt(x)$ transformation are both valid approaches to reduce the skewness of A4. \\
+\midrule
+A5 & Systematic Missing Values & Remove observations with missing values. & Refer to table entry A2 for more detail. \\
+\midrule
+A5 & Outliers & Remove outliers in the lower end of the distribution and apply a transformation to reduce skewness to address the outliers in the upper end of the distribution of A5. & A5 has a few outliers in the lower end of its distribution below zero, since the overwhelming majority of the data is larger than zero, this is most likely a data entry error and it would be wise to remove these entries. After these entries have been removed, transform A5 the same as A4. This is because A5 also has a right-skew distribution and the outliers in the upper range of its distribution form part of the natural distribution of the data and removing them would result in a loss of information. \\
+\midrule
+A6 & High Cardinality & Remove A6 from the dataset. & A6 has a cardinality of 581012, which is exactly the number of observations in the dataset. This coupled with the fact that A6 has a correlation of 0.082 with the response variable strongly suggests that A6 is a useless feature that will most likely just cause any model to overfit. \\
+\midrule
+A6 & Outliers & Transform A6 to reduce its skewness. & Figure~\ref{fig:a6_boxplot} shows that A6 has an extreme right-skewed distribution, with the outliers in the upper and lower ends of the distribution forming part of the natural distribution of the data, the best way to handle these outliers and mitigate their influence it so apply a transformation to reduce the skewness of A6. This keeps all information while reducing the influence of the outliers. \\
+\midrule
+A7 & Systematic Missing Values & Remove observations with missing values. & Refer to table entry A2 for more detail. \\
+\midrule
+A7 & High Cardinality & Remove A7 from the dataset. & A7 has a cardinality of 577988, which is very close to the number of observation in the dataset. This coupled with the fact that A6 has a correlation of 0 with the response variable strongly suggests that A7 is a useless feature that will most likely just cause any model to overfit. \\
+\midrule
+A7 & Uniform Distribution & Remove A7 from the dataset & Figure~\ref{fig:a7_histplot} shows that A7 has an approximately uniform distribution over the range [-1, 1]. Since it has low correlation with the response and high cardinality A7 is most likely just a uniformly generated random variable over the range [-1, 1], and removing it from the dataset will not result in a loss of information. \\
+\midrule
+A8 & Outliers & Remove the outliers. & There is a huge difference between the outliers in the upper range of A8s distribution and the third quartile of A8. So much so that the distribution is extremely right-skewed. The fact that the distribution of A8 is this skewed and it contains a few outliers of extreme value strongly suggest that they are data errors and the best approach would be to remove them from the dataset. \\
+\midrule
+A9 & Systematic Missing Values & Remove observations with missing values. & Refer to table entry A2 for more detail. \\
+\midrule
+A9 & Outliers & Transform A9 to reduce its skewness. & Figure~\ref{fig:a9_boxplot} shows that A9 has a left-skewed distribution, with outliers in the lower end of its distribution. These values most likely form part of the natural distribution of the data and removing them will result in a loss of information. The best approach to deal with these outliers is to apply a logarithmic or a square root transformation to mitigate the influence of the outliers, while keeping all the information they represent. One thing to keep in mind is that since the data is left-skewed one cannot just simply apply the standard logarithmic or square root transformation, one first needs to reflect that data to make it right-skewed and then apply the transformation. \\
+\midrule
+A10 & Systematic Missing Values & Remove observations with missing values. & Refer to table entry A2 for more detail. \\
+\midrule
+A10 & Invalid Values & Treat invalid values as missing values and impute with median. & A10 entries are all numeric, except some entries that have a value of \textit{a}. To handle this the best strategy is to treat the entries with observed values \textit{a} as missing values and impute them with the median of A10. This is because A10 has outliers in the lower range of its distribution. \\
+\midrule
+A10 & Outliers & Transform A10 to reduce its skewness. &  Figure~\ref{fig:a10_boxplot} shows that A10 has a distribution extremely similar to that of A9. Both are left-skewed and would benefit from a transformation to reduce the influence of the outliers while keeping all the information they represent as they form a natural part of the distribution of these features. \\
+\midrule
+A11 & Outliers & Keep outliers, but mitigate their influence using a clamp transformation. & Figure~\ref{fig:a11_boxplot} shows that A11 has a roughly bell-shaped distribution. The outliers on both ends of the distribution appear to be part of the natural tails of the distribution rather than data errors. The best solution to mitigate the influence of these outliers is to use a clamp transformation, like setting all values above the 99th percentile to the 99th percentile, and all values below the first percentile to the first percentile. This reduces the influence of the most extreme outliers without changing the distribution of A11. \\
+\midrule
+A12 & Systematic Missing Values & Remove observations with missing values. & Refer to table entry A2 for more detail. \\
+\midrule
+A12 & Outliers & Transform A12 to reduce its skewness. & Figure~\ref{fig:a12_boxplot} shows that A12 has a right skewed distribution with outliers in the upper range of the distribution. These outliers appear to be part of the natural shape of the distribution and removing them would result in a loss of information. The best approach to handle this issue is to use a transformation like the logarithmic or square root transformation. This mitigates the influence of the outliers while preserving any information they represent. \\
+\midrule
+A13-A15, \& A19-A60 & Binary Cardinality & Treat these features as one-hot encoded features & As mentioned in table~\ref{tab:data_quality_report_res_feat} features A13-A15 \& A19-A60 form two distinct groups of one-hot encoded features of two distinct original categorical features. The A19-A60 is a one-hot encoding of a 42 level categorical variable and using this in certain machine learning contexts might lead to overfitting. Whether it is better to keep these variables one-hot encoded or revert back to the original categorical representation is completely dependent on the original values of the feature and the machine learning model to use. \\
+\midrule
+A13 & Systematic Missing Values & Remove observations with missing values. & Refer to table entry A2 for more detail. \\
+\midrule
+A16 & Systematic Missing Values & Remove observations with missing values. & Refer to table entry A2 for more detail. \\
+\midrule
+A16 & Low Cardinality & Remove A16 from the dataset. & A16 is a constant feature, all observations take on a value of 0. This means A16 is a constant feature and provides no predictive power. Including A16 in the dataset will lead to an increase in complexity without adding any information. \\
+\midrule
+A17 & Low Cardinality & Remove A17 from the dataset. & Just like A16, A17 is a constant feature, all observations also take on a value of 0. Including A17 in the dataset adds complexity without adding any new information. \\
+\midrule
+A18 & Systematic Missing Values & Remove observations with missing values. & Refer to table entry A2 for more detail. \\
+\midrule
+A18 & Low Cardinality & Treat A18 as a three-level categorical feature. & All instances of A18 take on values of 0, 1, or 2 meaning that A18 likely represents a hashed version of some original categorical feature. \\
+\midrule
+A20 & Missing Values & Impute with 0. & A20 has a cardinality of 2, and it is part of the A19-A60 one-hot encoded feature group. Because A20 is part of this large group of encoded features, its mean is 0.01 which means that 99\% of the non-missing values are 0. This overwhelming imbalance makes imputing the missing values with 0 the most logical choice. Further, imputing the missing 0.59\% of the values with 0 will have negligible impact on the feature's already skewed distribution. \\
+\midrule
+A21 & Missing Values & Remove A21 from the dataset. & Feature A21 is missing 70.16\%. This means the vast majority of the feature is missing. The best course of action is to remove the feature from the dataset, because A21 carries very little reliable information, and has low predictive power. Also imputing the missing values would fabricate 70.16\% of the values of the feature, which would introduce extreme bias in the feature, which will harm any models performance. \\
+\midrule
+A61 & High Cardinality & Remove A61 from the dataset. & A21 contains 581012 unique values, which is exactly the same as the number of observations in the dataset. As mentioned in table~\ref{tab:data_quality_report_res_feat}, A61 is almost certainly a unique identifier for each observation in the dataset and including it in the dataset will not provide any useful information about the response. \\
+\midrule
+A62 & Low Cardinality & Remove A62 from the dataset. & A62 is a constant feature, with all observations taking on a value of 1. This means it provides no information about the response and has no predictive power. Including A62 in the dataset will lead to an increase in complexity without adding any new information. \\
+\midrule
+T & Missing Values & Replace with mode. & T is known to be a seven-level categorical variable. It is only missing 0.01\% of its values, so imputing these values with the mode, which is 2, will not negatively impact the distribution of T. \\
+\end{longtable}
+
+
+\section*{Supporting Figures}
 
 The following subsection contains figures and discussions that support the data quality issues mentioned in table~\ref{tab:data_quality_issues}.
 
@@ -230,7 +322,14 @@ The following subsection contains figures and discussions that support the data 
     \label{fig:a1_boxplot}
 \end{figure}
 
-The boxplot in figure~\ref{fig:a1_boxplot} provides a visual confirmation of the outliers in feature A1. The central box represents the interquartile range (IQR), containing the middle 50\% of the data. The points extending far below and above the whiskers of the box are individual data points identified as outliers. This visualization clearly shows that a significant number of outliers exist at both the lower and upper ends of the distribution.
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.6\textwidth]{images/A1_histplot.pdf}
+    \caption{Histogram of A1.}
+    \label{fig:a1_histplot}
+\end{figure}
+
+The boxplot in figure~\ref{fig:a1_boxplot} provides a visual confirmation of the outliers in feature A1. The central box represents the interquartile range (IQR), containing the middle 50\% of the data. The points extending far below and above the whiskers of the box are individual data points identified as outliers. This visualization clearly shows that a significant number of outliers exist at both the lower and upper ends of the distribution. Figure~\ref{fig:a1_histplot} shows that these outliers appear to be part of the natural distribution of A1 and removing them would lead to a loss of information. Since the data is not drastically skewed the best approach to mitigate the effect of these outliers on a model is to use a clamp transformation.
 
 \begin{figure}[H]
     \centering
@@ -257,7 +356,14 @@ Figure~\ref{fig:A2_vs_A3_scatterplot} shows that there is an extremely strong, p
     \label{fig:a4_boxplot}
 \end{figure}
 
-The boxplot in figure~\ref{fig:a4_boxplot} shows that A4 has outliers in the upper range of its distribution.
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.6\textwidth]{images/A4_histplot.pdf}
+    \caption{Histogram of A4.}
+    \label{fig:a4_histplot}
+\end{figure}
+
+The boxplot in figure~\ref{fig:a4_boxplot} shows that A4 has outliers in the upper range of its distribution. The histogram in figure~\ref{fig:a4_histplot} show that these outliers appear to be part of the natural distribution of A4, as A4 appears to be right-skewed, and removing them would result in a loss of information. To mitigate the influence of these issues a transformation could be used to make A4 less skew, like a logarithmic transformation $log(x+1)$ or a square root transformation $sqrt(x)$. This keeps the information represented by the outliers, but reduces their effect on the fitted model.
 
 \begin{figure}[H]
     \centering
@@ -266,7 +372,15 @@ The boxplot in figure~\ref{fig:a4_boxplot} shows that A4 has outliers in the upp
     \label{fig:a5_boxplot}
 \end{figure}
 
-The boxplot in figure~\ref{fig:a5_boxplot} shows that A5 has outliers in the lower and upper range of its distribution. A5 has quite a lot of outliers on the upper end compared to only a few on the lower end.
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.6\textwidth]{images/A5_histplot.pdf}
+    \caption{Histogram of A5.}
+    \label{fig:a5_histplot}
+\end{figure}
+
+The boxplot in figure~\ref{fig:a5_boxplot} shows that A5 has outliers in the lower and upper range of its distribution. A5 has quite a lot of outliers on the upper end compared to only a few on the lower end. These outliers in the lower end of A5s distribution are most likely data errors, because figure~\ref{fig:a5_histplot} shows that the overwhelming majority of data is larger than zero. The fact that there are only a few negative values and they are all outliers is cause for suspicion. The outliers in the upper range of the distribution appear to be part of the normal distribution of A5.
 
 \begin{figure}[H]
     \centering
@@ -275,7 +389,14 @@ The boxplot in figure~\ref{fig:a5_boxplot} shows that A5 has outliers in the low
     \label{fig:a6_boxplot}
 \end{figure}
 
-The plot boxplot in figure~\ref{fig:a6_boxplot} shows that A6 has quite a few outliers, in both the lower and upper ends of its distribution.
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.6\textwidth]{images/A6_histplot.pdf}
+    \caption{Histogram of A6.}
+    \label{fig:a6_histplot}
+\end{figure}
+
+The boxplot in figure~\ref{fig:a6_boxplot} shows that A6 has quite a few outliers, in both the lower and upper ends of its distribution. Figure~\ref{fig:a6_histplot} shows the exact distribution of A6, and it can be seen that A6 has an extreme right-skewed distribution. These outliers form part of the natural distribution of A6 and removing them would result in a loss of information. To mitigate their influence on the machine learning model used, one could apply a transformation like the logarithmic or square root transformation. As mentioned previously this keeps the information represented by the outliers, but mitigates their influence on the fitted model.
 
 \begin{figure}[H]
     \centering
@@ -300,7 +421,7 @@ The histogram in figure~\ref{fig:a7_histplot} shows the distribution of A7. It i
     \label{fig:a8_histplot}
 \end{figure}
 
-The boxplot in figure~\ref{fig:a8_boxplot} shows the extreme outliers in the higher end of the distribution of A8. The boxplot and the histogram in figure~\ref{fig:a8_histplot} show that these outliers cause A8 to have an extremely right skewed distribution. Although there are only a few outliers, they drastically affect the distribution of A8.
+The boxplot in figure~\ref{fig:a8_boxplot} shows the extreme outliers in the higher end of the distribution of A8. The boxplot and the histogram in figure~\ref{fig:a8_histplot} show that these outliers cause A8 to have an extremely right skewed distribution. Although there are only a few outliers, they drastically affect the distribution of A8. They are most likely data errors since the distribution of A8 is this severely skewed and the best approach to deal with them is to remove them from the dataset.
 
 \begin{figure}[H]
     \centering
@@ -309,7 +430,14 @@ The boxplot in figure~\ref{fig:a8_boxplot} shows the extreme outliers in the hig
     \label{fig:a9_boxplot}
 \end{figure}
 
-The boxplot in figure~\ref{fig:a9_boxplot} shows that A9 has a bunch of outliers in the lower end of its distribution.
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.6\textwidth]{images/A9_histplot.pdf}
+    \caption{Histogram of A9.}
+    \label{fig:a9_histplot}
+\end{figure}
+
+The boxplot in figure~\ref{fig:a9_boxplot} shows that A9 has a bunch of outliers in the lower end of its distribution. Figure~\ref{fig:a9_histplot} show that A9 has a left-skewed distribution, meaning that these outliers form part of the natural distribution of A9 and removing them would result in a loss of information. To mitigate their influence a logarithmic or square root transformation can be used, but since A9 is left-skewed, the transformation cannot be applied as is. A9 first has to be reflected to make it right-skewed and then only the transformation can be applied.
 
 \begin{figure}[H]
     \centering
@@ -318,7 +446,14 @@ The boxplot in figure~\ref{fig:a9_boxplot} shows that A9 has a bunch of outliers
     \label{fig:a10_boxplot}
 \end{figure}
 
-The boxplot in figure~\ref{fig:a10_boxplot} was drawn after preprocessing A10, and treating all instances that are not numeric, meaning all instances of \textit{a}, as missing values. This plot shows that A10 has outliers in the lower end of its distribution.
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.6\textwidth]{images/A10_histplot.pdf}
+    \caption{Histogram of A10.}
+    \label{fig:a10_histplot}
+\end{figure}
+
+The boxplot in figure~\ref{fig:a10_boxplot} was drawn after preprocessing A10, and treating all instances that are not numeric, meaning all instances of \textit{a}, as missing values. This plot shows that A10 has outliers in the lower end of its distribution. Figure~\ref{fig:a10_histplot} shows that A10 has a left-skewed distribution extremely similar to that of A9, and would benefit from the same kind of transformation.
 
 \begin{figure}[H]
     \centering
@@ -327,7 +462,14 @@ The boxplot in figure~\ref{fig:a10_boxplot} was drawn after preprocessing A10, a
     \label{fig:a11_boxplot}
 \end{figure}
 
-The boxplot in figure~\ref{fig:a11_boxplot} shows that A11 has numerous outliers in both the lower and upper ranges of its distribution.
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.6\textwidth]{images/A11_histplot.pdf}
+    \caption{Histogram of A11.}
+    \label{fig:a11_histplot}
+\end{figure}
+
+The boxplot in figure~\ref{fig:a11_boxplot} shows that A11 has numerous outliers in both the lower and upper ranges of its distribution. Figure~\ref{fig:a11_histplot} shows that A11 has an approximately normal distribution and the outliers in the upper and lower ranges of the distribution form part of the natural distribution of A11. Removing them would lead to a loss of information, that is why the best way to mitigate their influence on the trained model is to use a clamp transformation.
 
 \begin{figure}[H]
     \centering
@@ -336,7 +478,15 @@ The boxplot in figure~\ref{fig:a11_boxplot} shows that A11 has numerous outliers
     \label{fig:a12_boxplot}
 \end{figure}
 
-The boxplot in figure~\ref{fig:a12_boxplot} indicates that A12 has numerous outliers in the upper end of its distribution.
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.6\textwidth]{images/A12_histplot.pdf}
+    \caption{Histogram of A12.}
+    \label{fig:a12_histplot}
+\end{figure}
+
+The boxplot in figure~\ref{fig:a12_boxplot} indicates that A12 has numerous outliers in the upper end of its distribution. Figure~\ref{fig:a12_histplot} shows the distribution of A12. These outliers in the upper range of the distribution of A12 seem to be part of the natural distribution of A12, since it is right-skewed. They are most likely not data errors and need to be kept to include the information they represent, although a transformation can be used to mitigate their influence on the trained model.
 
 \begin{figure}[H]
     \centering
@@ -346,95 +496,5 @@ The boxplot in figure~\ref{fig:a12_boxplot} indicates that A12 has numerous outl
 \end{figure}
 
 The heatmap in figure~\ref{fig:binary_heatmap} strongly suggests the presence of two groups of one-hot encoded variables. Binary one-hot encoded features created from the same original categorical variable are inherently negatively correlated. This means that distinct blocks of blue (negatively correlated) squares in the heatmap in figure~\ref{fig:binary_heatmap} correspond to encodings of a distinct original categorical variable. A13, A14, \& A15 are the first group, since they are all negatively correlated with one another. A19-A60 is another group of one-hot encoded variables as they are also negatively correlated with one another. There is correlation present between the variables in the first and second group, which also strongly suggests that these are groups of two distinct one-hot encoded categorical features.
-
-\section*{Task 3: Addressing The Data Quality Issues}
-
-\begin{longtable}{lp{4cm}p{4cm}p{5cm}}
-
-\caption{Addressing Data Quality Issues.}
-\label{tab:address_data_quality_issues} \\
-\toprule
-\textbf{Feature} & \textbf{Data Quality Issue} & \textbf{Handling Strategy} & \textbf{Justification} \\
-\midrule
-\endfirsthead
-
-\caption[]{Addressing Data Quality Issues (continued).} \\
-\toprule
-\textbf{Feature} & \textbf{Data Quality Issue} & \textbf{Handling Strategy} & \textbf{Justification} \\
-\midrule
-\endhead
-
-\multicolumn{4}{r}{\textit{Continued on next page}} \\
-\endfoot
-
-\bottomrule
-\endlastfoot
-
-A1 & Outliers & h & h \\
-\midrule
-A2 & Systematic Missing Values & Remove observations with missing values. & Features A2, A5, A7, A9, A10, A12, A13, A16, and A18 each have missing values when at least one of them do. To confirm that these missing values are co-located, programmatic analysis was done to count the number of observations containing a missing value in at least one of the features. This was then compared to the number of observations where all the features contained missing values. These two counts were both found to be 2943, 0.51\% of the 581012 observations. This provided definitive proof that the missing data occurs in the same observations. Since the 2943 observations are all missing a large portion of their data, and they make up a small percentage of all observations it is best to remove them from the dataset. \\
-\midrule
-A3 & High Cardinality & Remove A3 from the dataset. & A3 has a cardinality of 576099, which is very close to the number of observations, 581012. This coupled with the fact that A3 has a correlation of 0.017 with the response variable strongly suggests that A3 is a useless feature that will most likely just cause any model to overfit.\\
-\midrule
-A3 & Perfect Positive Correlation with A2 & Remove A3 from the dataset. & Figure~\ref{fig:A2_vs_A3_scatterplot} shows that A3 has a perfect positive correlation with A2. The line starts at (0, 0) which means that A3 is likely just a scaled version of A2. This means that including both A2 and A3 in the dataset is redundant and does not provide any new information. \\
-\midrule
-A4 & Missing Values & Impute missing values with the median of A4. & A4 is missing only 0.05\% of its values, which is not a lot. Imputing the missing values in this case will not introduce any bias in the dataset. Since A4 contains outliers in the upper range of its distribution it is better to impute the missing values of A4 with the median. \\
-\midrule
-A4 & Outliers & h & h \\
-\midrule
-A5 & Systematic Missing Values & Remove observations with missing values. & Refer to table entry A2 for more detail. \\
-\midrule
-A5 & Outliers & h & h \\
-\midrule
-A6 & High Cardinality & Remove A6 from the dataset. & A6 has a cardinality of 581012, which is exactly the number of observations in the dataset. This coupled with the fact that A6 has a correlation of 0.082 with the response variable strongly suggests that A6 is a useless feature that will most likely just cause any model to overfit. \\
-\midrule
-A6 & Outliers & h & h \\
-\midrule
-A7 & Systematic Missing Values & Remove observations with missing values. & Refer to table entry A2 for more detail. \\
-\midrule
-A7 & High Cardinality & Remove A7 from the dataset. & A7 has a cardinality of 577988, which is very close to the number of observation in the dataset. This coupled with the fact that A6 has a correlation of 0 with the response variable strongly suggests that A7 is a useless feature that will most likely just cause any model to overfit. \\
-\midrule
-A7 & Uniform Distribution & Remove A7 from the dataset & Figure~\ref{fig:a7_histplot} shows that A7 has an approximately uniform distribution over the range [-1, 1]. Since it has low correlation with the response and high cardinality A7 is most likely just a uniformly generated random variable over the range [-1, 1], and removing it from the dataset will not result in a loss of information. \\
-\midrule
-A8 & Outliers & h & h \\
-\midrule
-A9 & Systematic Missing Values & Remove observations with missing values. & Refer to table entry A2 for more detail. \\
-\midrule
-A10 & Systematic Missing Values & Remove observations with missing values. & Refer to table entry A2 for more detail. \\
-\midrule
-A10 & Invalid Values & Treat invalid values as missing values and impute with median. & A10 entries are all numeric, except some entries that have a value of \textit{a}. To handle this the best strategy is to treat the entries with observed values \textit{a} as missing values and impute them with the median of A10. This is because A10 has outliers in the lower range of its distribution. \\
-\midrule
-A10 & Outliers & h & h \\
-\midrule
-A11 & Outliers & h & h \\
-\midrule
-A12 & Systematic Missing Values & Remove observations with missing values. & Refer to table entry A2 for more detail. \\
-\midrule
-A12 & Outliers & h & h \\
-\midrule
-A13-A15, \& A19-A60 & Binary Cardinality & Treat these features as one-hot encoded features & As mentioned in table~\ref{tab:data_quality_report_res_feat} features A13-A15 \& A19-A60 form two distinct groups of one-hot encoded features of two distinct original categorical features. The A19-A60 is a one-hot encoding of a 42 level categorical variable and using this in certain machine learning contexts might lead to overfitting. Whether it is better to keep these variables one-hot encoded or revert back to the original categorical representation is completely dependent on the original values of the feature and the machine learning model to use. \\
-\midrule
-A13 & Systematic Missing Values & Remove observations with missing values. & Refer to table entry A2 for more detail. \\
-\midrule
-A16 & Systematic Missing Values & Remove observations with missing values. & Refer to table entry A2 for more detail. \\
-\midrule
-A16 & Low Cardinality & Remove A16 from the dataset. & A16 is a constant feature, all observations take on a value of 0. This means A16 is a constant feature and provides no predictive power. Including A16 in the dataset will lead to an increase in complexity without adding any information. \\
-\midrule
-A17 & Low Cardinality & Remove A17 from the dataset. & Just like A16, A17 is a constant feature, all observations also take on a value of 0. Including A17 in the dataset adds complexity without adding any new information. \\
-\midrule
-A18 & Systematic Missing Values & Remove observations with missing values. & Refer to table entry A2 for more detail. \\
-\midrule
-A18 & Low Cardinality & Treat A18 as a three-level categorical feature. & All instances of A18 take on values of 0, 1, or 2 meaning that A18 likely represents a hashed version of some original categorical feature. \\
-\midrule
-A20 & Missing Values & Impute with 0. & A20 has a cardinality of 2, and it is part of the A19-A60 one-hot encoded feature group. Because A20 is part of this large group of encoded features, its mean is 0.01 which means that 99\% of the non-missing values are 0. This overwhelming imbalance makes imputing the missing values with 0 the most logical choice. Further, imputing the missing 0.59\% of the values with 0 will have negligible impact on the feature's already skewed distribution. \\
-\midrule
-A21 & Missing Values & Remove A21 from the dataset. & Feature A21 is missing 70.16\%. This means the vast majority of the feature is missing. The best course of action is to remove the feature from the dataset, because A21 carries very little reliable information, and has low predictive power. Also imputing the missing values would fabricate 70.16\% of the values of the feature, which would introduce extreme bias in the feature, which will harm any models performance. \\
-\midrule
-A61 & High Cardinality & Remove A61 from the dataset. & A21 contains 581012 unique values, which is exactly the same as the number of observations in the dataset. As mentioned in table~\ref{tab:data_quality_report_res_feat}, A61 is almost certainly a unique identifier for each observation in the dataset and including it in the dataset will not provide any useful information about the response. \\
-\midrule
-A62 & Low Cardinality & Remove A62 from the dataset. & A62 is a constant feature, with all observations taking on a value of 1. This means it provides no information about the response and has no predictive power. Including A62 in the dataset will lead to an increase in complexity without adding any new information. \\
-\midrule
-T & Missing Values & Replace with mode. & T is known to be a seven-level categorical variable. It is only missing 0.01\% of its values, so imputing these values with the mode, which is 2, will not negatively impact the distribution of T. \\
-\end{longtable}
 
 \end{document}
