@@ -124,6 +124,8 @@ T & 580952 & 0.01 & 7 & 2.00 & 283269 & 48.76 & 1.00 & 211815 & 36.46 \\
 
 The data quality report for the response feature T, shown in table~\ref{tab:data_quality_report_res_feat}, indicates that it is an almost complete and highly imbalanced categorical feature.
 
+The descriptive statistics were calculated using Python 3.12.3 and Pandas 2.3.1. These same tools along with Matplotlib 3.10.5 and Seaborn 0.13.2 were used to do the analyses in Tasks 2 \& 3.
+
 
 \section*{Task 2: Data Quality Issues}
 
@@ -174,7 +176,7 @@ A7 & High Cardinality & A7 contains 577988 unique values, which is very close to
 \midrule
 A7 & Uniform Distribution & Figure~\ref{fig:a7_histplot} shows the distribution of A7. It indicates that A7 has a uniform distribution over the range [-1, 1]. Since it has low correlation with the response and high cardinality it most likely provides no useful information. A7 is most likely just a uniformly generated random variable over the range [-1, 1]. \\
 \midrule
-A8 & Outliers & A8 contains a few extremely high value outliers in the upper end of its distribution. The maximum value of A8 is 510165098, which is much larger than the third quartile (3328). The boxplot in figure~\ref{fig:a8_boxplot} and the histogram in figure~\ref{fig:a8_histplot} both indicate how these outliers greatly skew the distribution of A8 to the right. The fact that the outliers are so much larger than the rest of the recorded value strongly suggest that they are errors. \\
+A8 & Outliers & A8 contains a few extremely high value outliers in the upper end of its distribution. The maximum value of A8 is 510165098, which is much larger than the third quartile (3328). The boxplot in figure~\ref{fig:a8_boxplot} and the histogram in figure~\ref{fig:a8_histplot} both indicate how these outliers greatly skew the distribution of A8 to the right. The fact that the outliers are orders of magnitude larger than the rest of the recorded values strongly suggests they are not just natural variations but are likely data collection errors. This extreme difference in scale could indicate that these observations were recorded using a different unit of measurement than the rest of the dataset. \\
 \midrule
 A9 & Systematic Missing Values & A9 is missing 0.51\% of its values.  Refer to table entry A2 for more detail. \\
 \midrule
@@ -213,6 +215,8 @@ A21 & Missing Values & A21 is missing 70.16\% of its values. This means that for
 A21 & Perfect Positive Correlation with A20 & Figure~\ref{fig:binary_heatmap} shows that A21 has a perfect positive correlation with A20. To confirm this programmatically, analysis was done to compare the number of non-missing values of A21 with the number of entries where A20 and A21 have the same value. It was found that A20 and A21 each have a value of \textit{0} in 172455 rows, and a value of \textit{1} in 900 rows. The sum of these two numbers (173355) is exactly the number of non-missing entries in A21, which means that for the observations where A21 is recorded, it is a duplicate of A20, hence the correlation coefficient of 1. This does not reflect what is expected of one-hot encoded variables from a single original categorical feature which strongly suggests a data error in A21. \\
 \midrule
 A61 & High Cardinality & A61 contains 581012 unique values, which is exactly the same as the number of observations. A61 is most likely a unique identifier for each observation. The values range from 1 to 581012. The value of the first quartile is 145253.75. Pandas, which is a Python package to wrangle data, uses the following formula to calculate the position of the quartiles: $Position = 1 + \frac{k}{4} \times (N - 1)$. If one plugs the quantities $k = 1$ and $N = 581012$ then the calculated position for the first quartile is 145253.75, which is exactly the observed value of the 1st quartile of A61. The same holds for the median and the 3rd quartile. Also for any uniformly increasing sequence the average is the midpoint between the first and last numbers, this means if A61 is a uniformly increasing unique identifier for each row then the average should be $\frac{(1 + 581012)}{2} = 290506.5$, which is the value observed for the mean. The statistical properties of A61 perfectly match those of a simple uniformly increasing sequence from 1 to 581012. This clearly indicates that A61 is a unique identifier for each observation and does not have any predictive power. \\
+\midrule
+A61 & Extreme Multicollinearity with A1 & Figure~\ref{fig:A1_vs_A61_scatterplot} shows a near perfect, predictable relationship between A1 and A61. As A1 increases, A61 decreases along a smooth, predictable curve. \\
 \midrule
 A62 & Low Cardinality & A62 has a cardinality of one. All instances of A62 take on a value of 1. This means A62 is a constant value and provides no predictive power, since the value never changes. \\
 \midrule
@@ -310,13 +314,14 @@ A21 & Perfect Positive Correlation with A20 & Remove A21 from the dataset. & Fig
 \midrule
 A61 & High Cardinality & Remove A61 from the dataset. & A21 contains 581012 unique values, which is exactly the same as the number of observations in the dataset. As mentioned in table~\ref{tab:data_quality_report_res_feat}, A61 is almost certainly a unique identifier for each observation in the dataset and including it in the dataset will not provide any useful information about the response. \\
 \midrule
+A61 & Extreme Multicollinearity with A1 & Remove A61 from the dataset & Figure~\ref{fig:A1_vs_A61_scatterplot} shows a near perfect, predictable relationship between A1 and A61. The two variables contain almost the exact same information, and one can be almost perfectly predicted from the other. Including both features in the dataset is redundant and thus it is best to remove one. Since it is known that A61 is almost certainly a unique identifier of each observation it is best to remove it and keep A1, which could potentially contain valuable information. \\
+\midrule
 A62 & Low Cardinality & Remove A62 from the dataset. & A62 is a constant feature, with all observations taking on a value of 1. This means it provides no information about the response and has no predictive power. Including A62 in the dataset will lead to an increase in complexity without adding any new information. \\
 \midrule
 T & Missing Values & Replace with mode. & T is known to be a seven-level categorical variable. It is only missing 0.01\% of its values, so imputing these values with the mode, which is 2, will not negatively impact the distribution of T. \\
 \midrule
 T & Imbalanced Class Distribution & Over sample minority class using SMOTE and under sample majority class using Tomek Links. & The dataset does not contain enough data about the minority classes, while it contains too much data about the majority classes. This will cause any machine learning model fit on this dataset to be biased toward predicting the majority classes. To combat this SMOTE can be used to over sample the minority classes. It creates new synthetic examples of minority class observations and provides the model with more data to learn from. Tomek links can also by used to combat the class imbalance by under sampling the majority classes. Tomek links remove majority class observations, making the majority class less dominant thereby making the model less biased to predicting the majority classes. \\
 \end{longtable}
-
 
 \section*{Supporting Figures}
 
@@ -502,7 +507,16 @@ The boxplot in figure~\ref{fig:a12_boxplot} indicates that A12 has numerous outl
     \label{fig:binary_heatmap}
 \end{figure}
 
-The heatmap in figure~\ref{fig:binary_heatmap} strongly suggests the presence of two groups of one-hot encoded variables. Binary one-hot encoded features created from the same original categorical variable are inherently negatively correlated. This means that distinct blocks of blue (negatively correlated) squares in the heatmap in figure~\ref{fig:binary_heatmap} correspond to encodings of a distinct original categorical variable. A13, A14, \& A15 are the first group, since they are all negatively correlated with one another. A19-A60 is another group of one-hot encoded variables as they are also negatively correlated with one another. There is correlation present between the variables in the first and second group, which also strongly suggests that these are groups of two distinct one-hot encoded categorical features.
+The heatmap in figure~\ref{fig:binary_heatmap} strongly suggests the presence of two groups of one-hot encoded variables. Binary one-hot encoded features created from the same original categorical variable are inherently negatively correlated. This means that distinct blocks of blue (negatively correlated) squares in the heatmap in figure~\ref{fig:binary_heatmap} correspond to encodings of a distinct original categorical variable. A13, A14, \& A15 are the first group, since they are all negatively correlated with one another. A19-A60 is another group of one-hot encoded variables as they are also negatively correlated with one another. There is mild correlation present between the variables in the first and second group, which also strongly suggests that these are groups of two distinct one-hot encoded categorical features.
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.6\textwidth]{images/A1_vs_A61_scatterplot.pdf}
+    \caption{Scatterplot of A1 vs A61.}
+    \label{fig:A1_vs_A61_scatterplot}
+\end{figure}
+
+The scatterplot in figure~\ref{fig:A1_vs_A61_scatterplot} shows that A1 and A61 exhibit a strong negative relationship. The plot shows a near perfect, predictable relationship between A1 and A61. This means that including both A1 and A61 in the dataset will lead to data redundancy issues. Since it is known that A61 is most likely a unique identifier for each row it is best to remove A61 and keep A1 as A1 could contain some meaningful information. A keen conclusion that can be drawn from this plot is that the dataset is sorted in descending values of A1. Since A61 is known to be an increasing unique identifier and A1 decreases predictably when A61 increases, all observations in the dataset are ordered by their value of A1 in decreasing order.
 
 \begin{figure}[H]
     \centering

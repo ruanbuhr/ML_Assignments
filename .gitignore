@@ -2,6 +2,7 @@
 data/
 *.pdf
 !Assignment1/report/images/*.pdf
+*.html
 
 # Byte-compiled / optimized / DLL files
 __pycache__/
