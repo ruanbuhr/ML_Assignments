@@ -24,7 +24,7 @@
 
 \section*{Task 1: Data Quality Reports}
 
-The \texttt{badDataSet.csv} data set contains 581012 instances, with 62 descriptive features and a single response.
+The \texttt{badDataSet.csv} data set contains 581012 instances, with 62 descriptive features and a single response. Table~\ref{tab:data_quality_report_des_feat} gives the data quality report for the descriptive features.
 
 \begin{table}[H]
 \centering
@@ -214,7 +214,7 @@ A21 & Missing Values & A21 is missing 70.16\% of its values. This means that for
 \midrule
 A21 & Perfect Positive Correlation with A20 & Figure~\ref{fig:binary_heatmap} shows that A21 has a perfect positive correlation with A20. To confirm this programmatically, analysis was done to compare the number of non-missing values of A21 with the number of entries where A20 and A21 have the same value. It was found that A20 and A21 each have a value of \textit{0} in 172455 rows, and a value of \textit{1} in 900 rows. The sum of these two numbers (173355) is exactly the number of non-missing entries in A21, which means that for the observations where A21 is recorded, it is a duplicate of A20, hence the correlation coefficient of 1. This does not reflect what is expected of one-hot encoded variables from a single original categorical feature which strongly suggests a data error in A21. \\
 \midrule
-A61 & High Cardinality & A61 contains 581012 unique values, which is exactly the same as the number of observations. A61 is most likely a unique identifier for each observation. The values range from 1 to 581012. The value of the first quartile is 145253.75. Pandas, which is a Python package to wrangle data, uses the following formula to calculate the position of the quartiles: $Position = 1 + \frac{k}{4} \times (N - 1)$. If one plugs the quantities $k = 1$ and $N = 581012$ then the calculated position for the first quartile is 145253.75, which is exactly the observed value of the 1st quartile of A61. The same holds for the median and the 3rd quartile. Also for any uniformly increasing sequence the average is the midpoint between the first and last numbers, this means if A61 is a uniformly increasing unique identifier for each row then the average should be $\frac{(1 + 581012)}{2} = 290506.5$, which is the value observed for the mean. The statistical properties of A61 perfectly match those of a simple uniformly increasing sequence from 1 to 581012. This clearly indicates that A61 is a unique identifier for each observation and does not have any predictive power. \\
+A61 & High Cardinality & A61 contains 581012 unique values, which is exactly the same as the number of observations. A61 is most likely a unique identifier for each observation. The values range from 1 to 581012. The value of the first quartile is 145253.75. Pandas, which is a Python package to wrangle data, uses the following formula to calculate the position of the quartiles: $Position = 1 + \frac{k}{4} \times (N - 1)$. If one plugs the quantities $k = 1$ and $N = 581012$ then the calculated position for the first quartile is 145253.75, which is exactly the observed value of the 1st quartile of A61. The same holds for the median and the 3rd quartile. Also for any uniformly increasing sequence the average is the midpoint between the first and last numbers, this means if A61 is a uniformly increasing unique identifier for each row then the average should be $\frac{(1 + 581012)}{2} = 290506.5$, which is the value observed for the mean. The statistical properties of A61 perfectly match those of a simple uniformly increasing sequence from 1 to 581012. This strongly indicates that A61 is a unique identifier for each observation and does not have any predictive power. \\
 \midrule
 A61 & Extreme Multicollinearity with A1 & Figure~\ref{fig:A1_vs_A61_scatterplot} shows a near perfect, predictable relationship between A1 and A61. As A1 increases, A61 decreases along a smooth, predictable curve. \\
 \midrule
@@ -286,13 +286,13 @@ A10 & Invalid Values & Treat invalid values as missing values and impute with me
 \midrule
 A10 & Outliers & Transform A10 to reduce its skewness. &  Figure~\ref{fig:a10_boxplot} shows that A10 has a distribution extremely similar to that of A9. Both are left-skewed and would benefit from a transformation to reduce the influence of the outliers while keeping all the information they represent as they form a natural part of the distribution of these features. \\
 \midrule
-A11 & Outliers & Keep outliers, but mitigate their influence using a clamp transformation. & Figure~\ref{fig:a11_boxplot} shows that A11 has a roughly bell-shaped distribution. The outliers on both ends of the distribution appear to be part of the natural tails of the distribution rather than data errors. The best solution to mitigate the influence of these outliers is to use a clamp transformation, like setting all values above the 99th percentile to the 99th percentile, and all values below the first percentile to the first percentile. This reduces the influence of the most extreme outliers without changing the distribution of A11. \\
+A11 & Outliers & Keep outliers, but mitigate their influence using a clamp transformation. & Figure~\ref{fig:a11_boxplot} shows that A11 has a roughly bell-shaped distribution. The outliers on both ends of the distribution appear to be part of the natural tails of the distribution rather than data errors. The best solution to mitigate the influence of these outliers is to use a clamp transformation, like setting all values above the 99th percentile to the 99th percentile, and all values below the 1st percentile to the 1st percentile. This reduces the influence of the most extreme outliers without changing the distribution of A11. \\
 \midrule
 A12 & Systematic Missing Values & Remove observations with missing values. & Refer to table entry A2 for more detail. \\
 \midrule
 A12 & Outliers & Transform A12 to reduce its skewness. & Figure~\ref{fig:a12_boxplot} shows that A12 has a right skewed distribution with outliers in the upper range of the distribution. These outliers appear to be part of the natural shape of the distribution and removing them would result in a loss of information. The best approach to handle this issue is to use a transformation like the logarithmic or square root transformation. This mitigates the influence of the outliers while preserving any information they represent. \\
 \midrule
-A13-A15, \& A19-A60 & Binary Cardinality & Treat these features as one-hot encoded features & As mentioned in table~\ref{tab:data_quality_report_res_feat} features A13-A15 \& A19-A60 form two distinct groups of one-hot encoded features of two distinct original categorical features. The A19-A60 is a one-hot encoding of a 42 level categorical variable and using this in certain machine learning contexts might lead to overfitting. Whether it is better to keep these variables one-hot encoded or revert back to the original categorical representation is completely dependent on the original values of the feature and the machine learning model to use. \\
+A13-A15, \& A19-A60 & Binary Cardinality & Treat these features as one-hot encoded features & As mentioned in table~\ref{tab:data_quality_issues} features A13-A15 \& A19-A60 form two distinct groups of one-hot encoded features of two distinct original categorical features. The A19-A60 is a one-hot encoding of a 42 level categorical variable and using this in certain machine learning contexts might lead to overfitting. Whether it is better to keep these variables one-hot encoded or revert back to the original categorical representation is completely dependent on the original values of the feature and the machine learning model to use. \\
 \midrule
 A13 & Systematic Missing Values & Remove observations with missing values. & Refer to table entry A2 for more detail. \\
 \midrule
@@ -325,7 +325,7 @@ T & Imbalanced Class Distribution & Over sample minority class using SMOTE and u
 
 \section*{Supporting Figures}
 
-The following subsection contains figures and discussions that support the data quality issues mentioned in table~\ref{tab:data_quality_issues}.
+The following section contains figures and discussions that support the data quality issues mentioned in table~\ref{tab:data_quality_issues} and table~\ref{tab:address_data_quality_issues}.
 
 \begin{figure}[H]
     \centering
@@ -392,7 +392,7 @@ The boxplot in figure~\ref{fig:a4_boxplot} shows that A4 has outliers in the upp
     \label{fig:a5_histplot}
 \end{figure}
 
-The boxplot in figure~\ref{fig:a5_boxplot} shows that A5 has outliers in the lower and upper range of its distribution. A5 has quite a lot of outliers on the upper end compared to only a few on the lower end. These outliers in the lower end of A5s distribution are most likely data errors, because figure~\ref{fig:a5_histplot} shows that the overwhelming majority of data is larger than zero. The fact that there are only a few negative values and they are all outliers is cause for suspicion. The outliers in the upper range of the distribution appear to be part of the normal distribution of A5.
+The boxplot in figure~\ref{fig:a5_boxplot} shows that A5 has outliers in the lower and upper range of its distribution. A5 has quite a lot of outliers on the upper end compared to only a few on the lower end. These outliers in the lower end of the distribution of A5 are most likely data errors, because figure~\ref{fig:a5_histplot} shows that the overwhelming majority of data is larger than zero. The fact that there are only a few negative values and they are all outliers is cause for suspicion. The outliers in the upper range of the distribution appear to be part of the normal distribution of A5.
 
 \begin{figure}[H]
     \centering
@@ -433,7 +433,7 @@ The histogram in figure~\ref{fig:a7_histplot} shows the distribution of A7. It i
     \label{fig:a8_histplot}
 \end{figure}
 
-The boxplot in figure~\ref{fig:a8_boxplot} shows the extreme outliers in the higher end of the distribution of A8. The boxplot and the histogram in figure~\ref{fig:a8_histplot} show that these outliers cause A8 to have an extremely right skewed distribution. Although there are only a few outliers, they drastically affect the distribution of A8. They are most likely data errors since the distribution of A8 is this severely skewed and the best approach to deal with them is to remove them from the dataset.
+The boxplot in figure~\ref{fig:a8_boxplot} shows the extreme outliers in the higher end of the distribution of A8. The boxplot and the histogram in figure~\ref{fig:a8_histplot} show that these outliers cause A8 to have an extremely right skewed distribution. Although there are only a few outliers, they drastically affect the distribution of A8. They are most likely data errors since the distribution of A8 is this severely skewed. The best approach to deal with them is to remove them from the dataset.
 
 \begin{figure}[H]
     \centering
