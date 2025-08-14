@@ -274,7 +274,7 @@ A7 & High Cardinality & Remove A7 from the dataset. & A7 has a cardinality of 57
 \midrule
 A7 & Uniform Distribution & Remove A7 from the dataset & Figure~\ref{fig:a7_histplot} shows that A7 has an approximately uniform distribution over the range [-1, 1]. Since it has low correlation with the response and high cardinality A7 is most likely just a uniformly generated random variable over the range [-1, 1], and removing it from the dataset will not result in a loss of information. \\
 \midrule
-A8 & Outliers & Remove the outliers. & There is a huge difference between the outliers in the upper range of A8s distribution and the third quartile of A8. So much so that the distribution is extremely right-skewed. The fact that the distribution of A8 is this skewed and it contains a few outliers of extreme value strongly suggest that they are data errors and the best approach would be to remove them from the dataset. \\
+A8 & Outliers & Remove the outliers. & There is a huge difference between the outliers in the upper range of the distribution of A8 and the third quartile of A8. So much so that the distribution is extremely right-skewed. The fact that the distribution of A8 is this skewed and it contains a few outliers of extreme value strongly suggest that they are data errors and the best approach would be to remove them from the dataset. \\
 \midrule
 A9 & Systematic Missing Values & Remove observations with missing values. & Refer to table entry A2 for more detail. \\
 \midrule
@@ -282,7 +282,7 @@ A9 & Outliers & Transform A9 to reduce its skewness. & Figure~\ref{fig:a9_boxplo
 \midrule
 A10 & Systematic Missing Values & Remove observations with missing values. & Refer to table entry A2 for more detail. \\
 \midrule
-A10 & Invalid Values & Treat invalid values as missing values and impute with median. & A10 entries are all numeric, except some entries that have a value of \textit{a}. To handle this the best strategy is to treat the entries with observed values \textit{a} as missing values and impute them with the median of A10. This is because A10 has outliers in the lower range of its distribution. \\
+A10 & Invalid Values & Treat invalid values as missing values and impute with median. & A10 entries are all numeric, except 1\% of the entries that have a value of \textit{a}. To handle this the best strategy is to treat the entries with observed values \textit{a} as missing values and impute them with the median of A10. This is because A10 has outliers in the lower range of its distribution, and imputing only 1\% of values with the median will not introduce any extreme bias. \\
 \midrule
 A10 & Outliers & Transform A10 to reduce its skewness. &  Figure~\ref{fig:a10_boxplot} shows that A10 has a distribution extremely similar to that of A9. Both are left-skewed and would benefit from a transformation to reduce the influence of the outliers while keeping all the information they represent as they form a natural part of the distribution of these features. \\
 \midrule
