@@ -13,7 +13,7 @@
 
 \title{ML441 Assignment 2}
 
-\author{\IEEEauthorblockN{Ruan Buhr, 26440873}
+\author{\IEEEauthorblockN{RH Buhr, 26440873}
 \IEEEauthorblockA{\textit{BDatSci Programme, 4th Year} \\
 \textit{Stellenbosch University}\\
 Stellenbosch, South Africa \\
@@ -35,12 +35,44 @@ This is the abstract.
 This is the intro of the report.
 
 \section{Background}
-This is the background section.
+
+The task of predicting a forest cover type from cartographic data is a classic example of a supervised learning problem, specifically a multi-class classification problem. The core idea is to train a model on a dataset containing observations (parcels of land) with known descriptive features and known response labels. The trained model should then be able to predict the correct label for new, unseen observations. Myriad machine learning algorithms exist to accomplish this task, each with unique methodologies and inductive biases. This report will focus on two distinct approaches, an information-based method and a similarity-based method. 
+
+\subsection{Machine learning algorithm description}
+
+\subsubsection{Classification Tree Description}
+
+A classification tree is an information-based machine learning model, that forms a tree-like structure of human-readable rules.. Non-terminal nodes in this tree represent rules applied to descriptive features, and terminal nodes represent the response feature predictions. The algorithm learns to recursively split the data into increasingly pure subsets based on the feature values that provide the most information. The homogeneity (purity) measures often used by classification trees are entropy and the Gini index.
+
+Entropy is an information theory concept that measures the level of disorder of uncertainty in a set. In the context of decision trees, it measures the impurity of a node. Entropy falls between [0, 1], and an entropy value of 0 signifies a perfectly pure node, where all observations are from the same class. An entropy value of 1 represents the hightest level of disorder, e.g. a 50/50 split in a binary classification problem. The classification tree algorithm selects the split that provides the highest information gain, which is the reduction in entropy after the split. The formula for entropy is: $Entropy = -\sum_{i=1}^{C} p_i \log p_i$, where $C$ is the number of classes and $p_i$ is the probability of an element being in class $i$.
+
+An alternative measure is the Gini index. It is a measure of how often a randomly chosen element from a set would be incorrectly labeled if it were randomly labeled according to the distribution of the labels in the set. The Gini index also falls in the range [0, 1], and a Gini index score of 0 represents a perfectly pure node, while a higher score indicates greater impurity. Just like entropy, the algorithm seeks to find rules that result in the largest decrease in Gini index. The formula for Gini index is: $Gini\ index = 1 - \sum_{i=1}^{C} (p_i)^2$, where $C$ is the number of classes and $p_i$ is the probability of an element being in class $i$.
+
+To prevent overfitting, classification trees are simplified through a process called pruning, which reduces the tree's size by removing branches that contribute little to its predictive power. A tree that grows till every terminal node is perfectly pure often captures noise in the training data and generalizes poorly to unseen data. There are two main strategies to prune classification trees and achieve a better trade-off between bias and variance.
+
+Pre-pruning stops the tree's growth before it is fully induced. This method involves setting stopping criteria that halt the splitting of nodes once they are met. Examples include:
+
+\begin{itemize}
+    \item Maximum Tree Depth: Limit longest path from root to leaf nodes.
+    \item Minimum Samples for a Split: Require a node to have at least a certain amount of samples before it can be split.
+    \item Minimum Samples per Leaf: Ensure that terminal nodes contain a minimum number of samples.
+\end{itemize}
+
+Pre-pruning is cost-effective because it stops the tree from becoming too large, but a potential drawback is that it might stop the growth too early. This is where post-pruning comes in. It allows the tree to grow to its maximum size and then systematically cuts back the branches that are least important. The algorithm prunes subtrees that provide weak predictive power, typically be evaluating the tree's performance on a separate validation set \cite{b1}.
+
+\subsubsection{k-Nearest Neighbors Description}
+
+\subsection{Expectations wrt data quality issues}
+
+\subsubsection{Decision Tree Description}
+
+\subsubsection{k-Nearest Neighbors Description}
+
 
 \section{Implementation}
 This is where I need to explain how sklearn is used.
 
-\section{Empirical Process}
+\section{Empirical process}
 
 \subsection{Data pre-processing}
 
@@ -55,13 +87,7 @@ This is where I need to explain how sklearn is used.
 \section{Conclusions}
 
 \begin{thebibliography}{00}
-\bibitem{b1} G. Eason, B. Noble, and I. N. Sneddon, ``On certain integrals of Lipschitz-Hankel type involving products of Bessel functions,'' Phil. Trans. Roy. Soc. London, vol. A247, pp. 529--551, April 1955.
-\bibitem{b2} J. Clerk Maxwell, A Treatise on Electricity and Magnetism, 3rd ed., vol. 2. Oxford: Clarendon, 1892, pp.68--73.
-\bibitem{b3} I. S. Jacobs and C. P. Bean, ``Fine particles, thin films and exchange anisotropy,'' in Magnetism, vol. III, G. T. Rado and H. Suhl, Eds. New York: Academic, 1963, pp. 271--350.
-\bibitem{b4} K. Elissa, ``Title of paper if known,'' unpublished.
-\bibitem{b5} R. Nicole, ``Title of paper with only first word capitalized,'' J. Name Stand. Abbrev., in press.
-\bibitem{b6} Y. Yorozu, M. Hirano, K. Oka, and Y. Tagawa, ``Electron spectroscopy studies on magneto-optical media and plastic substrate interface,'' IEEE Transl. J. Magn. Japan, vol. 2, pp. 740--741, August 1987 [Digests 9th Annual Conf. Magnetics Japan, p. 301, 1982].
-\bibitem{b7} M. Young, The Technical Writer's Handbook. Mill Valley, CA: University Science, 1989.
+\bibitem{b1} GeeksforGeeks, Pruning decision trees, {\em GeeksforGeeks}, 23 Jul, 2025. [Online]. Available: https://www.geeksforgeeks.org/machine-learning/pruning-decision-trees/. [Accessed: Aug. 20, 2025].
 \end{thebibliography}
 \vspace{12pt}
 
