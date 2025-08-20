@@ -31,16 +31,16 @@ This is the abstract.
 % component, formatting, style, styling, insert
 % \end{IEEEkeywords}
 
-\section{Introduction}
+\section{\textbf{Introduction}}
 This is the intro of the report.
 
-\section{Background}
+\section{\textbf{Background}}
 
 The task of predicting a forest cover type from cartographic data is a classic example of a supervised learning problem, specifically a multi-class classification problem. The core idea is to train a model on a dataset containing observations (parcels of land) with known descriptive features and known response labels. The trained model should then be able to predict the correct label for new, unseen observations. Myriad machine learning algorithms exist to accomplish this task, each with unique methodologies and inductive biases. This report will focus on two distinct approaches, an information-based method and a similarity-based method. 
 
-\subsection{Machine learning algorithm description}
+\subsection{\textbf{Machine learning algorithm description}}
 
-\subsubsection{Classification Tree Description}
+\subsubsection{\textbf{Classification Tree}}
 
 A classification tree is an information-based machine learning model, that forms a tree-like structure of human-readable rules.. Non-terminal nodes in this tree represent rules applied to descriptive features, and terminal nodes represent the response feature predictions. The algorithm learns to recursively split the data into increasingly pure subsets based on the feature values that provide the most information. The homogeneity (purity) measures often used by classification trees are entropy and the Gini index.
 
@@ -60,11 +60,37 @@ Pre-pruning stops the tree's growth before it is fully induced. This method invo
 
 Pre-pruning is cost-effective because it stops the tree from becoming too large, but a potential drawback is that it might stop the growth too early. This is where post-pruning comes in. It allows the tree to grow to its maximum size and then systematically cuts back the branches that are least important. The algorithm prunes subtrees that provide weak predictive power, typically be evaluating the tree's performance on a separate validation set \cite{b1}.
 
-\subsubsection{k-Nearest Neighbors Description}
+Classification Trees are a good approach to solve the given problem. They are highly interpretable, require little data preprocessing, and capture non-linear relationships. However they are prone to overfitting and can create biased trees if some classes dominate.
 
-\subsection{Expectations wrt data quality issues}
+\subsubsection{\textbf{k-Nearest Neighbors}}
 
-\subsubsection{Decision Tree Description}
+k-Nearest neighbors is a similarity based machine learning model. k-NN is a non-parametric algorithm, that assumes that an observation is likely to be similar to the data points closest to it in feature space.
+
+k-NN works by storing all training instances, when a new instance to be predicted is presented to the model the instance is compared to the training data to find the most similar instances. The label of this instance is then assigned the majority label in the set of its closest k neighbors. To find these k most similar points k-NN uses difference metrics such as Euclidean distance: $d(x_1, x_2) = \sqrt{\sum_{i=1}^{p} (x_1i - x_2i)^2}$, Manhattan distance: $d(x_1, x_2) = \sum_{i=1}^{p} |x_1i - x_2i|$, or Minkowski distance: $d(x_1, x_2) = (\sum_{i=1}^{p} |x_1i - x_2i|^q)^\frac{1}{q}$, to quantify the distance between observations, where $p$ is the number of descriptive features, and $q$ is a parameter.
+
+Once the distances between the observation of interest and all other observations in the training set have been calculated, the algorithm can then select the k closest points (smallest distance), and assign a prediction to the label of the observation of interest based on a majority vote or a weighted majority vote.
+
+The value of k is a hyperparameter that needs to be tuned via cross validation or another robust method. A low value for k will result in a model with high variance and low bias, potentially overfitting the training data. While a high value for k will result in a model with low variance and high bias, which will underfit the training data.
+
+kNN is a robust and flexible non-parametric machine learning model, but it does have some drawbacks. It is extremely sensitive to feature scale. If one feature is orders of magnitude larger than the others then it will dominate in the distance calculations and the information provided by all other features would be disregarded. Hence it is always best to standardize all features before training a k-NN model.
+
+\subsection{\textbf{Expectations wrt data quality issues}}
+
+\subsubsection{\textbf{Classification Tree}}
+
+Classification trees are impacted in the following ways by the data quality issues still present in the \texttt{forestCover.csv} dataset:
+
+\begin{itemize}
+    \item \textbf{Missing Values}: Unlike other algorithms, that require missing values to be removed or imputed, some classification tree algorithms, like CART of C4.5, have elegant, built-in methods to handle missing values directly, \cite{b2}.
+    \item \textbf{\texttt{Facet} correlated with \texttt{Aspect}}: The predictive accuracy of the model will not be affected. The tree induction algorithm will select one of the features for a split (which ever provides the most information gain), and the other will not be considered for subsequent splits as it does not provide much additional information. The only part of the model that is affected is the structure, since these two features are correlated the algorithm arbitrarily choses one of them to do the initial split on, if slightly different training data is used, the algorithm might choose the other variable.
+    \item \textbf{\texttt{Inclination} contains only noisy values}: A feature containing only noisy values will have very little negative impact on the final performance of a classification tree. Classification tree induction algorithms find the best feature and split-point that most effectively separates the data into distinct classes. A noisy feature has values that are essentially random wrt the target. This means that any split made on this feature will fail to create more informative subgroups. Since the tree building algorithm is greedy it will always look for more informative features and ignore \texttt{Inclination}. However if the noisy feature happens to be correlated with the target by chance then the algorithm might end including it in the tree leading to a more complex, overfit model.
+    \item \textbf{Features with outliers}: Classification trees are robust to outliers, their structure and splitting criteria naturally isolate extreme values. Trees split based on thresholds that separate groups, a few extreme values rarely change where the best split is. Outliers get isolated into their own small leaf nodes that do not distort the main decision boundaries learned from the majority data. 
+    \item \textbf{Features differing numeric ranges}: This will have no impact on a classification tree. Classification trees are completely insensitive to the scale of the features, they only consider thresholds within features, and do not consider feature scales. Entropy and the Gini index only care about the purity of resulting groups, not the magnitude or scale of the threshold itself.
+    \item \textbf{Numerical and categorical features}: Decision trees can naturally handle both numerical and categorical features. They are non-parametric models that do nto rely on distance calculations which make them uniquely suited for datasets with mixed feature types. For numerical features, the algorithm finds an optimal threshold that best separates classes. For categorical features, the algorithm partitions the categories into two or more subsets that result in the purest subgroups.
+    \item \textbf{\texttt{Water\_Level} has a cardinality of one}: A feature with a cardinality of one has no impact on the final classification tree model, the algorithm completely ignores it. Since \texttt{Water\_Level} is constant, it is impossible to split the data using it. This means this feature provides no information to the model and it will not aid in reducing impurity. The greedy nature of tree-based models ensure that they will never choose features that provide zero benefit.
+    \item \textbf{\texttt{Observation\_ID} has a unique value for each observation}: A feature with a unique value for each observation will have a severely negative impact on a classification tree, causing it to overfit the training data. Since decision tree algorithms are greedy a unique identifier presents itself as the perfect feature for splitting, because every value in the \texttt{Observation\_ID} column is unique, the algorithm can create a split for each individual observation resulting in leaf nodes each containing one data point. This will minimize impurity to the greatest extent, and the algorithm sees this as the ultimate success. Features with unique value for each observation will cause classification trees to severely overfit the training data, having 100\% train accuracy, but very poor generalization.
+    \item \textbf{Skew class distribution}: Training a classification tree on a dataset with an extremely skewed response will create a biased model that performs poorly on the minority class. The easiest way for the tree to achieve high accuracy is to simply predict the majority class most of the time. Performance metrics like accuracy will show good performance, but minority class recall will be very poor.
+\end{itemize}
 
 \subsubsection{k-Nearest Neighbors Description}
 
@@ -88,6 +114,7 @@ This is where I need to explain how sklearn is used.
 
 \begin{thebibliography}{00}
 \bibitem{b1} GeeksforGeeks, Pruning decision trees, {\em GeeksforGeeks}, 23 Jul, 2025. [Online]. Available: https://www.geeksforgeeks.org/machine-learning/pruning-decision-trees/. [Accessed: Aug. 20, 2025].
+\bibitem{b2} P. Patidar, A. Tiwari, Handling Missing Value in Decision Tree Algorithm, {\em International Journal of Computer Applications}, vol. 70, no. 13, May 2013.
 \end{thebibliography}
 \vspace{12pt}
 
