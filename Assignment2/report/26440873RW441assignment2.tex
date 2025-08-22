@@ -112,7 +112,27 @@ The remaining data quality issues present in the \texttt{forestCover.csv} datase
 
 
 \section{\textbf{Implementation}}
-This is where I need to explain how sklearn is used.
+
+The primary goal of this objective is to classify forest cover types by implementing, tuning, and comparing two distinct classification algorithms, decision tree and k-NN classifiers.
+
+To achieve this goal, Python with Pandas, and Scikit-Learn was used to preprocess the given \texttt{forestCover.csv} dataset and train both a classification tree and a k-NN classifier on the cleaned data.
+
+The stages of the implementation process for each model consisted of: 
+
+\begin{itemize}
+    \item Data preprocessing
+    \item Addressing class imbalance in training set
+    \item Systematic hyperparameter tuning using grid search with cross-validation
+    \item Final model evaluation on unseen test data
+\end{itemize}
+
+During the data preprocessing stage, the data was prepared differently for the decision tree than the k-NN model, this required the use of two different copies of the original dataset. Since the decision tree is more robust to the issues that are mentioned to still be present in the dataset, less preprocessing was required. The dataset to be used for k-NN model training required substantially more preprocessing as k-NN models, being distance based models, are more sensitive to the issues present in the dataset.
+
+After the data quality issues in the descriptive features for both datasets were handled accordingly, the class imbalance in the response, \texttt{Cover_Type}, was addressed by applying SMOTE. This balanced the dataset by over sampling the minority classes (3, 4, 5, 6, 7) to create a more balanced dataset. It is important to note that SMOTE was applied only to the training datasets after both datasets were were train-test split to prevent data leakage and ensure unbiased evaluation of the model's performance on unseen data.
+
+After applying SMOTE, the models were trained and hyperparameter tuning took place. For both models grid search with 5-fold cross validation was used. Grid search is a hyper parameter tuning approach where a user provides a set of all values the different model parameters are allowed to take on, the algorithm then evaluates and compares all the different combinations of hyperparameter values in order to find the best one. 5-Fold cross validation was used because it strikes a perfect balance between speed and stability. It works by splitting the dataset into five equal parts, and for each round (five total) the algorithm uses four folds for training and one for testing. The test fold is rotated each round, and the five test scores are averaged in the end to get a final model performance estimate.
+
+Performance
 
 \section{Empirical process}
 
