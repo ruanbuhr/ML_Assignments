@@ -7,6 +7,7 @@
 \usepackage{xcolor}
 \usepackage{float}
 \usepackage{booktabs}
+\usepackage{url}
 
 \def\BibTeX{{\rm B\kern-.05em{\sc i\kern-.025em b}\kern-.08em
     T\kern-.1667em\lower.7ex\hbox{E}\kern-.125emX}}
@@ -25,18 +26,28 @@ Stellenbosch, South Africa \\
 \maketitle
 
 \begin{abstract}
+
 This report presents a comparative analysis of the k-Nearest Neighbors (k-NN) and Decision Tree classification algorithms for predicting forest cover types using the \texttt{forestCover.csv} dataset. The primary goal is to determine which model offers superior performance when faced with the dataset's inherent data quality issues.
 
 The investigation begins with a foundational overview of both the k-NN and classification tree models, highlighting their advantages and disadvantages in the context of this specific problem domain. The report details the critical preprocessing strategies implemented to overcome the dataset's limitations, ensuring robust model training. A systematic approach to control parameter tuning for each classifier is described, alongside the performance metric used for a fair evaluation.
 
-% Main observation - subject to change.
 The main observation from this analysis is that while both models are capable classifiers, the classification tree demonstrates a notable advantage in predictive accuracy and interpretability for this particular dataset.
 
 This report provides a detailed walkthrough of the process followed to arrive at this conclusion, offering valuable insights in selecting between these fundamental classification models for complex applications.
+
 \end{abstract}
 
 \section{\textbf{Introduction}}
-This is the intro of the report.
+
+The task of accurately classifying forest cover types from cartographic data presents a significant challenge in environmental monitoring and resource management. This report addresses this challenge by conducting a comparative analysis of two widely-used supervised machine learning algorithms: the k-Nearest Neighbors (k-NN) classifier and the classification tree. The primary objective is to determine which of these models provides superior predictive performance and practical utility when applied to the \texttt{forestCover.csv} dataset, a dataset with numerous data quality issues and severe class imbalance.
+
+To achieve this goal, a rigorous methodology was employed. This involved extensive data preprocessing tailored to the specific requirements of each algorithm, including strategies to handle missing values, correlated features, and outliers. The critical issue of class imbalance was addressed by applying the Synthetic Minority Oversampling Technique (SMOTE) to the training data. After the pre-processing stage a systematic hyperparameter tuning process was conducted for both models using a 5-fold cross-validation grid search, with the macro-averaged F1-score as the primary evaluation metric to ensure a fair comparison across all classes.
+
+The analysis reveals that while both classifiers are highly effective, the classification tree demonstrates a slight, though not statistically significant, advantage in overall predictive accuracy and robustness. It achieved an accuracy of 94\% compared to the k-NN model's 93\% and showed more consistent performance on the challenging minority classes. Given its high interpretability and significantly lower pre-processing, and computational resource requirements, the classification tree is ultimately recommended as the more effective solution for this specific problem.
+
+The remainder of this report is structured as follows: Section 2 provides a background on the machine learning algorithms and discusses their expected performance given the data quality issues. Section 3 details the implementation process. Section 4 describes the empirical process, including data pre-processing and hyperparameter tuning, as well as the analysis process used. Section 5 presents and discusses the results of the model evaluations, and Section 6 concludes the report with a final recommendation.
+
+The complete code for this analysis can be found at \url{https://github.com/ruanbuhr/ML_Assignments/blob/main/Assignment2/assign2.ipynb}.
 
 \section{\textbf{Background}}
 
@@ -402,7 +413,17 @@ This indicates that although the k-NN model shows a marginally higher mean F1-sc
 
 In conclusion, based on the statistical analysis, the classification tree and k-NN classifier exhibit comparable predictive performance on this dataset.
 
-\section{\textbf{Conclusions}}
+\section{\textbf{Conclusion}}
+
+This report set out to compare the performance of two distinct machine learning algorithms, a classification tree, and a k-NN classifier, for the task of predicting forest cover types from the \texttt{forestCover.csv} dataset. The primary objective was to determine which model provided a more effective and practical solution, especially considering the various data quality issues present. The methodology involved targeted data preprocessing for each model, addressing class imbalance in the training data using SMOTE, systematic hyperparameter tuning via grid search with 5-fold cross-validation, and a comprehensive evaluation using a suite of performance metrics and statistical tests.
+
+The investigation revealed that both the final classification tree and the k-NN classifier are highly capable models, achieving strong overall accuracies of 94\% and 93\%, respectively. A Wilcoxon signed-rank test was conducted to formally compare their performance, yielding a p-value of $p = 0.6250$. This result indicates that there is no statistically significant difference between the two models in terms of their predictive power on this dataset.
+
+Despite the models having no statistically significant difference in performance, the final recommendation is to use the classification tree for this dataset and problem. This conclusion is based on several key factors. First, the decision tree consistently outperformed the k-NN model across several crucial evaluation metrics, including overall accuracy (94\% vs 93\%), Cohen's Kappa (0.8996 vs. 0.8870), and the Matthews Correlation Coefficient (0.8996 vs. 0.8873). It also demonstrated a better balance of precision and recall on the most challenging minority classes.
+
+Second, the classification tree offers significant practical advantages. Its inherent structure provides a high degree of interpretability, allowing its decision making process to be scrutinized by domain experts. Furthermore, it is far less computationally expensive and requires significantly less data preprocessing. The decision tree's robustness to feature scaling, outliers, and correlated features stands in stark contrast to the extensive transformations required to make the k-NN model viable.
+
+In conclusion, while both algorithms can accurately classify forest cover types, the classification tree emerges as the more effective and pragmatic choice. It delivers slightly better performance and greater insight with lower computational cost, making it the preferred solution for this problem.
 
 \begin{thebibliography}{00}
 \bibitem{b1} GeeksforGeeks, Pruning decision trees, {\em GeeksforGeeks}, 23 Jul, 2025. [Online]. Available: https://www.geeksforgeeks.org/machine-learning/pruning-decision-trees/. [Accessed: Aug. 20, 2025].
