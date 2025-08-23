@@ -130,7 +130,7 @@ During the data preprocessing stage, the data was prepared differently for the d
 
 After the data quality issues in the descriptive features for both datasets were handled accordingly, the class imbalance in the response, \texttt{Cover\_Type}, was addressed by applying SMOTE. This balanced the dataset by over sampling the minority classes (3, 4, 5, 6, 7) to create a more balanced dataset. It is important to note that SMOTE was applied only to the training datasets after both datasets were were train-test split to prevent data leakage and ensure unbiased evaluation of the model's performance on unseen data.
 
-After applying SMOTE, the models were trained and hyperparameter tuning was done. For both models grid search with 5-fold cross validation was used. Grid search is a hyper parameter tuning approach where a user provides a set of all values the different model parameters are allowed to take on, the algorithm then evaluates and compares all the different combinations of hyperparameter values in order to find the best one. 5-Fold cross validation was used because it strikes a perfect balance between speed and stability. It works by splitting the dataset into five equal parts, and for each round (five total) the algorithm uses four folds for training and one for testing. The test fold is rotated each round, and the five test scores are averaged in the end to get a final model performance estimate.
+After applying SMOTE, the models were trained and hyperparameter tuning was done. For both models grid search with 5-fold cross validation was used. Grid search is a hyper parameter tuning approach where a user provides a set of all values the different model parameters are allowed to take on, the algorithm then evaluates and compares all the different combinations of hyperparameter values in order to find the best one. 5-Fold cross validation was used because it strikes a perfect balance between speed and stability.
 
 Performance metric used to score the models during cross validation was F1 Macro. The macro-averaged F1 score calculates the F1 score for each class independently and then finds their unweighted average. This means that it treats all classes as equally important, regardless of how many samples are in the dataset. Even though SMOTE forces a model to pay attention to underrepresented classes during training the goal is not just to have a balanced training set, it is to build a model that performs well on the real-world imbalanced data. Using F1 Macro as scoring metric causes the cross validation algorithm to consider all categories equally important, including those that were originally in the minority.
 
@@ -174,9 +174,103 @@ This subsection details the data pre-processing steps that were taken to train t
 
 \subsection{\textbf{Control parameter tuning}}
 
-\subsection{Performance metric}
+To optimize the predictive performance of the models and prevent overfitting, hyperparameter tuning was done using Scikit-Learn's \texttt{GridSearchCV}. This method exhaustively searches for the optimal combination of hyperparameter values from a predefined grid of values. The search was guided by 5-fold cross-validation and the macro-averaged F1-score was used as the evaluation metric.
 
-\subsection{Analysis process}
+5-Fold cross validation was used, because it strikes a perfect balance between speed and stability. It works by splitting the dataset into five equal parts, and for each round (five total) the algorithm uses four folds for training and one for testing. The test fold is rotated each round, and the five test scores are averaged in the end to get a final model performance estimate.
+
+\subsubsection{\textbf{Classification Tree}}
+
+For the decision tree classifier, the tuning process focussed on controlling the model's complexity to find the perfect balance between bias and variance. The following hyperparameters were explored:
+
+\begin{itemize}
+    \item \texttt{criterion}: Impurity measure: [Gini-index, Entropy]
+    \item \texttt{max\_depth}: Maximum depth of the tree: [10, 20, 30, 40, 50]
+    \item \texttt{min\_samples\_split}: The minimum samples required to split an internal node: [2, 5, 10].
+    \item \texttt{min\_samples\_leaf}: The minimum samples required to be at a leaf node: [1, 2, 4].
+\end{itemize}
+
+The grid search identified the optimal hyperparameters for the classification tree, which achieved a mean 5-fold cross-validation F1 macro score of 0.9614. The best parameter set was found to be:
+
+\begin{itemize}
+    \item \texttt{criterion}: Entropy
+    \item \texttt{max\_depth}: 40
+    \item \texttt{min\_samples\_split}: 2
+    \item \texttt{min\_samples\_leaf}: 1
+\end{itemize}
+
+\subsubsection{\textbf{k-Nearest Neighbors}}
+
+The performance of the k-NN classifier is highly dependent on the choice of neighbors, distance metric, and distance weighting scheme. Given the computational expense of k-NN on large datasets the hyperparameter search was conducted on a random subsample of 200000 instances (after SMOTE the dataset had 1500000 observations).
+
+The grid search explored the following parameters:
+
+\begin{itemize}
+    \item \texttt{n\_neighbors}: The number of neighbors: [3, 5, 6, 9, 11]. Odd values were used to avoid ties.
+    \item \texttt{weights}: Weighting scheme used when considering nearest neighbors to make a prediction. Values tested were \texttt{uniform}, where all points are weighted equally, and \texttt{distance}, where closer neighbors have a greater influence than neighbors further away.
+    \item \texttt{metric}: Distance metric used: [Euclidean, Manhattan].
+\end{itemize}
+
+The grid search identified the optimal hyperparameters for the k-NN classifier which achieved a mean 5-fold cross-validation F1 macro score of 0.9379. The optimal hyperparameters were:
+
+\begin{itemize}
+    \item \texttt{n\_neighbors}: 3
+    \item \texttt{weights}: Distance
+    \item \texttt{metric}: Manhattan
+\end{itemize}
+
+\subsection{\textbf{Performance metric}}
+
+To evaluate the performance of the classification models, macro averaged F1-score was used as the primary metric. This choice was made to address the specific characteristics of the \texttt{forestCover} dataset, namely its multi-class nature and significant class imbalance.
+
+The F1-score is the harmonic mean of precision and recall, providing a single score that balances both concerns. Precision measures the accuracy of positive predictions, while recall measures the model's ability to find all relevant instances of a class.
+
+$$
+F1 = 2 \times \frac{precision \times recall}{precision + recall}
+$$
+
+For a multi-class problem, like this one with 7 \texttt{Cover\_Type} categories, macro-averaging the F1-scores across all classes calculates the F1-score independently for each of the 7 classes then then computes their unweighted average.
+
+It is superior to other common metrics, like accuracy, for this problem, for several reasons:
+
+\begin{itemize}
+    \item Handles class imbalance effectively: Even though the imbalance was corrected with SMOTE on the training set, the model could still achieve high accuracy on unseen, imbalanced data.
+    \item Provides balanced view: The use of the harmonic mean ensures that a model must perform well on both precision and recall to get a high score.
+\end{itemize}
+
+In summary, the macro-averaged F1-score provides the most robust and fair evaluation of model performance for this inherently imbalanced, multi-class classification task.
+
+\subsection{\textbf{Analysis process}}
+
+After optimal hyperparameters were found, final classification tree and k-NN classifier models were trained using these parameters and the full training datasets. Afterward analysis was conducted to compare the predictive performance of the two classifiers on the \texttt{forestCover} dataset.
+
+To ensure robust comparison between the classification tree and k-NN models the analysis employed a multi-faceted evaluation framework. This involved assessing these models against a suite of performance metrics designed to capture different aspects of predictive power, followed by a formal statistical test to determine the significance of any performance differences.
+
+Simply looking at one number can be misleading, especially for multi-class problems. Therefore several metrics were used to create a holistic view of each model's performance.
+
+\textbf{Accuracy} is represents the proportion of correctly classified observations. It provides a general assessment of the model's performance. However, it can be deceptive on datasets with significant class imbalance. Since SMOTE was used to remedy the class imbalance, the accuracy metric for these two models are quire reliable, but additional metrics were also looked at.
+
+\textbf{Precision, Recall, and F1-score} provide deeper insights into the types of errors a model makes. Precision measures how accurate a model's positive predictions are. Recall measures how well a model identifies all positive instances. F1-score is the harmonic mean of precision and recall that ensures a model balances both metrics. If a model has good values for all these metrics, it indicates that the model is both accurate in its positive predictions and effective at capturing most of the actual positive instances, demonstrating strong overall performance with minimal trade-offs between false positives and false negatives.
+
+\textbf{Cohen's Kappa} measures the agreement between the model's predictions and the actual labels, while correcting for the probability of agreement occurring by chance. A Kappa score of 1 indicates perfect agreement, while a Kappa score of 0 indicates that the model performance is no better than random guessing. Negative values indicate that the model performs worse than random guessing.
+
+\textbf{Matthews Correlation Coefficient (MCC)} is one of the most reliable evaluation metrics for classification. It is a correlation coefficient between the observed and predicted classifications. Its values range from -1 to +1. A score of +1 indicates perfect prediction, 0 indicates a prediction no better than random guessing, and -1 indicates total disagreement between prediction and observation.
+
+Additionally a \textbf{Wilcoxon Signed-Rank Test} was done to compare the difference between these two models. The Wilcoxon test is a non-parametric statistical hypothesis test used to compare two related samples.
+
+The test is designed for paired data. n this analysis, the data pairs are the accuracy scores of the classification tree and the k-NN model on each of the 10 identical cross-validation folds. Evaluating both models on the same sub-datasets ensures a direct, fair comparison.
+
+Unlike a paired t-test, it does not assume the differences in scores are normally distributed. This makes it a safer and more robust choice for comparing model performance scores, which often don't follow a normal distribution.
+
+The test is structured around a null and alternative hypothesis:
+
+\begin{itemize}
+    \item \textbf{Null Hypothesis $H_0$}: There is no statistically significant difference between the performance of the two models.
+    \item \textbf{Alternative Hypothesis $H_A$}: There is a statistically significant difference between the models' performance.
+\end{itemize}
+
+The test calculates the difference between each pair of accuracy scores. It then ranks these differences by absolute magnitude and sums the ranks of the positive and negative differences separately.
+
+This process yields a p-value, which represents the probability of observing the performance difference seen in the sample if the null hypothesis is true. A small p-value ($p < 0.05$) provides strong evidence against the null hypothesis. It suggests the difference between the models is unlikely to be due to random chance, meaning the null hypothesis is rejected. The opposite is true for large p-values.
 
 \section{Results \& discussion}
 
