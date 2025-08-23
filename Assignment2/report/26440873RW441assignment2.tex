@@ -322,7 +322,7 @@ Classes 1, and 2 are the largest classes, indicated by their support values of 4
 
 Class 7 is of moderate size in the test set (4100), but the model still performs well when predicting this class even though most of the data learnt from was synthetic.
 
-Classes 3 is also of moderate size and the model's performance still remains strong when predicting instances of class 3. The precision, recall, and F1-score only have slightly lower values for class 3 than the majority classes.
+Class 3 is also of moderate size and the model's performance still remains strong when predicting instances of class 3. The precision, recall, and F1-score only have slightly lower values for class 3 than the majority classes.
 
 Classes 4, 5, and 6 are the most challenging classes for the model to predict. They are minority classes, with the smallest number of instances which means that most of the data of these classes that the model learned from was probably synthetic. Even so the performance of classes 4, and 6 are not horrendous, the metrics are only slightly lower than class 3. Class 5 is the class the model struggled with the most. The model achieves a precision of 0.75 for class 5 instances which means that of all the samples that the model predicted as class 5, only 75\% were actually class 5. This is not terrible, but it can be better.
 
@@ -334,7 +334,73 @@ Further, the classification tree has a \textbf{Matthews Correlation Coefficient 
 
 \subsection{\textbf{k-Nearest Neighbors}}
 
+The confusion matrix in figure~\ref{fig:cm_knn} shows that the k-NN classifier model performs well on the test data. In fact for most of the minority classes it performs better than the classification tree.
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.6\textwidth]{images/cm_knn.pdf}
+    \caption{Confusion Matrix of k-NN Classifier Predictions}
+    \label{fig:cm_knn}
+\end{figure}
+
+The confusion matrix indicates that the model's predictions are strong, which is evident by the high values on along the diagonal.
+
+\begin{table}[H]
+    \centering
+    \caption{Classification Report for k-NN Model}
+    \label{tab:class_rep_knn}
+    \begin{tabular}{ccccc}
+        \toprule
+        \textbf{Class} & \textbf{Precision} & \textbf{Recall} & \textbf{F1-Score} & \textbf{Support} \\
+        \midrule
+        1 & 0.93 & 0.93 & 0.93 & 42349 \\
+        2 & 0.96 & 0.93 & 0.94 & 56629 \\
+        3 & 0.90 & 0.91 & 0.91 & 7147 \\
+        4 & 0.78 & 0.86 & 0.82 & 549 \\
+        5 & 0.67 & 0.92 & 0.77 & 1898 \\
+        6 & 0.77 & 0.89 & 0.83 & 3471 \\
+        7 & 0.90 & 0.98 & 0.94 & 4100 \\
+        \midrule
+        \textbf{Accuracy} &  &  & 0.93 & 116143 \\
+        \textbf{Macro avg} & 0.84 & 0.92 & 0.88 & 116143 \\
+        \textbf{Weighted avg} & 0.93 & 0.93 & 0.93 & 116143 \\
+        \bottomrule
+    \end{tabular}
+\end{table}
+
+The classification report in table~\ref{tab:class_rep_knn} provides metrics for further investigating the performance of the model. The k-NN model demonstrates strong overall performance, with an accuracy of 93\%. The weighted average for precision, recall, and F1-score are all 0.93, which shows that the model performs well across all classes.
+
+The macro average of precision, recall, and F1-score are lower than the weighted average. This difference indicates that the model's performance on minority classes is slightly worse than its performance on majority classes. Which is clearly evident in figure~\ref{fig:cm_knn}.
+
+Classes 1, and 2 are the largest classes, and it is no surprise that the model performs best on these classes. The precision, recall, and F1-score of the model for these classes are all equal or above 0.93, indicating that the model has no problem balancing precision and recall.
+
+Class 7, even though it is a minority class, has metric values comparable to that of the majority classes. The precision, recall and F1-score are all larger than 0.9 even though the model had to learn this class from mostly synthetic data.
+
+The model also performs well when predicting class 3, even though it is a minority class. The precision, recall, and F1-score are all equal or above 0.9.
+
+Just like the decision tree, classes 4, 5, and 6 are the most challenging classes for the model to predict, this is expected as these are all minority classes. However what is interesting is that the k-NN model struggles more to predict these classes than the classification tree model. The values of all of these metrics are lower than those of the classification tree model, albeit not by a lot, except for the metrics related to class 5. The model has a precision of 0.67 when predicting class 5 instances which means that of all the samples that the model predicted as class 5, only 67\% were actually class 5. This is drastically worse than the classification tree. The only redeeming fact is that the recall for this class is 0.92, which means the F1-score comes out to 0.77, which is worse than the decision tree, meaning the model does not have as favorable of a balance between precision and recall as the decision tree when predicting class 5.
+
+In summary the classification report and the confusion matrix both show that the k-NN classifier is a strong classifier with high overall accuracy, but it does perform worse than the classification tree model in nearly all evaluation metrics discussed.
+
+The k-NN model has a \textbf{Cohen's Kappa} value of 0.8870, which indicates that the model has a very strong agreement with the true labels, just like the classification tree. As mentioned in the previous section, the accuracy of a model on an imbalanced dataset can be misleading, that is why it is always best to look at other metrics like Kappa as well. The high Kappa value of 0.8870 indicates that the model's predictions are reliable, and that the model has learned to classify the majority and minority classes effectively. Although this Kappa value is good, it is a little bit worse than the value achieved by the classification tree.
+
+The k-NN model has a \textbf{Matthews Correlation Coefficient (MCC)} of 0.8873, which also indicates that it is a strong and reliable model. This indicates that the models predictions are highly correlated with the true outcomes. The model is effective at correctly classifying both positive and negative instances for each class. The high MCC value also confirms that the model's performance is not the result of chance or bias toward a particular class. Although the value of this metric is high, it too is lower than that of the classification tree, also indicating that the classification tree is the favorable model. 
+
 \subsection{\textbf{Statistical Tests}}
+
+To determine if a statistically significant difference exists between the performance of the classification tree and the k-NN classifier models, a comparative analysis was conducted using a 10-fold cross-validation procedure. The macro F1-score was used as the primary performance metric for this comparison, for reasons discussed above.
+
+The results of the cross-validation show that the k-NN model achieved a significantly higher average performance. It yielded a mean macro F1-score of 0.8215, while the classification tree model achieved a mean macro F1-score of 0.8199.
+
+To formally test the significance of the observed difference in the scores, a \textbf{Wilcoxon signed-rank test} was performed. This non-parametric statistical test is used to compare related samples, such as paired scores generated by a cross-validation procedure on the same data splits (note that the same test data was used for both of these models, but the data was pre-processed differently for each model). The test evaluates the null hypothesis, $H_0$, that there is no difference in the performance between the two models.
+
+The test yielded a statistic of $W = 22$ and a p-value of $p = 0.6250$.
+
+The p-value of 0.6250 is substantially greater than the conventional significance level of $\alpha = 0.05$. This means that the null hypothesis fails to be rejected.
+
+This indicates that although the k-NN model shows a marginally higher mean F1-score, the difference in performance is not statistically significant. The small observed advantage for the k-NN model is most likely due to random chance and the specific splits used by the cross-validation process.
+
+In conclusion, based on the statistical analysis, the classification tree and k-NN classifier exhibit comparable predictive performance on this dataset.
 
 \section{\textbf{Conclusions}}
 
