@@ -5,6 +5,8 @@
 \usepackage{graphicx}
 \usepackage{textcomp}
 \usepackage{xcolor}
+\usepackage{float}
+\usepackage{booktabs}
 
 \def\BibTeX{{\rm B\kern-.05em{\sc i\kern-.025em b}\kern-.08em
     T\kern-.1667em\lower.7ex\hbox{E}\kern-.125emX}}
@@ -272,9 +274,69 @@ The test calculates the difference between each pair of accuracy scores. It then
 
 This process yields a p-value, which represents the probability of observing the performance difference seen in the sample if the null hypothesis is true. A small p-value ($p < 0.05$) provides strong evidence against the null hypothesis. It suggests the difference between the models is unlikely to be due to random chance, meaning the null hypothesis is rejected. The opposite is true for large p-values.
 
-\section{Results \& discussion}
+\section{\textbf{Results \& discussion}}
 
-\section{Conclusions}
+This section presents discussions and interpretations of the metrics and tests used to analyze the classification tree and k-NN classifier models.
+
+\subsection{\textbf{Classification Tree}}
+
+The confusion matrix in figure~\ref{fig:cm_tree} clearly shows that the final classification tree model trained performs well on the test data.
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.6\textwidth]{images/cm_tree.pdf}
+    \caption{Confusion Matrix of Classification Tree Predictions}
+    \label{fig:cm_tree}
+\end{figure}
+
+The model's predictions are strong, indicated by the high values on along the main diagonal. These values represent the correctly classified instances for each class. The confusion matrix shows a visual result of how the classification tree model performs, but accompanied by numerical measures, it tells the full story.
+
+\begin{table}[H]
+    \centering
+    \caption{Classification Report for Decision Tree Model}
+    \label{tab:class_rep_tree}
+    \begin{tabular}{cccccc}
+        \toprule
+        \textbf{Class} & \textbf{Precision} & \textbf{Recall} & \textbf{F1-Score} & \textbf{Support} \\
+        \midrule
+        1 & 0.94 & 0.94 & 0.94 & 42349 \\
+        2 & 0.95 & 0.94 & 0.95 & 56629 \\
+        3 & 0.91 & 0.92 & 0.92 & 7147 \\
+        4 & 0.81 & 0.85 & 0.83 & 549 \\
+        5 & 0.75 & 0.85 & 0.80 & 1898 \\
+        6 & 0.84 & 0.87 & 0.86 & 3471 \\
+        7 & 0.93 & 0.96 & 0.95 & 4100 \\
+        \midrule
+        \textbf{Accuracy} &  &  & 0.94 & 116143 \\
+        \textbf{Macro avg} & 0.88 & 0.91 & 0.89 & 116143 \\
+        \textbf{Weighted avg} & 0.94 & 0.94 & 0.94 & 116143 \\
+        \bottomrule
+    \end{tabular}
+\end{table}
+
+The classification report in table~\ref{tab:class_rep_tree} provides an even clearer representation of the model's performance. The classification tree model demonstrates strong overall performance, with an accuracy of 94\%. This means 94\% of the predictions made by the model were correct. The weighted average for precision, recall, and F1-score are all 0.94, which shows that the model performs consistently well across all classes.
+
+However the macro average of precision, recall, and F1-score are slightly lower than the weighted average. This is important, because the macro average treats all classes equal regardless of their size. The difference between the weighted and macro averages indicates that the model's performance on the smaller classes is slightly worse than its performance on the larger classes, which can clearly be seen in figure~\ref{fig:cm_tree}.
+
+Classes 1, and 2 are the largest classes, indicated by their support values of 42349 and 56629 respectively (it is important to note that the testing dataset was not preprocessed in any way to make it balanced). The model performs exceptionally well on these classes, with precision, recall, and F1-scores all above 0.93. Even though the training data was balanced with the use of SMOTE, the model still performs best when predicting the majority classes, this is because it had plenty of authentic data to learn from, where the other classes had mostly synthetic data.
+
+Class 7 is of moderate size in the test set (4100), but the model still performs well when predicting this class even though most of the data learnt from was synthetic.
+
+Classes 3 is also of moderate size and the model's performance still remains strong when predicting instances of class 3. The precision, recall, and F1-score only have slightly lower values for class 3 than the majority classes.
+
+Classes 4, 5, and 6 are the most challenging classes for the model to predict. They are minority classes, with the smallest number of instances which means that most of the data of these classes that the model learned from was probably synthetic. Even so the performance of classes 4, and 6 are not horrendous, the metrics are only slightly lower than class 3. Class 5 is the class the model struggled with the most. The model achieves a precision of 0.75 for class 5 instances which means that of all the samples that the model predicted as class 5, only 75\% were actually class 5. This is not terrible, but it can be better.
+
+Overall the classification report and confusion matrix support the idea that the classification tree is a strong classifier with high overall accuracy. However the model does seem to perform noticeably better on the majority classes compared to the minority classes even though SMOTE was used to address the imbalance.
+
+The classification tree has a \textbf{Cohen's Kappa} value of 0.8996, which indicates that the model has a very strong agreement with the true labels, well beyond random chance. The overall accuracy the model achieved of 94\% can be misleading since the dataset is highly imbalanced. If a model has a high accuracy but a very low Kappa score it means that most of that accuracy could be due to chance agreement rather than true predictive power, which usually happens if a dataset is imbalanced. The high Kappa value of 0.8996 indicates that the model's predictions are reliable and that the model in fact has learned to classify the majority and minority classes effectively.
+
+Further, the classification tree has a \textbf{Matthews Correlation Coefficient (MCC)} of 0.8996, which also indicates that it is a strong and reliable model. An MCC value of 0.8996 indicates that the model's predictions are highly correlated with the true outcomes. This value is very close to the perfect outcome, 1, which means the model is highly effective at correctly identifying both positive and negative instances on a per class level. Again, unlike accuracy which can be misleading on imbalanced datasets, MCC provides a balanced measure because it concerns both types of errors (false positives, and false negatives) as well as correct classifications, MCC balances performance across all classes. The model's MCC value of 0.8996 further confirms that it is a strong and reliable classifier. It also provides evidence that the model's performance is not the result of chance or bias toward a particular class, but rather a reflection of the model's learned insights from the data.
+
+\subsection{\textbf{k-Nearest Neighbors}}
+
+\subsection{\textbf{Statistical Tests}}
+
+\section{\textbf{Conclusions}}
 
 \begin{thebibliography}{00}
 \bibitem{b1} GeeksforGeeks, Pruning decision trees, {\em GeeksforGeeks}, 23 Jul, 2025. [Online]. Available: https://www.geeksforgeeks.org/machine-learning/pruning-decision-trees/. [Accessed: Aug. 20, 2025].
