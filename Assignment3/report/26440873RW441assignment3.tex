@@ -1,0 +1,83 @@
+\documentclass[conference]{IEEEtran}
+\usepackage{cite}
+\usepackage{amsmath,amssymb,amsfonts}
+\usepackage{algorithmic}
+\usepackage{graphicx}
+\usepackage{textcomp}
+\usepackage{xcolor}
+\usepackage{float}
+\usepackage{booktabs}
+\usepackage{url}
+
+\def\BibTeX{{\rm B\kern-.05em{\sc i\kern-.025em b}\kern-.08em
+    T\kern-.1667em\lower.7ex\hbox{E}\kern-.125emX}}
+
+\begin{document}
+
+\title{ML441 Assignment 3}
+
+\author{\IEEEauthorblockN{RH Buhr, 26440873}
+\IEEEauthorblockA{\textit{BDatSci Programme, 4th Year} \\
+\textit{Stellenbosch University}\\
+Stellenbosch, South Africa \\
+26440873@sun.ac.za}
+}
+
+\maketitle
+
+\begin{abstract}
+
+\end{abstract}
+
+\section{\textbf{Introduction}}
+
+\section{\textbf{Background}}
+
+\subsection{\textbf{Datasets}}
+
+The recurrent neural networks were trained and evaluated across five distinct datasets to provide a comprehensive assessment of their performance across diverse tasks.
+
+\subsubsection{\textbf{AMD Stock Data}}
+
+The AMD dataset records AMD (Advanced Micro Devices) stock data over a period of 40 years. The dataset records 10098 instances of 7 variables:
+
+\begin{itemize}
+    \item \texttt{Date}: Date the instance was recorded in the format 'yyyy-mm-dd'.
+    \item \texttt{Open}: The price at which the stock first traded on the trading day.
+    \item \texttt{High}: The highest price the stock reached during the trading day.
+    \item \texttt{Low}: The lowest price the stock reached during the trading day.
+    \item \texttt{Close}: The final price of the stock when the market closed on that day.
+    \item \texttt{Adj Close}: The closing price adjusted for corporate actions like stock splits or dividends.
+    \item \texttt{Volume}: The total number of shares traded on that day.
+\end{itemize}
+
+For this problem, \texttt{Adj Close} is the response, instead of \texttt{Close}, because it reflects the true economic value of the stock by incorporating adjustments, these adjustments ensure the data more accurately reflects the stock market trends.
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.5\textwidth]{images/amd_adj_close.pdf}
+    \caption{AMD Adjusted Closing Prices Over Time}
+    \label{fig:amd_adj_close}
+\end{figure}
+
+Figure~\ref{fig:amd_adj_close} displays how AMD's adjusted closing price fluctuated from 1980 through 2020. The series is clearly non-stationary, with periods of sharp growth and declines. The overall trend is upward, even though there are multiple crashes. Most notably around the early 2000s dot-com bubble and the 2008 financial crisis. The defining upward trend, showing rapid growth, started in 2020.
+
+To formally asses stationarity, and Augmented Dickey-Fuller (ADF) test was conducted. The ADF test is a widely used statistical procedure for detecting unit roots in time series data. If a series has a unit root, it means it behaves like a random walk and is thus non-stationary. The ADF statistic of the AMD stock dataset yielded a p-value of 0.05468, meaning the null hypothesis is not rejected at the 5\% significance level and the series is non-stationary.
+
+The series also exhibits no clear periodic seasonal structure, which is visually evident. Overall the dataset demonstrates the characteristics of a typical non-stationary financial time series, with long-term upward trend.
+
+\section{\textbf{Implementation}}
+
+\section{\textbf{Empirical process}}
+
+\section{\textbf{Results \& discussion}}
+
+\section{\textbf{Conclusion}}
+
+\begin{thebibliography}{00}
+\bibitem{b1} GeeksforGeeks, Pruning decision trees, {\em GeeksforGeeks}, 23 Jul, 2025. [Online]. Available: https://www.geeksforgeeks.org/machine-learning/pruning-decision-trees/. [Accessed: Aug. 20, 2025].
+\bibitem{b2} P. Patidar, A. Tiwari, Handling Missing Value in Decision Tree Algorithm, {\em International Journal of Computer Applications}, vol. 70, no. 13, May 2013.
+\end{thebibliography}
+\vspace{12pt}
+
+\end{document}
