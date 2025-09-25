@@ -68,7 +68,7 @@ The series also exhibits no clear periodic seasonal structure, which is visually
 
 \subsubsection{\textbf{Air Quality}}
 
-The Air Quality dataset records hourly averaged responses of a gas multi-sensor device deployed in an Italian city between March 2004 to February 2005. The dataset records 9358 instances with multiple variables including pollutants ($CO$, $NMHC$, $C_6H_6$, $NO_x$, $N_2$), sensor responses from five metal oxide sensors,as well as temperature, relative humidity, and absolute humidity.
+The Air Quality dataset records hourly averaged responses of a gas multi-sensor device deployed in an Italian city between March 2004 to February 2005. The dataset records 9358 instances with multiple variables including pollutants ($CO$, $NMHC$, $C_6H_6$, $NO_x$, $NO_2$), sensor responses from five metal oxide sensors,as well as temperature, relative humidity, and absolute humidity.
 
 For this study the focus is on \texttt{CO(GT)}, concentration of carbon monoxide in $mg/m^3$, making this a regression problem.
 
@@ -95,6 +95,41 @@ Figure~\ref{fig:air_q_seasonal} shows the seasonal decomposition of the \texttt{
 To assess stationarity an ADF test was done. The test yielded a p-value of $2.498 \times 10^{-16}$, meaning the null hypothesis of the unit root is rejected and the \texttt{CO(GT)} series can be considered stationary. Although the data exhibits short term cycles and noisy behavior, the statistical properties remain stable over time.
 
 In summary the Air Quality dataset exhibits short-term variability, seasonal cycles and a stationary structure. This makes it a suitable candidate for time series modeling with recurrent neural networks, \cite{air_quality}.
+
+\subsubsection{\textbf{Garment Productivity}}
+
+The Garment Productivity dataset records worker productivity across multiple production units in a garment factory over a three month period. It contains 1197 instances of 15 variables that capture operational metrics and contextual information:
+
+\begin{itemize}
+    \item \texttt{date}: The date the observation was make, in the format 'yyyy-mmm-dd'.
+    \item \texttt{quarter}: Specifies the portion of the month data was collected.
+    \item \texttt{department}: Indicates the department of the instance (\textit{sewing or finishing}).
+    \item \texttt{day}: Day of the week.
+    \item \texttt{team}: Identifier for the production team.
+    \item \texttt{targeted\_productivity}: The management determined productivity target (between 0 and 1).
+    \item \texttt{smv}: Standard Minute Value, it is the allocated time for a task.
+    \item \texttt{wip}: Work-in-Progress, includes the number of unfinished items in the pipeline.
+    \item \texttt{over\_time}: Total over-time work.
+    \item \texttt{incentive}: Financial incentive allocated to the team.
+    \item \texttt{idle\_time}: Time lost due to miscellaneous reasons.
+    \item \texttt{idle\_men}: Number of workers who were idle due to production interruption.
+    \item \texttt{no\_of\_style\_change}: Number of times the style being produced was changed.
+    \item \texttt{no\_of\_workers}: Number of workers in the team.
+    \item \texttt{actual\_productivity}: The actual productivity measure achieved by the workers (also between 0 and 1).
+\end{itemize}
+
+This dataset combines continuous variables with categorical variables. This distinguishes it from the above mentioned datasets.
+
+\begin{figure}[H]
+\centering
+\includegraphics[width=0.5\textwidth]{images/actual_prod.pdf}
+\caption{Actual Productivity Over Time}
+\label{fig:actual_prod}
+\end{figure}
+
+Figure~\ref{fig:actual_prod} shows how the average daily productivity changes over time. The plot indicates that the overall trajectory is relatively stable, with fluctuations driven by workload variation, overtime, etc. There appears to be no seasonal pattern, since the data was recorded over a very small window.
+
+An ADF test was conducted to formally investigate stationarity. The test returned a p-value of 0.001457, which is below the 5\% threshold. Thus the garment series is considered stationary, \cite{garment_productivty}.
 
 \section{\textbf{Implementation}}
 
