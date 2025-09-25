@@ -8,6 +8,7 @@
 \usepackage{float}
 \usepackage{booktabs}
 \usepackage{url}
+\usepackage{siunitx}
 
 \def\BibTeX{{\rm B\kern-.05em{\sc i\kern-.025em b}\kern-.08em
     T\kern-.1667em\lower.7ex\hbox{E}\kern-.125emX}}
@@ -130,6 +131,33 @@ This dataset combines continuous variables with categorical variables. This dist
 Figure~\ref{fig:actual_prod} shows how the average daily productivity changes over time. The plot indicates that the overall trajectory is relatively stable, with fluctuations driven by workload variation, overtime, etc. There appears to be no seasonal pattern, since the data was recorded over a very small window.
 
 An ADF test was conducted to formally investigate stationarity. The test returned a p-value of 0.001457, which is below the 5\% threshold. Thus the garment series is considered stationary, \cite{garment_productivty}.
+
+\subsubsection{\textbf{Room Occupancy}}
+
+The Occupancy dataset records environmental conditions and room occupancy information for an office space. The dataset contains 20560 minute-by-minute measurements of 7 variables:
+
+\begin{itemize}
+    \item \texttt{Date}: Timestamp of the measurement, in the format 'yyyy-mm-dd hh:mm:ss'.
+    \item \texttt{Temperature}: Ambient temperature of the room (\si{\celsius}).
+    \item \texttt{Humidity}: Relative humidity (\%).
+    \item \texttt{Light}: Ambient illumination level (Lux).
+    \item \texttt{CO2}: Carbon dioxide concentration (ppm).
+    \item \texttt{HumidityRatio}: Specific humidity (ratio of water vapor to dry air).
+    \item \texttt{Occupancy}: Binary response variable, where 1 indicates the room was occupied and 0 indicates it was vacant.
+\end{itemize}
+
+\begin{figure}[H]
+\centering
+\includegraphics[width=0.5\textwidth]{images/occupancy_over_time.pdf}
+\caption{Room Occupancy Over Time}
+\label{fig:occupancy_over_time}
+\end{figure}
+
+Figure~\ref{fig:occupancy_over_time} shows the occupancy status over time, plotted as the raw binary response series and rolling averages over 60 minutes and 6 hours. The raw occupancy data exhibits abrupt shifts between 0 and 1, reflecting sudden transitions as people enter the room and leave it vacant again. The rolling averages reveal broader trends, the 60-minute window smooths out short-term fluctuations within hours, while the 6-hour window reveals daily cycles, showing how occupancy changes during working and non-working hours.
+
+To formally assess stationarity an ADF test was conducted on the binary response variable, \texttt{Occupancy}. The \texttt{Occupancy} ADF test resulted in a p-value of $5.08e-09$, which means the series is stationary. This can also be confirmed by looking at the plot in figure~\ref{fig:occupancy_over_time}.
+
+The Occupancy dataset exhibits no clear trend, but shows very strong daily seasonality. As mentioned the office is occupied during the day and vacant during the night, which is a form of 24-hour seasonality, \cite{occupancy_detection}.
 
 \section{\textbf{Implementation}}
 
