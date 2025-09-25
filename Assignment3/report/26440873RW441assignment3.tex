@@ -81,6 +81,8 @@ For this study the focus is on \texttt{CO(GT)}, concentration of carbon monoxide
 
 Figure~\ref{fig:air_q_over_time} shows the hourly CO(GT) values along with 24-hour and 7-day rolling averages. The raw series is highly volatile, with frequent spikes while the rolling means reveal drifts in the $CO$ concentration. These shifts indicate that although the hourly data are noisy, there are underlying patterns driven by human activity and environmental causes.
 
+The dataset is missing some pollutant measurement entries, recorded as placeholder value \textbf{-200}, this leads to visible gaps in the series.
+
 \begin{figure}[H]
 \centering
 \includegraphics[width=0.5\textwidth]{images/air_q_seasonal.pdf}
@@ -92,7 +94,7 @@ Figure~\ref{fig:air_q_seasonal} shows the seasonal decomposition of the \texttt{
 
 To assess stationarity an ADF test was done. The test yielded a p-value of $2.498 \times 10^{-16}$, meaning the null hypothesis of the unit root is rejected and the \texttt{CO(GT)} series can be considered stationary. Although the data exhibits short term cycles and noisy behavior, the statistical properties remain stable over time.
 
-In summary the Air Quality dataset exhibits short-term variability, seasonal cycles and a stationary structure. This makes it a suitable candidate for time series modeling with recurrent neural networks.
+In summary the Air Quality dataset exhibits short-term variability, seasonal cycles and a stationary structure. This makes it a suitable candidate for time series modeling with recurrent neural networks, \cite{air_quality}.
 
 \section{\textbf{Implementation}}
 
