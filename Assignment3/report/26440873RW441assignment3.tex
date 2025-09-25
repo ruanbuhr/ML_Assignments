@@ -159,6 +159,25 @@ To formally assess stationarity an ADF test was conducted on the binary response
 
 The Occupancy dataset exhibits no clear trend, but shows very strong daily seasonality. As mentioned the office is occupied during the day and vacant during the night, which is a form of 24-hour seasonality, \cite{occupancy_detection}.
 
+\subsubsection{\textbf{Max Planck Institute Weather Data}}
+
+The Weather dataset records meteorological observations at the Max Planck Institute every 10 minutes over the course of one year. The dataset contains 52560 observations of 20 atmospheric variables, which include temperature, air pressure, potential temperature, dew point temperature, relative humidity, vapor pressure measures, specific humidity, water content, air density, wind velocity and direction, as well as radiation and precipitation indicators. 
+
+Temperature (in \si{\celsius}) is the response variable of interest. This dataset thus represents a regression problem where the goal is to forecast the temperature based on other meteorological data.
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.5\textwidth]{images/temp_over_time.pdf}
+    \caption{Temperature Over Time}
+    \label{fig:temp_over_time}
+\end{figure}
+
+Figure~\ref{fig:temp_over_time} shows how the observed temperature changed throughout the measurement period. The time series exhibits a seasonal pattern, with temperature increasing from January to July, peaking in the summer months, and then decreasing toward December. This is expected of climactic time series data.
+
+An ADF test was conducted, and yielded a p-value of $2.149e-13$, which is well below the 0.05 significance threshold. This means the series is stationary.
+
+In summary, the dataset provides a comprehensive representation of atmospheric conditions and demonstrates the dynamics of meteorological processes, where the response variable (temperature) is influenced by multiple interacting environmental factors \cite{weather_dataset}.
+
 \section{\textbf{Implementation}}
 
 \section{\textbf{Empirical process}}
