@@ -51,7 +51,7 @@ The AMD dataset records AMD (Advanced Micro Devices) stock data over a period of
     \item \texttt{Volume}: The total number of shares traded on that day.
 \end{itemize}
 
-For this problem, \texttt{Adj Close} is the response, instead of \texttt{Close}, because it reflects the true economic value of the stock by incorporating adjustments, these adjustments ensure the data more accurately reflects the stock market trends.
+This is a regression problem, with \texttt{Adj Close} as the response, instead of \texttt{Close}, because it reflects the true economic value of the stock by incorporating adjustments, these adjustments ensure the data more accurately reflects the stock market trends.
 
 \begin{figure}[H]
     \centering
@@ -64,7 +64,35 @@ Figure~\ref{fig:amd_adj_close} displays how AMD's adjusted closing price fluctua
 
 To formally asses stationarity, and Augmented Dickey-Fuller (ADF) test was conducted. The ADF test is a widely used statistical procedure for detecting unit roots in time series data. If a series has a unit root, it means it behaves like a random walk and is thus non-stationary. The ADF statistic of the AMD stock dataset yielded a p-value of 0.05468, meaning the null hypothesis is not rejected at the 5\% significance level and the series is non-stationary.
 
-The series also exhibits no clear periodic seasonal structure, which is visually evident. Overall the dataset demonstrates the characteristics of a typical non-stationary financial time series, with long-term upward trend.
+The series also exhibits no clear periodic seasonal structure, which is visually evident. Overall the dataset demonstrates the characteristics of a typical non-stationary financial time series, with long-term upward trend, \cite{stock_market_dataset_amd}.
+
+\subsubsection{\textbf{Air Quality}}
+
+The Air Quality dataset records hourly averaged responses of a gas multi-sensor device deployed in an Italian city between March 2004 to February 2005. The dataset records 9358 instances with multiple variables including pollutants ($CO$, $NMHC$, $C_6H_6$, $NO_x$, $N_2$), sensor responses from five metal oxide sensors,as well as temperature, relative humidity, and absolute humidity.
+
+For this study the focus is on \texttt{CO(GT)}, concentration of carbon monoxide in $mg/m^3$, making this a regression problem.
+
+\begin{figure}[H]
+\centering
+\includegraphics[width=0.5\textwidth]{images/air_q_over_time.pdf}
+\caption{Air Quality Over Time: CO(GT) with 24h and 7d rolling means}
+\label{fig:air_q_over_time}
+\end{figure}
+
+Figure~\ref{fig:air_q_over_time} shows the hourly CO(GT) values along with 24-hour and 7-day rolling averages. The raw series is highly volatile, with frequent spikes while the rolling means reveal drifts in the $CO$ concentration. These shifts indicate that although the hourly data are noisy, there are underlying patterns driven by human activity and environmental causes.
+
+\begin{figure}[H]
+\centering
+\includegraphics[width=0.5\textwidth]{images/air_q_seasonal.pdf}
+\caption{Seasonal decomposition of CO(GT) series}
+\label{fig:air_q_seasonal}
+\end{figure}
+
+Figure~\ref{fig:air_q_seasonal} shows the seasonal decomposition of the \texttt{CO(GT)} series. The trend component highlights longer-term fluctuations, where the average $CO$ levels decrease during mid 2004 and increase again toward late 2004 and early 2005. The seasonal component reveals clear short-term periods, consistent with daily and weekly cycles, possibly linked to human activity.
+
+To assess stationarity an ADF test was done. The test yielded a p-value of $2.498 \times 10^{-16}$, meaning the null hypothesis of the unit root is rejected and the \texttt{CO(GT)} series can be considered stationary. Although the data exhibits short term cycles and noisy behavior, the statistical properties remain stable over time.
+
+In summary the Air Quality dataset exhibits short-term variability, seasonal cycles and a stationary structure. This makes it a suitable candidate for time series modeling with recurrent neural networks.
 
 \section{\textbf{Implementation}}
 
@@ -74,10 +102,8 @@ The series also exhibits no clear periodic seasonal structure, which is visually
 
 \section{\textbf{Conclusion}}
 
-\begin{thebibliography}{00}
-\bibitem{b1} GeeksforGeeks, Pruning decision trees, {\em GeeksforGeeks}, 23 Jul, 2025. [Online]. Available: https://www.geeksforgeeks.org/machine-learning/pruning-decision-trees/. [Accessed: Aug. 20, 2025].
-\bibitem{b2} P. Patidar, A. Tiwari, Handling Missing Value in Decision Tree Algorithm, {\em International Journal of Computer Applications}, vol. 70, no. 13, May 2013.
-\end{thebibliography}
+\bibliographystyle{plain}
+\bibliography{references}
 \vspace{12pt}
 
 \end{document}
