@@ -1,6 +1,7 @@
 # Custom
 data/
 *.pdf
+*.jpg
 !Assignment1/report/images/*.pdf
 *.html
 resources/

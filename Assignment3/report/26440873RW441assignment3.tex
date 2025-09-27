@@ -34,6 +34,87 @@ Stellenbosch, South Africa \\
 
 \section{\textbf{Background}}
 
+\subsection{\textbf{Recurrent Neural Networks}}
+
+Recurrent Neural Neworks are a type of neural network specifically designed to handle sequential data, where there exists temporal dependencies between observations. RNNs incorporate feedback connections that allow information from prior steps to influence future predictions, which is what makes them well-suited for time series data, such as language translation, natural language processing, sentiment analysis, speech recognition, image captioning, etc.
+
+RNNs extend traditional neural networks by incorporating a hidden state that carries information from one time step to the next. This creates a feedback loop, allowing the network to retain context from previous time steps and use it to influence the current time step. At each time step, the RNN processes the new input together with the hidden state from the previous time step, which allows the model to capture temporal dependencies in time series data. Unlike traditional neural networks, like feedforward neural networks, RNNs share hyperparameters across time steps and are trained using backpropagation through time, as opposed to regular backpropagation \cite{ibm_rnn}.
+
+\begin{figure}[H]
+  \centering
+  \includegraphics[width=0.65\linewidth]{images/ibm_rnn.jpg}
+  \caption{Rolled and unrolled views of an RNN (\cite{ibm_rnn}).}
+  \label{fig:ibm_rnn}
+\end{figure}
+
+Figure~\ref{fig:ibm_rnn} shows a rolled RNN with its unrolled counterpart which has been unrolled over time. Each time step takes $X_t$ and the previous hidden state as input, produces and output $Y_t$ and passes the hidden state to the next time step.
+
+\subsubsection{\textbf{Elman RNN}}
+
+The Elman RNN is considered the vanilla RNN. Its defining factor is the hidden state that stores information from the previous time steps and passes it along to the next time step.
+
+Formally, the Elman RNN is defined as:
+
+$$
+h_t = \sigma_h(W_x x_t + W_h h_{t-1} + b_h)
+$$
+
+$$
+y_t = \sigma_y(W_y h_t + b_y)
+$$
+
+where:
+
+\begin{itemize}
+    \item $x_t$ is the input vector at time step t.
+    \item $y_t$ is the output vector at time step t.
+    \item $h_t$ is the hidden state at time step t.
+    \item $W_x$ is the input weight matrix.
+    \item $W_h$ is the recurrent weight matrix.
+    \item $W_y$ is the output weight matrix.
+    \item $b_h$ is the hidden state bias term.
+    \item $b_y$ is the output bias term.
+    \item $\sigma_h$ is a non-linear activation function (e.g. ReLu, sigmoid, tanh).
+    \item $\sigma_y$ is an activation function suited for the machine learning task at hand (e.g. softmax for multi-class classification).
+\end{itemize}
+
+The inclusion of $W_h h_{t-1}$ in the hidden state of Elman RNNs distinguishes them from traditional models and allows them to maintain memory of past context \cite{elman_rnn}.
+
+\subsubsection{\textbf{Jordan RNN}}
+
+Unlike the Elman RNN, where the hidden state depends on the previous hidden states, the Jordan RNN hidden state depends on previous outputs. This allows the Jordan RNN to integrate information from its own past predictions when updating the current hidden layer.
+
+Formally, the Jordan RNN is defined as:
+
+$$
+h_t = \sigma_h(W_x x_t + W_h y_{t-1} + b_h)
+$$
+
+$$
+y_t = \sigma_y(W_y h_t + b_y)
+$$
+
+The use of $W_h y_{t-1}$ in the hidden state instead of $W_h h_{t-1}$ is what sets Jordan RNNs apart from Elman RNNs. This means Jordan RNNs capture sequential information differently than Elman RNNs, which can make them more efficient in settings where the model's own predictions strongly influence the outcome of the current and future time steps \cite{jordan_rnn}.
+
+\subsubsection{\textbf{Multi-RNN}}
+
+Multi-RNNs can be thought of as a combination between Elman and Jordan RNNs by incorporating feedback from both the previous hidden state and the previous output. This allows Multi-RNNs to model sequential information more flexibly, since the current hidden representation does not only depend on the internal memory of the network but also its previous predictions.
+
+The Multi-RNN can be expressed as:
+
+$$
+h_t = \sigma_h(W_x x_t + W_hh y_{t-1} + W_hy y_{t-1} + b_h)
+$$
+
+$$
+y_t = \sigma_y(W_y h_t + b_y)
+$$
+
+The difference is captured in the inclusion of $W_hh y_{t-1} + W_hy y_{t-1}$ in the hidden state allowing Multi-RNNs to capture richer temporal information.
+
+\subsubsection{\textbf{RNN Limitations}}
+
+While RNNs are powerful tools for time series problems, they suffer from critical limitations, especially when faced with long sequences. The main issue under consideration is known as the Vanishing/Exploding Gradient Problem. During backpropagation through time, gradients can either shrink to near zero or grow excessively. This makes it difficult for the network to capture long-term dependencies and can lead to unstable learning. As a result, RNNs often struggle when context from distant time steps is needed to accurately predict the current time step. Mitigations include, gradient clipping, selection of problem appropriate activation functions, better weight initialization, learning rate control, and the use of more advanced architectures like LSTM \cite{rnn_problems}. 
 \subsection{\textbf{Datasets}}
 
 The recurrent neural networks were trained and evaluated across five distinct datasets to provide a comprehensive assessment of their performance across diverse tasks.
@@ -177,6 +258,8 @@ Figure~\ref{fig:temp_over_time} shows how the observed temperature changed throu
 An ADF test was conducted, and yielded a p-value of $2.149e-13$, which is well below the 0.05 significance threshold. This means the series is stationary.
 
 In summary, the dataset provides a comprehensive representation of atmospheric conditions and demonstrates the dynamics of meteorological processes, where the response variable (temperature) is influenced by multiple interacting environmental factors \cite{weather_dataset}.
+
+\subsection{\textbf{RNN Training \& Hyperparameter Tuning}}
 
 \section{\textbf{Implementation}}
 
