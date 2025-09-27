@@ -261,6 +261,31 @@ In summary, the dataset provides a comprehensive representation of atmospheric c
 
 \subsection{\textbf{RNN Training \& Hyperparameter Tuning}}
 
+Unlike traditional data, time series data contains temporal dependencies between observations. This means that traditional k-fold cross-validation cannot be used to evaluate models trained on time series data. Randomly partitioning a time series into folds can result in information leakage between future and past observations.
+
+A more suitable cross-validation strategy that can be used with time series data and RNNs is cross-validation on a rolling basis.
+
+\begin{figure}[H]
+  \centering
+  \includegraphics[width=0.65\linewidth]{images/rolling_cv.png}
+  \caption{Cross-validation on a Rolling Basis (\cite{time_series_cv}).}
+  \label{fig:rolling_cv}
+\end{figure}
+
+Figure~\ref{fig:rolling_cv} illustrates the basic idea of cross-validation on a rolling basis. The process starts with a small subset of the data used for training, with the subsequent subset used for testing. The data tested on is then used for the next training set and the subsequent subset is then used for testing. This procedure repeats until the end of the series.
+
+Another approach is blocked cross-validation, where the series is divided into non-overlapping contiguous blocks, each block is used once as a validation set. This method avoids temporal leakage but may be less efficient in utilizing the full dataset compared to rolling schemes \cite{time_series_cv}.
+
+Hyperparameter tuning for RNNs typically involve exploring architectural and training parameters. Important hyperparameter categories and examples include:
+
+\begin{itemize}
+    \item \textbf{Network Architecture}: Number of hidden layers, number of neurons per layer, choice of RNN variant.
+    \item \textbf{Training Parameters}: Learning rate, optimizer type, batch size, sequence length, gradient clipping thresholds.
+    \item \textbf{Regularization}: Dropout probability, weight decay.
+\end{itemize}
+
+Strategies such as grid search or random search using cross-validation can be used to explore the hyperparameter space and determine the best combination. The accuracy metric used to evaluate the models during the cross-validation process is entirely problem dependent, e.g. MSE used for regression, and accuracy for classification
+
 \section{\textbf{Implementation}}
 
 \section{\textbf{Empirical process}}
