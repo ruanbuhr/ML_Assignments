@@ -168,7 +168,7 @@ The dataset is missing some pollutant measurement entries, recorded as placehold
 \begin{figure}[H]
 \centering
 \includegraphics[width=0.5\textwidth]{images/air_q_seasonal.pdf}
-\caption{Seasonal decomposition of CO(GT) series}
+\caption{Seasonal Decomposition of CO(GT)}
 \label{fig:air_q_seasonal}
 \end{figure}
 
@@ -213,32 +213,29 @@ Figure~\ref{fig:actual_prod} shows how the average daily productivity changes ov
 
 An ADF test was conducted to formally investigate stationarity. The test returned a p-value of 0.001457, which is below the 5\% threshold. Thus the garment series is considered stationary, \cite{garment_productivty}.
 
-\subsubsection{\textbf{Room Occupancy}}
+\subsubsection{\textbf{Electric Production}}
 
-The Occupancy dataset records environmental conditions and room occupancy information for an office space. The dataset contains 20560 minute-by-minute measurements of 7 variables:
-
-\begin{itemize}
-    \item \texttt{Date}: Timestamp of the measurement, in the format 'yyyy-mm-dd hh:mm:ss'.
-    \item \texttt{Temperature}: Ambient temperature of the room (\si{\celsius}).
-    \item \texttt{Humidity}: Relative humidity (\%).
-    \item \texttt{Light}: Ambient illumination level (Lux).
-    \item \texttt{CO2}: Carbon dioxide concentration (ppm).
-    \item \texttt{HumidityRatio}: Specific humidity (ratio of water vapor to dry air).
-    \item \texttt{Occupancy}: Binary response variable, where 1 indicates the room was occupied and 0 indicates it was vacant.
-\end{itemize}
+The Electric Production time series is the US Federal Reserve industrial production index for the US electric power sector (series code: IPG2211A2N). It records monthly output of electric power generation, transmission, and distribution. The dataset contains a single feature, \texttt{IPG2211A2N}, recorded at monthly intervals from January 1985 to January 2018.
 
 \begin{figure}[H]
-\centering
-\includegraphics[width=0.5\textwidth]{images/occupancy_over_time.pdf}
-\caption{Room Occupancy Over Time}
-\label{fig:occupancy_over_time}
+    \centering
+    \includegraphics[width=0.5\textwidth]{images/ep_over_time.pdf}
+    \caption{Electric Production Over Time}
+    \label{fig:ep_over_time}
 \end{figure}
 
-Figure~\ref{fig:occupancy_over_time} shows the occupancy status over time, plotted as the raw binary response series and rolling averages over 60 minutes and 6 hours. The raw occupancy data exhibits abrupt shifts between 0 and 1, reflecting sudden transitions as people enter the room and leave it vacant again. The rolling averages reveal broader trends, the 60-minute window smooths out short-term fluctuations within hours, while the 6-hour window reveals daily cycles, showing how occupancy changes during working and non-working hours.
+Figure~\ref{fig:ep_over_time} indicates the monthly electric production along with 12-month and 36-month rolling means. The series shows an overall upward trend from the mid 1980s to the mid 2000s, with an stagnant period thereafter containing some minor dips.
 
-To formally assess stationarity an ADF test was conducted on the binary response variable, \texttt{Occupancy}. The \texttt{Occupancy} ADF test resulted in a p-value of $5.08e-09$, which means the series is stationary. This can also be confirmed by looking at the plot in figure~\ref{fig:occupancy_over_time}.
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.5\textwidth]{images/ep_seasonal.pdf}
+    \caption{Seasonal Decomposition of Electric Production}
+    \label{fig:ep_seasonal}
+\end{figure}
 
-The Occupancy dataset exhibits no clear trend, but shows very strong daily seasonality. As mentioned the office is occupied during the day and vacant during the night, which is a form of 24-hour seasonality, \cite{occupancy_detection}.
+Figure~\ref{fig:ep_seasonal} shows the seasonal decomposition of the electric production series. It confirms that there is an upward trend from the mid 1980s to mid 2000s with a plateau thereafter. There also appears to be yearly seasonality present in the series, as can be seen in the within-year oscillations, reflecting seasonal demand in electricity.
+
+And ADF test was conducted that yielded a p-value of 0.1862, which is greater than 0.05. The null hypothesis is rejected hence the series is non-stationary \cite{electric_production}.
 
 \subsubsection{\textbf{Max Planck Institute Weather Data}}
 
