@@ -103,14 +103,14 @@ Multi-RNNs can be thought of as a combination between Elman and Jordan RNNs by i
 The Multi-RNN can be expressed as:
 
 $$
-h_t = \sigma_h(W_x x_t + W_hh y_{t-1} + W_hy y_{t-1} + b_h)
+h_t = \sigma_h(W_x x_t + W_{hh} y_{t-1} + W_{hy} y_{t-1} + b_h)
 $$
 
 $$
 y_t = \sigma_y(W_y h_t + b_y)
 $$
 
-The difference is captured in the inclusion of $W_hh y_{t-1} + W_hy y_{t-1}$ in the hidden state allowing Multi-RNNs to capture richer temporal information.
+The difference is captured in the inclusion of $W_{hh} y_{t-1} + W_{hy} y_{t-1}$ in the hidden state allowing Multi-RNNs to capture richer temporal information.
 
 \subsubsection{\textbf{RNN Limitations}}
 
