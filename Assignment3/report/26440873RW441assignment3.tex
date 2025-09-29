@@ -285,6 +285,121 @@ Strategies such as grid search or random search using cross-validation can be us
 
 \section{\textbf{Implementation}}
 
+\subsection{\textbf{RNN Architecture}}
+
+The RNN investigated in this study were implemented using the PyTorch API. Pytorch is a highly customizable open-source deep learning framework. Each RNN type was defined as a custom \texttt{nn.Module} class, with a forward pass implementation tailored to the recurrence formula of the different architectures.
+
+\begin{itemize}
+    \item \textbf{Elman RNN}: Implemented using PyTorch's built-in nn.RNN layer, which is a plain Elman RNN.
+    \item \textbf{Jordan RNN}: Implemented from scratch to include feedback from previous predicted output into the current hidden layer.
+    \item \textbf{Multi-RNN}: Implemented from scratch as a hybrid of the Elman and Jordan architectures, combining hidden-to-hidden and output-to-hidden recurrence.
+\end{itemize}
+
+Each model implementation was parameterized, which allows users to choose hidden layer size, activation function, and output type (sequence-to-one vs. sequence-to-sequence). The implementations also included gradient clipping to prevent the exploding/vanishing gradient problem.
+
+\subsection{\textbf{Dataset Specific Preprocessing}}
+
+\subsubsection{\textbf{AMD Stock Data}}
+
+\begin{itemize}
+    \item \texttt{Adj Close} was chosen as response, hence the redundant column \texttt{Close} was dropped.
+    \item Records with zero-valued opening prices were removed as these entries are most likely data entry errors, and there are only a few of them so removing them will not introduce any major bias into the dataset.
+\end{itemize}
+
+\subsubsection{\textbf{Air Quality}}
+
+\begin{itemize}
+    \item Several fields use the place holder value \textit{-200} to indicate sensor failures. These values were treated as missing entries.
+    \item The dataset contains five sensor readings \texttt{PT08.S1(CO)}, \texttt{PT08.S2(NMHC)}, \texttt{PT08.S3(NOx)}, \texttt{PT08.S4(NO2)}, \texttt{PT08.S5(O3)}, and three meteorological variables \texttt{T}, \texttt{RH}, \texttt{AH}. It was found that the missing entries in these features were co-located. These rows were entirely removed from the dataset as they contained mostly missing values.
+    \item Other missing values were interpolated using time-based interpolation, using the timestamp index to interpolate values between the nearest known points in time.
+\end{itemize}
+
+\subsubsection{\textbf{Garment Productivity}}
+
+\begin{itemize}
+    \item Invalid entries, such as entries missing key fields such as \texttt{date} or \texttt{actual\_productivity} (response) were removed.
+    \item The \texttt{wip} column was entirely removed from the dataset, as it was missing half of its entries.
+    \item The dataset contains a mix of numeric and categorical features. The categorical variables were converted into one-hot-encoded vectors using dummy encodings. This makes the categorical features usable in neural network based models.
+\end{itemize}
+
+\subsubsection{\textbf{Electric Production}}
+
+No preprocessing needed to be done on the Electric Production dataset. It contains only a single feature measured over time.
+
+\subsubsection{\textbf{Max Planck Institute Weather Data}}
+
+No preprocessing was needed for this dataset, as it is a complete dataset containing no missing values or invalid entries.
+
+\subsection{\textbf{Dataset Agnostic Preprocessing}}
+
+\subsubsection{\textbf{Scaling}}
+
+For all datasets, the descriptive and response features were normalized using scikit-learn's \texttt{MinMaxScaler}. During cross-validation and final model training, the scalers were fit on the training data only and then applied to the corresponding test and/or validation sets. This was done to prevent information from future time steps to leak into past time steps.
+
+The \texttt{MinMaxScaler} was used because the RNN implementations use the tanh activation function, which outputs values in the range [-1, 1]. By scaling inputs and outputs into compatible ranges, the model training process was more stable, reducing the risk of vanishing or exploding gradients.
+
+\subsubsection{\textbf{Sequence Construction}}
+
+Each dataset was transformed into sequences of fixed length. This allowed the recurrent neural networks to receive a window of past observations as inputs and predict future values at specified horizons.
+
+A sliding window procedure was used to construct the sequences. First the datasets were sorted by time stamp, and then for a given window length \texttt{L}, a contiguous block of \texttt{L} timesteps was extracted as an input sequence, and a value at a specified horizon was selected as the target. By moving the window forward one step at a time, multiple overlapping sequences were generated.
+
+A moderate sequence length of 30 items was selected as this effectively balances temporal context while keeping compute costs manageable. The earlier items in longer sequences would be wastefully included, as their temporal information will be lost by overly extensive recurrence.
+
+The study considered multiple horizons to evaluate the models' short-term and long-term predictive performance. Specifically predictions were made for horizons of 1, 3, 5, and 7 time steps ahead.
+
+To clarify:
+
+\begin{itemize}
+    \item \textbf{Horizon = 1}: If the sequence length is 3 and the time series is \texttt{[1, 2, 3, 4, 5, 6, 7]}, then the input sequence is \texttt{[1, 2, 3]} and the target is \texttt{4}. This is simple next-item prediction.
+    \item \textbf{Horizon = 3}. Under the same conditions, the input sequence would be \texttt{[1, 2, 3]} and the target is \texttt{6}
+\end{itemize}
+
+The models were trained in a sequence-to-one configuration, where each input sequence of 30 timesteps were used to predict a single output at the specified horizon. This allowed a fair comparison of Elman, Jordan, and Multi-RNN models across multiple datasets.
+
+\subsection{\textbf{Training Setup}}
+
+The training setup was designed to ensure stable learning, prevent overfitting, and allow for fair comparison of the three RNN model architectures across five different regression time series datasets.
+
+\subsubsection{\textbf{Loss Function}}
+
+All models were optimized using the Mean Squared Error loss function. This loss function is a common choice for regression problems, as it directly measures the squared deviation between predicted and true values, as well as being differentiable which is important for neural networks using gradient descent.
+
+\subsubsection{\textbf{Optimization Algorithm}}
+
+All models were trained using the Adam optimizer. The Adam optimizer (Adaptive Moment Estimation) is one of the most popular optimization algorithms used in training neural networks. It combines momentum, to smooth parameter updates by incorporating information from past gradients, and adaptive learning rate, to adjust step size of each parameter dynamically based on the history of gradients.
+
+\subsubsection{\textbf{Regularization \& Stability Measures}}
+
+To prevent overfitting and stabilize training, the following steps were taken:
+
+\begin{itemize}
+    \item \textbf{Weight Decay}: Incorporated in optimizer to penalize overly large weights and improve generalization.
+    \item \textbf{Gradient Clipping}: A threshold was applied to the gradient during backpropagation, to clip the gradient and prevent instability during training.
+    \item \textbf{Model Capacity Tuning}: Hidden layer size was included as a hyperparameter to be tuned during cross-validation, and sizes were varied to find the optimal hidden layer size for each model.
+\end{itemize}
+
+\subsubsection{\textbf{Early Stopping}}
+
+Another measure taken to prevent overfitting was to use an early stopping mechanism when training the models. Training was halted when validation loss failed to improve after a fixed patience period (ranging from 8 to 12 epochs). At termination, the model parameters corresponding to the lowest validation loss were chosen as the optimal parameter set.
+
+\subsubsection{\textbf{Batching and Data Loading}}
+
+Input sequences were grouped into mini-batches using PyTorch's \texttt{DataLoader}. Batch sizes varied from 256 to 512 depending on the hyperparameter set being evaluated.
+
+\subsubsection{\textbf{Hyperparameter Grid}}
+
+A hyperparameter grid was used to tune the hyperparameters of each of the models. The grid included the following parameters:
+
+\begin{itemize}
+    \item Hidden layer size: 32-256 units
+    \item Learning rate: $1e-3$ to $5e-5$
+    \item Batch size: 256 and 512
+    \item Epochs: 60-120
+    \item Patience for early stopping: 8-12
+    \item Weight decay: $0$ to $1e-4$
+\end{itemize}
+
 \section{\textbf{Empirical process}}
 
 \section{\textbf{Results \& discussion}}
