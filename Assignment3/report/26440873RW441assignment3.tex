@@ -400,6 +400,36 @@ A hyperparameter grid was used to tune the hyperparameters of each of the models
     \item Weight decay: $0$ to $1e-4$
 \end{itemize}
 
+\subsection{\textbf{Training and Evaluation Utilities}}
+
+To support the training and assessment of the RNNs, a set of utility functions was implemented to handle model training and evaluation across datasets and model architectures.
+
+\subsubsection{\textbf{Epoch Training and Validation}}
+
+Helpers were implemented to handle a single training epoch and a validation epoch. These utilities encapsulated the forward pass, loss computation, backpropagation, gradient clipping, and optimizer updates.
+
+\subsubsection{\textbf{Prediction}}
+
+A prediction utility function was implemented to generate prediction outputs for datasets. This function supported inverse transformation of scaled predictions back to the original space, which enabled meaningful interpretation of results.
+
+\subsubsection{\textbf{Cross-Validation}}
+
+Utilities were implemented to facilitate rolling-window cross-validation, which take care fo splitting training data into contiguous training and validation blocks, re-initialization of models for each fold to prevent information leakage, and recording performance metrics on each fold for later evaluation.
+
+\subsubsection{\textbf{Performance Metrics}}
+
+Multiple evaluation metrics were implemented to evaluate model performance on regression tasks:
+
+\begin{itemize}
+    \item \textbf{Root Mean Squared Error (RMSE)}: Root of average squared deviation. Penalizes large discrepancies.
+    \item \textbf{Mean Absolute Error (MAE)}: Average absolute deviation.
+    \item \textbf{Coefficient of Determination ($R^2$)}: Quantifies variance in observed data explained by the model. 
+\end{itemize}
+
+\subsubsection{\textbf{Hyperparameter Search}}
+
+Utilities were implemented to perform grid search to find the optimal hyperparameter configuration for each model. These utilities built models with different hyperparameter combinations, trained and validated them using cross-validation, and selected the hyperparameter set resulting in the best average validation performance.
+
 \section{\textbf{Empirical process}}
 
 \section{\textbf{Results \& discussion}}
