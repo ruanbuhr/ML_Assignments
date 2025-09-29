@@ -450,6 +450,86 @@ Evaluating these metrics across the different models and forecast horizons revea
 To ensure reproducibility all random seeds were set consistently for NumPy and PyTorch. Nvidia CUDA deterministic flags were enabled where applicable.
 
 \section{\textbf{Results \& discussion}}
+As mentioned, this study evaluates three recurrent neural network architectures - Elman, Jordan, and Multi-RNN - across five time series regression problems. All tasks involve predicting a continuous response, thus evaluation focusses on regression metrics.
+
+Root Mean Squared Error (RMSE) is used during cross-validation as the primary model selection criterion because it penalizes large discrepancies between actual and predicted targets more strongly than Mean Absolute Error (MAE).
+
+On the test set, model performance is evaluated with RMSE, MAE, and $R^2$. RMSE reflects variance weighted accuracy, MAE captures the average magnitude of error and $R^2$ measures how well the model explains the variability of the response.
+
+\subsection{\textbf{AMD Stock Data}}
+The first problem concerns forecasting AMD's adjusted closing stock price from open, high, low, and volume values. Stock price data are inherently non-stationary, which makes prediction challenging.
+
+The RNN models were trained to predict the adjusted closing price $h$ steps ahead, for forecast horizons in $h \in [1,3,5,7]$.
+
+\begin{table}[H]
+\centering
+\caption{AMD model performance ($h=1$).}
+\label{tab:amd_h1}
+\begin{tabular}{lcccc}
+\toprule
+Model & CV RMSE & Test RMSE & Test MAE & Test $R^2$ \\
+\midrule
+Elman  & 0.5837 & 1.1529 & 0.5750 & 0.9907 \\
+Jordan & 0.5319 & 1.2662 & 0.6165 & 0.9888 \\
+Multi  & 0.4863 & 1.5580 & 0.8101 & 0.9831 \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\begin{table}[H]
+\centering
+\caption{AMD model performance ($h=3$).}
+\label{tab:amd_h3}
+\begin{tabular}{lcccc}
+\toprule
+Model & CV RMSE & Test RMSE & Test MAE & Test $R^2$ \\
+\midrule
+Elman  & 0.8307 & 1.1507 & 0.6134 & 0.9908 \\
+Jordan & 0.7913 & 1.4183 & 0.7106 & 0.9860 \\
+Multi  & 0.7601 & 1.3528 & 0.7197 & 0.9872 \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\begin{table}[H]
+\centering
+\caption{AMD model performance ($h=5$).}
+\label{tab:amd_h5}
+\begin{tabular}{lcccc}
+\toprule
+Model & CV RMSE & Test RMSE & Test MAE & Test $R^2$ \\
+\midrule
+Elman  & 1.0310 & 1.9398 & 1.0958 & 0.9737 \\
+Jordan & 0.9821 & 1.9406 & 0.9461 & 0.9737 \\
+Multi  & 0.9895 & 1.8280 & 0.9197 & 0.9767 \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\begin{table}[H]
+\centering
+\caption{AMD model performance ($h=7$).}
+\label{tab:amd_h7}
+\begin{tabular}{lcccc}
+\toprule
+Model & CV RMSE & Test RMSE & Test MAE & Test $R^2$ \\
+\midrule
+Elman  & 1.1770 & 2.1858 & 1.2403 & 0.9667 \\
+Jordan & 1.1447 & 2.0999 & 1.0789 & 0.9692 \\
+Multi  & 1.1282 & 1.7695 & 0.9845 & 0.9781 \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+For short horizons ($h$ = 1 \& $h$ = 3), the Elman model overall performs the best. Across both horizons it maintains the lowest RMSE and MAE, and hightest $R^2$ values, despite having the largest CV RMSE. In both cases the Multi-RNN attains the best CV RMSE, but underperforms when compared to the Elman model on the test set. This suggests mild overfitting present in the Multi-RNN model. The simpler Elman architecture, which relies solely on hidden state recurrence, generalizes best when the forecast is only a few time steps ahead.
+
+At longer horizons ($h$ = 5 \& $h$ = 7), the Multi-RNN model becomes the best performing model. It maintains the lowest RMSE, MAE and highest $R^2$ values relative to the other two models, while also still maintaining the lowest CV RMSE score. This suggest that the inclusion of both hidden state and output recurrence allows the Multi-RNN model to more accurately capture medium-to-long range dependencies in temporal data, causing the model to have more accurate predictions as the target moves further away from the immediate next step.
+
+All models attain very high $R^2$ at short horizons, which gradually declines as the forecast horizon increases, consistent with error accumulation and weak predictability of stock price data. The deterioration is least for the Multi-RNN model, which aligns with its advantage at longer horizons as compared to the Elman and Jordan RNN variants.
+
+For all model architectures, as the forecast horizon increases, RMSE and MAE increase and $R^2$ declines, reflecting error accumulation as forecast horizon increases. The Elman RNN dominates at short horizons, but the Multi-RNN performs best as the horizon increases, suggesting that the inclusion of the Jordan recurrence becomes helpful once short-term patterns fade and models need to rely on longer-term trends. The Jordan architecture remains competitive but does not provide any clear advantage.
+
+Since stock price levels are usually non-stationary, future improvements can focus on forecasting returns, which would make the data more stable, strengthen short-term signals, and slow down performance degradation at longer horizons. The results obtained in the current setup of predicting raw price levels highlights the trade-off between simple models that generalize well at short-horizons and more complex models that capture long-range patterns.  
 
 \section{\textbf{Conclusion}}
 
