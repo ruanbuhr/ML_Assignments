@@ -285,29 +285,71 @@ Strategies such as grid search or random search using cross-validation can be us
 
 \section{\textbf{Implementation}}
 
-\subsection{\textbf{RNN Architecture}}
-
-The RNN investigated in this study were implemented using the PyTorch API. Pytorch is a highly customizable open-source deep learning framework. Each RNN type was defined as a custom \texttt{nn.Module} class, with a forward pass implementation tailored to the recurrence formula of the different architectures.
-
+\subsection{\textbf{Technology Stack}}
+All code was implemented in Python 3.12 using the following stack:
 \begin{itemize}
-    \item \textbf{Elman RNN}: Implemented using PyTorch's built-in nn.RNN layer, which is a plain Elman RNN.
-    \item \textbf{Jordan RNN}: Implemented from scratch to include feedback from previous predicted output into the current hidden layer.
-    \item \textbf{Multi-RNN}: Implemented from scratch as a hybrid of the Elman and Jordan architectures, combining hidden-to-hidden and output-to-hidden recurrence.
+    \item \textbf{Core Numerics}: \texttt{numpy}
+    \item \textbf{Data Wrangling}: \texttt{pandas}
+    \item \textbf{Time Series Utilities}: \texttt{statsmodels}
+    \item \textbf{Visualization}: \texttt{matplotlib}
+    \item \textbf{Preprocessing}: \texttt{scikit-learn}
+    \item \textbf{Modeling}: \texttt{pytorch}
 \end{itemize}
 
-Each model implementation was parameterized, which allows users to choose hidden layer size, activation function, and output type (sequence-to-one vs. sequence-to-sequence). The implementations also included gradient clipping to prevent the exploding/vanishing gradient problem.
+\subsection{\textbf{RNN Architectures}}
+The RNNs investigated in this study were implemented using the PyTorch API. PyTorch is a highly customizable open-source deep learning framework. Each RNN type was defined as a custom \texttt{nn.Module} class, with a forward pass implementation tailored to the recurrence formula of the different architectures.
+\begin{itemize}
+    \item \textbf{ElmanRNN}: A tanh RNN cell (\texttt{nn.RNN}) followed by a linear output layer.
+    \item \textbf{JordanRNN}: Forward pass implements the output-hidden state recurrence. The previous output is passed through an activation (\texttt{identity}/\texttt{sigmoid}/\texttt{softmax}/\texttt{tanh}) and then fed into the hidden layer at the current time step via a learned projection.
+    \item \textbf{MultiRNN}: Implemented as a hybrid of the Elman and Jordan architectures, combining hidden-to-hidden and output-to-hidden recurrence.
+\end{itemize}
+All model implementations use the \texttt{tanh} hidden activation function and a final linear layer for regression outputs.
+Implementations were also parameterized, which allows users to choose hidden layer size, output activation function, and output type (sequence-to-one vs. sequence-to-sequence). The implementations also included gradient clipping to prevent the exploding/vanishing gradient problem.
+
+\subsection{\textbf{Training Utilities \& Pipeline}}
+To keep code modular and compact, a set of utilities that encapsulates the steps in the model training pipeline were implemented:
+\begin{itemize}
+    \item \textbf{Sequence building}: \texttt{make\_sequences} converts $(X,y)$ into fixed-length windows and forecast horizon aligned targets with a configurable stride.
+    \item \textbf{Datasets \& loaders}: \texttt{TimeSeriesDataset} wraps sequences as tensors. \texttt{DataLoaders} are created without shuffling (respecting temporal order) and without dropping tail batches.
+    \item \textbf{Model factory}: \texttt{create\_model} constructs the requested model with the required architecture and parameters and moves it to the selected device (CPU/GPU).
+    \item \textbf{Epoch routines}: \texttt{train\_one\_epoch} and \texttt{evaluate\_one\_epoch} standardize the train/validation passes, apply gradient clipping, and accumulate loss in a size-weighted manner across a single epoch.
+    \item \textbf{Early stopping}: \texttt{fit\_early\_stopping} tracks the best validation loss, snapshots weights, and halts on \texttt{patience}. The best state dict is restored before evaluation.
+    \item \textbf{Scaling helpers}: \texttt{fit\_seq\_scalers} and \texttt{transform\_seq} fit \texttt{MinMaxScalers} on the training data only and then transforms descriptive features and targets.
+    \item \textbf{Prediction}: \texttt{predict\_all} performs batched inference.
+\end{itemize}
+
+\subsection{\textbf{Cross-Validation}}
+The cross-validation process for hyperparameter tuning is handled by:
+\begin{itemize}
+    \item \textbf{Windowing}: \texttt{rolling\_windows} yields chronological (train, val) index slices with a user-defined train size, validation size, and step.
+    \item \textbf{Hyperparameter config scoring}: \texttt{ts\_cv\_score} takes a model, fits scalers on each train slice, performs training with early stopping, inverse-transforms predictions, and returns per-fold scores and their summary stats.
+    \item \textbf{Grid search}: \texttt{grid\_search\_ts\_cv} iterates over hyperparameter configuration grid for a given architecture, invokes \texttt{ts\_cv\_score}, and selects the configuration with minimal mean CV error.
+\end{itemize}
+This separation ensures no data is leaked from future time steps to past time steps.
+
+\subsection{\textbf{Final Model Training}}
+Final model training and evaluation logic is encapsulated in:
+\begin{itemize}
+    \item \textbf{fit\_best}: given the selected hyperparameter configuration, it carves a small tail for internal early stopping, fits scalers on the remaining training sequences, restores best weights, performs test inference, and inverse-transforms outputs.
+    \item \textbf{Metrics}: pluggable metric functions (\texttt{RMSE}, \texttt{MAE}, \texttt{R2}) are passed as a dictionary, computed on original units, and returned alongside predictions for downstream plotting or tables.
+    \item \textbf{Experiment driver}: \texttt{run\_experiments} loops over horizons and architectures, applies grid search + \texttt{fit\_best}, and collects results.
+\end{itemize}
+
+\section{\textbf{Empirical process}}
+
+\subsection{\textbf{Objective}}
+The objective of this study was to compare three simple recurrent neural network architectures, namely the Elman RNN, Jordan RNN and Multi-RNN, in the context of five different time series forecasting problems. Five real-world regression time series datasets were selected that represent a diverse range of temporal patterns, stationarity, and application domains.
+The central aim of the study was to evaluate the relative strengths and weaknesses of the Elman, Jordan, and Multi-RNN architectures across different forecasting horizons, and to test whether the performance ranking of these models is consistent across various datasets or whether certain architectures are better suited to specific types of time series.
+Feature standardization, sequence construction, training setup, and evaluation procedures ensure the empirical process was designed to isolate the effect of model architecture as the key property of interest under investigation.
 
 \subsection{\textbf{Dataset Specific Preprocessing}}
-
 \subsubsection{\textbf{AMD Stock Data}}
-
 \begin{itemize}
     \item \texttt{Adj Close} was chosen as response, hence the redundant column \texttt{Close} was dropped.
-    \item Records with zero-valued opening prices were removed as these entries are most likely data entry errors, and there are only a few of them so removing them will not introduce any major bias into the dataset.
+    \item Rows with zero-valued opening prices were removed as these entries are most likely data entry errors, and there are only a few of them so removing them will not introduce any major bias into the dataset.
 \end{itemize}
 
 \subsubsection{\textbf{Air Quality}}
-
 \begin{itemize}
     \item Several fields use the place holder value \textit{-200} to indicate sensor failures. These values were treated as missing entries.
     \item The dataset contains five sensor readings \texttt{PT08.S1(CO)}, \texttt{PT08.S2(NMHC)}, \texttt{PT08.S3(NOx)}, \texttt{PT08.S4(NO2)}, \texttt{PT08.S5(O3)}, and three meteorological variables \texttt{T}, \texttt{RH}, \texttt{AH}. It was found that the missing entries in these features were co-located. These rows were entirely removed from the dataset as they contained mostly missing values.
@@ -315,7 +357,6 @@ Each model implementation was parameterized, which allows users to choose hidden
 \end{itemize}
 
 \subsubsection{\textbf{Garment Productivity}}
-
 \begin{itemize}
     \item Invalid entries, such as entries missing key fields such as \texttt{date} or \texttt{actual\_productivity} (response) were removed.
     \item The \texttt{wip} column was entirely removed from the dataset, as it was missing half of its entries.
@@ -323,56 +364,39 @@ Each model implementation was parameterized, which allows users to choose hidden
 \end{itemize}
 
 \subsubsection{\textbf{Electric Production}}
-
 No preprocessing needed to be done on the Electric Production dataset. It contains only a single feature measured over time.
 
 \subsubsection{\textbf{Max Planck Institute Weather Data}}
-
 No preprocessing was needed for this dataset, as it is a complete dataset containing no missing values or invalid entries.
 
 \subsection{\textbf{Dataset Agnostic Preprocessing}}
-
 \subsubsection{\textbf{Scaling}}
-
 For all datasets, the descriptive and response features were normalized using scikit-learn's \texttt{MinMaxScaler}. During cross-validation and final model training, the scalers were fit on the training data only and then applied to the corresponding test and/or validation sets. This was done to prevent information from future time steps to leak into past time steps.
-
 The \texttt{MinMaxScaler} was used because the RNN implementations use the tanh activation function, which outputs values in the range [-1, 1]. By scaling inputs and outputs into compatible ranges, the model training process was more stable, reducing the risk of vanishing or exploding gradients.
 
 \subsubsection{\textbf{Sequence Construction}}
-
 Each dataset was transformed into sequences of fixed length. This allowed the recurrent neural networks to receive a window of past observations as inputs and predict future values at specified horizons.
-
 A sliding window procedure was used to construct the sequences. First the datasets were sorted by time stamp, and then for a given window length \texttt{L}, a contiguous block of \texttt{L} timesteps was extracted as an input sequence, and a value at a specified horizon was selected as the target. By moving the window forward one step at a time, multiple overlapping sequences were generated.
-
 A moderate sequence length of 30 items was selected as this effectively balances temporal context while keeping compute costs manageable. The earlier items in longer sequences would be wastefully included, as their temporal information will be lost by overly extensive recurrence.
-
 The study considered multiple horizons to evaluate the models' short-term and long-term predictive performance. Specifically predictions were made for horizons of 1, 3, 5, and 7 time steps ahead.
-
 To clarify:
-
 \begin{itemize}
     \item \textbf{Horizon = 1}: If the sequence length is 3 and the time series is \texttt{[1, 2, 3, 4, 5, 6, 7]}, then the input sequence is \texttt{[1, 2, 3]} and the target is \texttt{4}. This is simple next-item prediction.
     \item \textbf{Horizon = 3}. Under the same conditions, the input sequence would be \texttt{[1, 2, 3]} and the target is \texttt{6}
 \end{itemize}
-
 The models were trained in a sequence-to-one configuration, where each input sequence of 30 timesteps were used to predict a single output at the specified horizon. This allowed a fair comparison of Elman, Jordan, and Multi-RNN models across multiple datasets.
 
-\subsection{\textbf{Training Setup}}
-
-The training setup was designed to ensure stable learning, prevent overfitting, and allow for fair comparison of the three RNN model architectures across five different regression time series datasets.
+\subsection{\textbf{Model Training}}
+After dataset preprocessing, the models were trained using a training setup that was designed to ensure stable learning, prevent overfitting, and allow for fair comparison of the three RNN model architectures across five different regression time series datasets.
 
 \subsubsection{\textbf{Loss Function}}
-
 All models were optimized using the Mean Squared Error loss function. This loss function is a common choice for regression problems, as it directly measures the squared deviation between predicted and true values, as well as being differentiable which is important for neural networks using gradient descent.
 
 \subsubsection{\textbf{Optimization Algorithm}}
-
 All models were trained using the Adam optimizer. The Adam optimizer (Adaptive Moment Estimation) is one of the most popular optimization algorithms used in training neural networks. It combines momentum, to smooth parameter updates by incorporating information from past gradients, and adaptive learning rate, to adjust step size of each parameter dynamically based on the history of gradients.
 
 \subsubsection{\textbf{Regularization \& Stability Measures}}
-
 To prevent overfitting and stabilize training, the following steps were taken:
-
 \begin{itemize}
     \item \textbf{Weight Decay}: Incorporated in optimizer to penalize overly large weights and improve generalization.
     \item \textbf{Gradient Clipping}: A threshold was applied to the gradient during backpropagation, to clip the gradient and prevent instability during training.
@@ -380,17 +404,13 @@ To prevent overfitting and stabilize training, the following steps were taken:
 \end{itemize}
 
 \subsubsection{\textbf{Early Stopping}}
-
 Another measure taken to prevent overfitting was to use an early stopping mechanism when training the models. Training was halted when validation loss failed to improve after a fixed patience period (ranging from 8 to 12 epochs). At termination, the model parameters corresponding to the lowest validation loss were chosen as the optimal parameter set.
 
 \subsubsection{\textbf{Batching and Data Loading}}
-
 Input sequences were grouped into mini-batches using PyTorch's \texttt{DataLoader}. Batch sizes varied from 256 to 512 depending on the hyperparameter set being evaluated.
 
 \subsubsection{\textbf{Hyperparameter Grid}}
-
-A hyperparameter grid was used to tune the hyperparameters of each of the models. The grid included the following parameters:
-
+A hyperparameter grid was used to tune the hyperparameters of each of the models during cross validation. The grid included the following parameters:
 \begin{itemize}
     \item Hidden layer size: 32-256 units
     \item Learning rate: $1e-3$ to $5e-5$
@@ -400,37 +420,34 @@ A hyperparameter grid was used to tune the hyperparameters of each of the models
     \item Weight decay: $0$ to $1e-4$
 \end{itemize}
 
-\subsection{\textbf{Training and Evaluation Utilities}}
+\subsubsection{\textbf{Cross-Validation and Model Selection}}
+Time series cross-validation was used to select optimal hyperparameters while respecting temporal order. After sequence construction the data was chronologically split (80/20) into a training portion and a test portion. The training portion was used to form rolling windows comprising of (train, validation) slices:
+\begin{enumerate}
+    \item For each window, \texttt{MinMaxScalers} were fit on the train slice only, and then applied to the validation slice to prevent look-ahead leakage.
+    \item For each RNN architecture and hyperparameter configuration from the grid, a model was trained on the train slice and evaluated on the validation slice using RMSE computed on the original response scale.
+    \item The cross-validation score for a model configuration was calculated as the mean RMSE across all rolling windows (folds).
+\end{enumerate}
+For each dataset, model and forecast horizon ([1, 3, 5, 7]), the hyperparameter configuration with the lowest mean CV RMSE was selected as the best hyperparameter configuration for that architecture. This process ensured a fair comparison driven only in difference between model architecture.
 
-To support the training and assessment of the RNNs, a set of utility functions was implemented to handle model training and evaluation across datasets and model architectures.
+\subsubsection{\textbf{Final Model Training}}
+Given the optimal hyperparameter set for a model architecture, forecast horizon, and dataset, final model training proceeded as follows:
+\begin{enumerate}
+    \item Within the entire training portion of the dataset, a small chronological tail (10\%) was reserved as a validation set to be used for early stopping.
+    \item \texttt{MinMaxScalers} were then fit on the remaining training data.
+    \item The model was then trained with MSE loss, and the Adam optimizer, using gradient clipping and weight decay where applicable.
+\end{enumerate}
 
-\subsubsection{\textbf{Epoch Training and Validation}}
-
-Helpers were implemented to handle a single training epoch and a validation epoch. These utilities encapsulated the forward pass, loss computation, backpropagation, gradient clipping, and optimizer updates.
-
-\subsubsection{\textbf{Prediction}}
-
-A prediction utility function was implemented to generate prediction outputs for datasets. This function supported inverse transformation of scaled predictions back to the original space, which enabled meaningful interpretation of results.
-
-\subsubsection{\textbf{Cross-Validation}}
-
-Utilities were implemented to facilitate rolling-window cross-validation, which take care fo splitting training data into contiguous training and validation blocks, re-initialization of models for each fold to prevent information leakage, and recording performance metrics on each fold for later evaluation.
-
-\subsubsection{\textbf{Performance Metrics}}
-
-Multiple evaluation metrics were implemented to evaluate model performance on regression tasks:
-
+\subsection{\textbf{Final Model Evaluation}}
+To provide an representative view of model accuracy and fit, three complementary metrics were calculated for each model on the test data set:
 \begin{itemize}
-    \item \textbf{Root Mean Squared Error (RMSE)}: Root of average squared deviation. Penalizes large discrepancies.
-    \item \textbf{Mean Absolute Error (MAE)}: Average absolute deviation.
-    \item \textbf{Coefficient of Determination ($R^2$)}: Quantifies variance in observed data explained by the model. 
+    \item \textbf{RMSE}: Squared error.
+    \item \textbf{MAE} Average absolute deviation.
+    \item \boldmath{$R^2$} Explained variance.
 \end{itemize}
+Evaluating these metrics across the different models and forecast horizons reveal how the architectures perform compared to each other, and how they trade off short-term precision with long-range stability.
 
-\subsubsection{\textbf{Hyperparameter Search}}
-
-Utilities were implemented to perform grid search to find the optimal hyperparameter configuration for each model. These utilities built models with different hyperparameter combinations, trained and validated them using cross-validation, and selected the hyperparameter set resulting in the best average validation performance.
-
-\section{\textbf{Empirical process}}
+\subsection{\textbf{Reproducibility}}
+To ensure reproducibility all random seeds were set consistently for NumPy and PyTorch. Nvidia CUDA deterministic flags were enabled where applicable.
 
 \section{\textbf{Results \& discussion}}
 
