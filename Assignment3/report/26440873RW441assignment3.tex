@@ -608,7 +608,84 @@ The models attain relatively high $R^2$ for immediate next-item prediction, whic
 
 The Jordan RNN performs best at short and medium horizons, with the Multi-RNN model performing best at longer horizons. The Elman architecture remains competitive but provides no distinct advantage.
 
-Air quality time series data typically exhibit strong short term correlation, pollutant levels between contiguous time steps are highly related. This means that at short forecast horizons, like next-step prediction, the local persistence of pollutant levels make prediction comparatively easy. As horizons grow, uncertainty compounds and prediction becomes harder. It might be possible to increase model performance by including more exogenous meteorological data, and explicitly modeling seasonality. 
+Air quality time series data typically exhibit strong short term correlation, pollutant levels between contiguous time steps are highly related. This means that at short forecast horizons, like next-step prediction, the local persistence of pollutant levels make prediction comparatively easy. As horizons grow, uncertainty compounds and prediction becomes harder. It might be possible to increase model performance by including more exogenous meteorological data, and explicitly modeling weekly seasonality, as is present in the dataset. 
+
+\subsection{\textbf{Garment Productivity}}
+The Garment Productivity problem concerns forecasting worker productivity from shop floor signals. The models were trained and evaluated across multiple forecast horizons, $h \in [1,3,5,7]$.
+
+\begin{table}[H]
+\centering
+\caption{Garment Productivity model performance ($h=1$).}
+\label{tab:gp_h1}
+\begin{tabular}{lcccc}
+\toprule
+\textbf{Model} & \textbf{CV RMSE} & \textbf{Test RMSE} & \textbf{Test MAE} & $\mathbf{R^2}$ \\
+\midrule
+Elman  & 0.1628 & 0.1676 & 0.1184 & -0.1375 \\
+Jordan & 0.1774 & 0.1818 & 0.1377 & -0.3377 \\
+Multi  & 0.1675 & 0.1712 & 0.1210 & -0.1862 \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\begin{table}[H]
+\centering
+\caption{Garment Productivity model performance ($h=3$).}
+\label{tab:gp_h3}
+\begin{tabular}{lcccc}
+\toprule
+\textbf{Model} & \textbf{CV RMSE} & \textbf{Test RMSE} & \textbf{Test MAE} & $\mathbf{R^2}$ \\
+\midrule
+Elman  & 0.1650 & 0.1641 & 0.1287 & -0.0854 \\
+Jordan & 0.1849 & 0.2148 & 0.1494 & -0.8602 \\
+Multi  & 0.1688 & 0.1703 & 0.1243 & -0.1693 \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\begin{table}[H]
+\centering
+\caption{Garment Productivity model performance ($h=5$).}
+\label{tab:gp_h5}
+\begin{tabular}{lcccc}
+\toprule
+\textbf{Model} & \textbf{CV RMSE} & \textbf{Test RMSE} & \textbf{Test MAE} & $\mathbf{R^2}$ \\
+\midrule
+Elman  & 0.1662 & 0.1685 & 0.1329 & -0.1451 \\
+Jordan & 0.1834 & 0.1682 & 0.1338 & -0.1400 \\
+Multi  & 0.1717 & 0.1986 & 0.1479 & -0.5907 \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\begin{table}[H]
+\centering
+\caption{Garment Productivity model performance ($h=7$).}
+\label{tab:gp_h7}
+\begin{tabular}{lcccc}
+\toprule
+\textbf{Model} & \textbf{CV RMSE} & \textbf{Test RMSE} & \textbf{Test MAE} & $\mathbf{R^2}$ \\
+\midrule
+Elman  & 0.1711 & 0.1717 & 0.1446 & -0.1882 \\
+Jordan & 0.1829 & 0.1685 & 0.1240 & -0.1447 \\
+Multi  & 0.1709 & 0.1809 & 0.1367 & -0.3186 \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+Across all forecast horizons the usual degradation of model performance is present, but it is much more pronounced on the Garment Productivity dataset because the response productivity measure is a proportion in the range [0, 1].
+
+For next-item prediction ($h=1$), the Elman RNN performs the best, it has the lowest RMSE, and MAE metric values with the highest $R^2$ value. All models have negative $R^2$ values which mean that they all perform worse than a model just predicting the mean productivity for each input sequence.
+
+For medium forecast horizons ($h=3$ \& $h=5$), the Elman network still performs the best. Test RMSE and MAE for all models degrade as the horizon increases from short to medium, except the Jordan RNN, its performance actually increases as the forecast horizon increases, and at a horizon of $h=5$ the Elman and Jordan model effectively perform the same. Notably Test MAE takes on values in the range [0.1, 0.15], which means that predictions are off by $\sim 12.5\%$ on average, which is not very good.
+
+At the longest horizon ($h=7$), the Jordan RNN performs the best. It has the lowest RMSE and MAE scores with the highest $R^2$ score. All models still have negative $R^2$ values which mean that they still perform worse than predicting the mean.
+
+All models perform poorly, the model's predictions are off on average by 0.125 units, and since the response is in the range [0, 1] this is quite a large error. Further all $R^2$ values, across model architectures and forecast horizons, are negative meaning all models perform worse than just predicting the mean of \texttt{actual\_productivity} for each input sequence.
+
+For short forecast horizons the Elman RNN performs best, for medium horizons, there is no real difference between the performance of the Elman and Jordan RNN, but at long forecast horizons the Jordan model performs best, although it is important to note that no RNN model actually performs well in an absolute sense. The Multi-RNN model provides no distinct advantage for this problem.
+
+Garment productivity is hard to forecast because the garment manufacturing process is driver by short-memory, and regime changes (style switches, SMV shifts, incentives) that cause abrupt jumps rather than smooth trends. This means the RNN models are not able to accurately capture any temporal patterns present in the data.
 
 \section{\textbf{Conclusion}}
 
