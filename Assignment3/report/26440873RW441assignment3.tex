@@ -467,7 +467,7 @@ The RNN models were trained to predict the adjusted closing price $h$ steps ahea
 \label{tab:amd_h1}
 \begin{tabular}{lcccc}
 \toprule
-Model & CV RMSE & Test RMSE & Test MAE & Test $R^2$ \\
+\textbf{Model} & \textbf{CV RMSE} & \textbf{Test RMSE} & \textbf{Test MAE} & $\mathbf{R^2}$ \\
 \midrule
 Elman  & 0.5837 & 1.1529 & 0.5750 & 0.9907 \\
 Jordan & 0.5319 & 1.2662 & 0.6165 & 0.9888 \\
@@ -482,7 +482,7 @@ Multi  & 0.4863 & 1.5580 & 0.8101 & 0.9831 \\
 \label{tab:amd_h3}
 \begin{tabular}{lcccc}
 \toprule
-Model & CV RMSE & Test RMSE & Test MAE & Test $R^2$ \\
+\textbf{Model} & \textbf{CV RMSE} & \textbf{Test RMSE} & \textbf{Test MAE} & $\mathbf{R^2}$ \\
 \midrule
 Elman  & 0.8307 & 1.1507 & 0.6134 & 0.9908 \\
 Jordan & 0.7913 & 1.4183 & 0.7106 & 0.9860 \\
@@ -497,7 +497,7 @@ Multi  & 0.7601 & 1.3528 & 0.7197 & 0.9872 \\
 \label{tab:amd_h5}
 \begin{tabular}{lcccc}
 \toprule
-Model & CV RMSE & Test RMSE & Test MAE & Test $R^2$ \\
+\textbf{Model} & \textbf{CV RMSE} & \textbf{Test RMSE} & \textbf{Test MAE} & $\mathbf{R^2}$ \\
 \midrule
 Elman  & 1.0310 & 1.9398 & 1.0958 & 0.9737 \\
 Jordan & 0.9821 & 1.9406 & 0.9461 & 0.9737 \\
@@ -512,7 +512,7 @@ Multi  & 0.9895 & 1.8280 & 0.9197 & 0.9767 \\
 \label{tab:amd_h7}
 \begin{tabular}{lcccc}
 \toprule
-Model & CV RMSE & Test RMSE & Test MAE & Test $R^2$ \\
+\textbf{Model} & \textbf{CV RMSE} & \textbf{Test RMSE} & \textbf{Test MAE} & $\mathbf{R^2}$ \\
 \midrule
 Elman  & 1.1770 & 2.1858 & 1.2403 & 0.9667 \\
 Jordan & 1.1447 & 2.0999 & 1.0789 & 0.9692 \\
@@ -521,15 +521,94 @@ Multi  & 1.1282 & 1.7695 & 0.9845 & 0.9781 \\
 \end{tabular}
 \end{table}
 
-For short horizons ($h$ = 1 \& $h$ = 3), the Elman model overall performs the best. Across both horizons it maintains the lowest RMSE and MAE, and hightest $R^2$ values, despite having the largest CV RMSE. In both cases the Multi-RNN attains the best CV RMSE, but underperforms when compared to the Elman model on the test set. This suggests mild overfitting present in the Multi-RNN model. The simpler Elman architecture, which relies solely on hidden state recurrence, generalizes best when the forecast is only a few time steps ahead.
+For short to medium horizons ($h$ = 1 \& $h$ = 3), the Elman model overall performs the best. Across both horizons it maintains the lowest RMSE and MAE, and hightest $R^2$ values, despite having the largest CV RMSE. In both cases the Multi-RNN attains the best CV RMSE, but underperforms when compared to the Elman model on the test set. This suggests mild overfitting present in the Multi-RNN model. The simpler Elman architecture, which relies solely on hidden state recurrence, generalizes best when the forecast is only a few time steps ahead.
 
-At longer horizons ($h$ = 5 \& $h$ = 7), the Multi-RNN model becomes the best performing model. It maintains the lowest RMSE, MAE and highest $R^2$ values relative to the other two models, while also still maintaining the lowest CV RMSE score. This suggest that the inclusion of both hidden state and output recurrence allows the Multi-RNN model to more accurately capture medium-to-long range dependencies in temporal data, causing the model to have more accurate predictions as the target moves further away from the immediate next step.
+For medium to longer horizons ($h$ = 5 \& $h$ = 7), the Multi-RNN model becomes the best performing model. It maintains the lowest RMSE, MAE and highest $R^2$ values relative to the other two models, while also still maintaining the lowest CV RMSE score. This suggest that the inclusion of both hidden state and output recurrence allows the Multi-RNN model to more accurately capture medium-to-long range dependencies in temporal data, causing the model to have more accurate predictions as the target moves further away from the immediate next step.
 
 All models attain very high $R^2$ at short horizons, which gradually declines as the forecast horizon increases, consistent with error accumulation and weak predictability of stock price data. The deterioration is least for the Multi-RNN model, which aligns with its advantage at longer horizons as compared to the Elman and Jordan RNN variants.
 
 For all model architectures, as the forecast horizon increases, RMSE and MAE increase and $R^2$ declines, reflecting error accumulation as forecast horizon increases. The Elman RNN dominates at short horizons, but the Multi-RNN performs best as the horizon increases, suggesting that the inclusion of the Jordan recurrence becomes helpful once short-term patterns fade and models need to rely on longer-term trends. The Jordan architecture remains competitive but does not provide any clear advantage.
 
 Since stock price levels are usually non-stationary, future improvements can focus on forecasting returns, which would make the data more stable, strengthen short-term signals, and slow down performance degradation at longer horizons. The results obtained in the current setup of predicting raw price levels highlights the trade-off between simple models that generalize well at short-horizons and more complex models that capture long-range patterns.  
+
+\subsection{\textbf{Air Quality}}
+The focus of the Air Quality problem is to predict \texttt{CO(GT)} pollutant concentration at different forecast horizons given an input sequence of sensor measurements and meteorological metric data at contiguous time steps.
+
+The Elman, Jordan, and Multi-RNN models under investigation were trained to predict across the same horizons as the AMD Stock Data, $h \in [1,3,5,7]$.
+
+\begin{table}[H]
+\centering
+\caption{Air Quality model performance ($h$=1)}
+\label{tab:aq_h1}
+\begin{tabular}{lcccc}
+\toprule
+\textbf{Model} & \textbf{CV RMSE} & \textbf{Test RMSE} & \textbf{MAE} & \(\mathbf{R^2}\) \\
+\midrule
+Elman  & 0.9493 & 0.7685 & 0.6014 & 0.6518 \\
+Jordan & 0.9652 & 0.7634 & 0.5868 & 0.6564 \\
+Multi  & 0.9331 & 0.7781 & 0.5943 & 0.6430 \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\begin{table}[H]
+\centering
+\caption{Air Quality model performance ($h$=3)}
+\label{tab:aq_h3}
+\begin{tabular}{lcccc}
+\toprule
+\textbf{Model} & \textbf{CV RMSE} & \textbf{Test RMSE} & \textbf{MAE} & \(\mathbf{R^2}\) \\
+\midrule
+Elman  & 1.3571 & 1.2542 & 0.9434 & 0.0726 \\
+Jordan & 1.4823 & 1.2415 & 0.9284 & 0.0913 \\
+Multi  & 1.3412 & 1.2503 & 0.9708 & 0.0783 \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\begin{table}[H]
+\centering
+\caption{Air Quality model performance ($h$=5)}
+\label{tab:aq_h5}
+\begin{tabular}{lcccc}
+\toprule
+\textbf{Model} & \textbf{CV RMSE} & \textbf{Test RMSE} & \textbf{MAE} & \(\mathbf{R^2}\) \\
+\midrule
+Elman  & 1.4525 & 1.3229 & 1.0303 & -0.0318 \\
+Jordan & 1.6336 & 1.3023 & 1.0274 & 0.0001 \\
+Multi  & 1.4277 & 1.3174 & 1.0528 & -0.0232 \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\begin{table}[H]
+\centering
+\caption{Air Quality model performance ($h$=7)}
+\label{tab:aq_h7}
+\begin{tabular}{lcccc}
+\toprule
+\textbf{Model} & \textbf{CV RMSE} & \textbf{Test RMSE} & \textbf{MAE} & \(\mathbf{R^2}\) \\
+\midrule
+Elman  & 1.4771 & 1.2671 & 0.9964 & 0.0534 \\
+Jordan & 1.6571 & 1.3178 & 1.0382 & -0.0239 \\
+Multi  & 1.4435 & 1.2039 & 0.9502 & 0.1455 \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+As forecast horizon increases, performance degrades for each model, which is consistent with rising uncertainty at longer horizons.
+
+At short to medium horizons ($h=1$ \& $h=3$), the Jordan model performs the best, delivering the lowest Test RMSE and MAE with the highest $R^2$, despite higher CV RMSE scores than the other models. This might suggest (although not likely) benign overfitting, which means that the Jordan model might generalize better under less regularization and overfitting protection.
+
+For medium horizons $h=5$, Jordan still remains the top performing model on the test set. Notably, $R^2$ drops sharply as the forecast horizon increases from $h=1$ to $h=3$, and hovers around zero when increased to $h=5$, with negative $R^2$ values for the Elman and Multi-RNN models. This indicates that simple mean predictions become difficult to outperform as the horizon grows.
+
+At the longest horizon $h=7$, the Multi-RNN model performs significantly better than both the Elman and Jordan RNN models, achieving lowest RMSE, MAE and highest $R^2$. This aligns with previous findings that including both Elman and Jordan recurrences to create a more complex model better captures long-term temporal relations.
+
+The models attain relatively high $R^2$ for immediate next-item prediction, which degrades as the forecast horizon increases, consistent with reduced predictability of pollutant concentration at longer horizons. From short to medium  horizons $R^2$ falls sharply, with a modest rebound at longer horizons for the Multi-RNN model suggesting that more complex architectures can mitigate long horizon degradation.
+
+The Jordan RNN performs best at short and medium horizons, with the Multi-RNN model performing best at longer horizons. The Elman architecture remains competitive but provides no distinct advantage.
+
+Air quality time series data typically exhibit strong short term correlation, pollutant levels between contiguous time steps are highly related. This means that at short forecast horizons, like next-step prediction, the local persistence of pollutant levels make prediction comparatively easy. As horizons grow, uncertainty compounds and prediction becomes harder. It might be possible to increase model performance by including more exogenous meteorological data, and explicitly modeling seasonality. 
 
 \section{\textbf{Conclusion}}
 
