@@ -841,6 +841,20 @@ In summary for short and long horizons the Multi-RNN model performs best, while 
 
 \section{\textbf{Conclusion}}
 
+This study set out to compare three simple recurrent neural network architectures - Elman, Jordan, and Multi-RNN - across five real-world regression time series forecasting tasks and multiple horizons. By standardizing preprocessing, rolling cross-validation, and training protocols, the analysis isolated architectural effects on model performance.
+
+The results show that no single RNN variant is universally superior. The best model depends on both dataset characteristics, and the forecast horizon to be predicted. For short forecast horizons with strong local persistence, the Elman RNN often performed best. The Jordan RNN, which feeds back past outputs to the current hidden state, can excel when past predictions carry strong signal, but tends to degrade at longer horizons as error compound.
+
+When the problems are more complex and richer dynamics matter - seasonality, trend, long range dependencies - the Mulit-RNN model consistently outperformed competition. Blending hidden-to-hidden and output-to-hidden recurrences allow the model to capture richer temporal patterns by allowing the model to maintain seasonal/trend/long range context while correcting from previous outputs. It is important to note the trade-off in computational complexity, training Multi-RNN models on complex datasets take significantly longer than simple Elman/Jordan models. Multi-RNN models are also more prone to overfitting than the others, a few cases exposed mild train/test metric discrepancies, highlighting the importance of guarding against overfitting.
+
+Across all datasets the usual performance metric pattern holds: as horizons increase, RMSE/MAE rise and $R^2$ falls. However, the rate of deterioration varies between models and datasets.
+
+Series with clear seasonal cycles benefit more from models that can capture multi-scale patterns, like Multi-RNN, whereas noisy data remains challenging for all three model architectures.
+
+In summary, model choice should be data and horizon aware. While Elman and Jordan models remain viable for short-range predictions, the hybrid Multi-RNN model is preferable when forecasting longer horizons on time series with richer dynamics.
+
+Several extensions could strengthen the findings in this study. Comparing the three RNN models against gated and attention based models, like LSTM, GRU, and Transformers, can quantify gains from adding gating and attention mechanisms over simple RNNs. Explicit seasonal encodings could potentially improve model performance, e.g. for financial data it might be more beneficial to predict returns rather than raw prices. 
+
 \bibliographystyle{plain}
 \bibliography{references}
 \vspace{12pt}
