@@ -687,6 +687,80 @@ For short forecast horizons the Elman RNN performs best, for medium horizons, th
 
 Garment productivity is hard to forecast because the garment manufacturing process is driver by short-memory, and regime changes (style switches, SMV shifts, incentives) that cause abrupt jumps rather than smooth trends. This means the RNN models are not able to accurately capture any temporal patterns present in the data.
 
+\subsection{\textbf{Electric Production}}
+
+The Electric Production problem concerns predicting US industrial electric power production based on an input sequence of previous electric production measurements. This is the simplest problem investigated as it contains measurements of only a single variable. Like the RNN models before, the RNN models trained on the Electric Production dataset were evaluated at horizons $h \in [1,3,5,7]$.
+
+\begin{table}[H]
+\centering
+\caption{Electric Production model performance ($h=1$).}
+\label{tab:ep_h1}
+\begin{tabular}{lcccc}
+\toprule
+\textbf{Model} & \textbf{CV RMSE} & \textbf{Test RMSE} & \textbf{Test MAE} & $\mathbf{R^2}$ \\
+\midrule
+Elman  & 9.9853  & 10.6117 & 8.7759 & -0.2229 \\
+Jordan & 10.4397 & 7.9953  & 6.2540 & 0.3058 \\
+Multi  & 6.3614  & 4.2711  & 3.4017 & 0.8019 \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\begin{table}[H]
+\centering
+\caption{Electric Production model performance ($h=3$).}
+\label{tab:ep_h3}
+\begin{tabular}{lcccc}
+\toprule
+\textbf{Model} & \textbf{CV RMSE} & \textbf{Test RMSE} & \textbf{Test MAE} & $\mathbf{R^2}$ \\
+\midrule
+Elman  & 10.3303 & 7.3707  & 6.0734 & 0.4162 \\
+Jordan & 10.3370 & 12.2193 & 10.2021 & -0.6046 \\
+Multi  & 6.3953  & 6.5294  & 4.9870 & 0.5418 \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\begin{table}[H]
+\centering
+\caption{Electric Production model performance ($h=5$).}
+\label{tab:ep_h5}
+\begin{tabular}{lcccc}
+\toprule
+\textbf{Model} & \textbf{CV RMSE} & \textbf{Test RMSE} & \textbf{Test MAE} & $\mathbf{R^2}$ \\
+\midrule
+Elman  & 9.5779  & 9.1306  & 7.6675 & 0.1041 \\
+Jordan & 10.4779 & 12.3032 & 9.8914 & -0.6268 \\
+Multi  & 4.7539  & 7.0623  & 5.2254 & 0.4640 \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\begin{table}[H]
+\centering
+\caption{Electric Production model performance ($h=7$).}
+\label{tab:ep_h7}
+\begin{tabular}{lcccc}
+\toprule
+\textbf{Model} & \textbf{CV RMSE} & \textbf{Test RMSE} & \textbf{Test MAE} & $\mathbf{R^2}$ \\
+\midrule
+Elman  & 9.5051 & 10.3615 & 8.5946 & -0.1538 \\
+Jordan & 8.3729 & 9.3305  & 7.4672 & 0.0644 \\
+Multi  & 7.7781 & 5.3698  & 3.7958 & 0.6901 \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+Across all horizons, the Multi-RNN models dominate over the Elman and Jordan models. They maintain the lowest RMSE and MAE values, with the highest $R^2$ values. For some of the forecast horizons, the Elman and Jordan models actually perform worse than predicting the mean, while the Mulit-RNN model remains competitive across all horizons.
+
+The degradation of model performance is present as horizon increases, but from $h=5$ to $h=7$ the Jordan and Multi-RNN models have quite a positive jump in performance. The Multi-RNN model still dominates, but this suggests that the output-to-hidden recurrence might help the Multi-RNN model more accurately model seasonal information present at longer forecast horizons.
+
+Overall the Multi-RNN model performs best, consistently maintaining best test metric scores and lowest cross-validation scores, suggesting the model balances performance with complexity very well. Relative to the Multi-RNN model, the Elman and Jordan models offer no benefits and often perform no better than naive baselines.
+
+The Multi-RNN model performs best on the Electric Production dataset because it blends hidden-to-hidden and output-to-hidden recurrences to capture trend \& seasonality along with most recent predictions to prevent error accumulation. This blend of Elman and Jordan recurrences make the Multi-RNN model more capable of accurately capturing the rich temporal nature, seasonality, and trend of the Electric Production dataset.
+
+\subsection{\textbf{Max Planck Institute Weather Data}}
+
 \section{\textbf{Conclusion}}
 
 \bibliographystyle{plain}
