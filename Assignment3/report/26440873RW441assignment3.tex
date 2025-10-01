@@ -29,25 +29,25 @@ Stellenbosch, South Africa \\
 \begin{abstract}
 This study benchmarks three simple recurrent neural network architectures - Elman, Jordan, Multi-RNN - across five time series tasks and varying forecast horizons. The goal is to understand how architectural differences affect model performance as horizons and data characteristics vary.
 
-A uniform Python implemented pipeline applies dataset specific preprocessing, data sequencing, time series cross-validation for hyperparameter selection, and model training. Final models were trained with early stopping and were evaluated on held-out test sets using standard regression metrics: RMSE, MAE and $R^2$.
+A Python-based machine learning pipeline was developed to perform dataset specific preprocessing, data sequencing, time series cross-validation for hyperparameter selection, and final model training. Final models were trained with early stopping and evaluated on held-out test sets using standard regression metrics: RMSE, MAE and $R^2$.
 
-Results show there is no universal winner. Elman performs best for next-item forecasts where local persistence dominates, while Jordan remains competitive at short horizons where recent model predictions carry signal. Multi-RNN excels at longer horizons and on time series with more complex dynamics (seasonality/trend/long-range dependencies).
+Results show there is no universal best performing model architecture. Elman performs best for next-item forecasts where local persistence dominates, while Jordan remains competitive at short horizons where recent model predictions carry signal. Multi-RNN excels at longer horizons and on time series with more complex dynamics (seasonality/trend/long-range dependencies).
 
-Overall model selection should be data- and forecast horizon aware. Elman \& Jordan models suit short-range forecasts while Multi-RNN suits cases with long-range dependencies or complex dynamics.
+RNN model selection for a time series task should be data- and forecast horizon aware. Elman \& Jordan models suit short-range forecasts while Multi-RNN suits cases with long-range dependencies or complex dynamics.
 \end{abstract}
 
 \section{\textbf{Introduction}}
 
 Time series forecasting is important for decision making in many domains, such as finance, manufacturing, energy production and environmental monitoring. Models that exploit temporal structure of data, such as recurrent neural networks (RNNs), offer a simple yet expressive approach for sequence modeling by maintaining context that evolves over time. Despite the emergence of gated and attention based models, plain RNNs remain important and practical baselines, especially when computational simplicity and interpretability of the recurrence pattern are desirable.
 
-This study examines the performance of three simple RNN architectures - Elman, Jordan, and Multi-RNN - across five real-world regression time series problems, of varying complexity. The goals of this study are to evaluate how architectural differences in the models affect short and long forecast horizon accuracy, and identify conditions under which each variant is desirable. These goals are pursued by standardized data preprocessing, sequence construction, time series cross validation to tune model hyperparameters, and evaluation of models at multiple forecast horizons using appropriate regression metrics.
+This study examines the performance of three simple RNN architectures - Elman, Jordan, and Multi-RNN - across five real-world regression time series problems, of varying complexity. The goals of this study are to evaluate how architectural differences in the models affect short and long forecast horizon accuracy, and identify conditions under which each RNN variant is desirable. These goals were achieved by standardized data preprocessing, sequence construction, time series cross validation to tune model hyperparameters, and evaluation of models at multiple forecast horizons using appropriate regression metrics.
 
-The concrete objectives of this study are to: compare Elman, Jordan, and Multi-RNN models on five diverse datasets using uniform training regimes, assess horizon sensitivity by evaluating next-item and multi-step forecasting, quantify performance with RMSE, MAE,a and $R^2$ on test datasets, and derive key takeaways on model selection as a function of data properties and horizon length. To meet these objectives, the models were implemented in PyTorch, each dataset was transformed into fixed length input sequences with defined forecast horizons, time series cross-validation identified the optimal hyperparameter configuration for each model, and the best configuration was subsequently evaluated on a held-out test set.
+The concrete objectives of this study are to: compare Elman, Jordan, and Multi-RNN models on five diverse datasets using uniform training regimes, assess horizon sensitivity by evaluating next-item and multi-step forecasting, quantify performance with RMSE, MAE, and $R^2$ on test datasets, and derive key takeaways on model selection as a function of data properties and horizon length. To meet these objectives, the models were implemented in PyTorch, each dataset was transformed into fixed length input sequences with defined forecast horizons, time series cross-validation identified the optimal hyperparameter configuration for each model, and the best configuration was subsequently evaluated on a held-out test set.
 
 The rest of the report is structured as follows:
 
 \begin{itemize}
-    \item \textbf{Background}: RNN and dataset descriptions
+    \item \textbf{Background}: RNN and dataset descriptions.
     \item \textbf{Implementation}: Details of software stack and programming decisions.
     \item \textbf{Empirical Process}: Covers dataset preprocessing, sequence construction, cross-validation, training- and evaluation protocol.
     \item \textbf{Results \& Discussion}: Presents per-data set results, highlights architectural trade-offs and interprets performance patterns.
@@ -58,7 +58,7 @@ The rest of the report is structured as follows:
 
 \subsection{\textbf{Recurrent Neural Networks}}
 
-Recurrent Neural Neworks are a type of neural network specifically designed to handle sequential data, where there exists temporal dependencies between observations. RNNs incorporate feedback connections that allow information from prior steps to influence future predictions, which is what makes them well-suited for time series data, such as language translation, natural language processing, sentiment analysis, speech recognition, image captioning, etc.
+Recurrent Neural Neworks are a type of neural network specifically designed to handle sequential data, where there are temporal dependencies between observations. RNNs incorporate feedback connections that allow information from prior steps to influence future predictions, which is what makes them well-suited for time series data, such as language translation, natural language processing, sentiment analysis, speech recognition, image captioning, etc.
 
 RNNs extend traditional neural networks by incorporating a hidden state that carries information from one time step to the next. This creates a feedback loop, allowing the network to retain context from previous time steps and use it to influence the current time step. At each time step, the RNN processes the new input together with the hidden state from the previous time step, which allows the model to capture temporal dependencies in time series data. Unlike traditional neural networks, like feedforward neural networks, RNNs share hyperparameters across time steps and are trained using backpropagation through time, as opposed to regular backpropagation \cite{ibm_rnn}.
 
@@ -69,7 +69,7 @@ RNNs extend traditional neural networks by incorporating a hidden state that car
   \label{fig:ibm_rnn}
 \end{figure}
 
-Figure~\ref{fig:ibm_rnn} shows a rolled RNN with its unrolled counterpart which has been unrolled over time. Each time step takes $X_t$ and the previous hidden state as input, produces and output $Y_t$ and passes the hidden state to the next time step.
+Figure~\ref{fig:ibm_rnn} shows a rolled RNN with its unrolled counterpart. Each time step takes $X_t$ and the previous hidden state as input, produces and output $Y_t$ and passes the hidden state to the next time step.
 
 \subsubsection{\textbf{Elman RNN}}
 
@@ -96,7 +96,7 @@ where:
     \item $W_y$ is the output weight matrix.
     \item $b_h$ is the hidden state bias term.
     \item $b_y$ is the output bias term.
-    \item $\sigma_h$ is a non-linear activation function (e.g. ReLu, sigmoid, tanh).
+    \item $\sigma_h$ is a non-linear activation function (e.g. ReLU, sigmoid, tanh).
     \item $\sigma_y$ is an activation function suited for the machine learning task at hand (e.g. softmax for multi-class classification).
 \end{itemize}
 
@@ -104,7 +104,7 @@ The inclusion of $W_h h_{t-1}$ in the hidden state of Elman RNNs distinguishes t
 
 \subsubsection{\textbf{Jordan RNN}}
 
-Unlike the Elman RNN, where the hidden state depends on the previous hidden states, the Jordan RNN hidden state depends on previous outputs. This allows the Jordan RNN to integrate information from its own past predictions when updating the current hidden layer.
+Unlike the Elman RNN, where the hidden state depends on the previous hidden states, the Jordan RNN hidden state depends on previous outputs. This allows the Jordan RNN to integrate information from its own past predictions when updating the current hidden state.
 
 Formally, the Jordan RNN is defined as:
 
@@ -120,7 +120,7 @@ The use of $W_h y_{t-1}$ in the hidden state instead of $W_h h_{t-1}$ is what se
 
 \subsubsection{\textbf{Multi-RNN}}
 
-Multi-RNNs can be thought of as a combination between Elman and Jordan RNNs by incorporating feedback from both the previous hidden state and the previous output. This allows Multi-RNNs to model sequential information more flexibly, since the current hidden representation does not only depend on the internal memory of the network but also its previous predictions.
+Multi-RNNs can be thought of as a combination between Elman and Jordan RNNs by incorporating feedback from both the previous hidden state and the previous output. This allows Multi-RNNs to model sequential information more flexibly, since the current hidden state representation does not only depend on the internal memory of the network but also its previous predictions.
 
 The Multi-RNN can be expressed as:
 
@@ -134,12 +134,40 @@ $$
 
 The difference is captured in the inclusion of $W_{hh} y_{t-1} + W_{hy} y_{t-1}$ in the hidden state allowing Multi-RNNs to capture richer temporal information.
 
-\subsubsection{\textbf{RNN Limitations}}
+\subsection{\textbf{RNN Training \& Hyperparameter Tuning}}
 
-While RNNs are powerful tools for time series problems, they suffer from critical limitations, especially when faced with long sequences. The main issue under consideration is known as the Vanishing/Exploding Gradient Problem. During backpropagation through time, gradients can either shrink to near zero or grow excessively. This makes it difficult for the network to capture long-term dependencies and can lead to unstable learning. As a result, RNNs often struggle when context from distant time steps is needed to accurately predict the current time step. Mitigations include, gradient clipping, selection of problem appropriate activation functions, better weight initialization, learning rate control, and the use of more advanced architectures like LSTM \cite{rnn_problems}. 
+Unlike traditional data, time series data contains temporal dependencies between observations. This means that traditional k-fold cross-validation cannot be used to evaluate models trained on time series data. Randomly partitioning a time series into folds can result in information leakage between future and past observations.
+
+A more suitable cross-validation strategy that can be used with time series data and RNNs is cross-validation on a rolling basis.
+
+\begin{figure}[H]
+  \centering
+  \includegraphics[width=0.65\linewidth]{images/rolling_cv.png}
+  \caption{Cross-validation on a Rolling Basis (\cite{time_series_cv}).}
+  \label{fig:rolling_cv}
+\end{figure}
+
+Figure~\ref{fig:rolling_cv} illustrates the basic idea of cross-validation on a rolling basis. The process starts with a small subset of the data used for training, with the subsequent subset used for testing. The data tested on is then added to the next training set and the subsequent subset is then used for testing. This procedure repeats until the end of the series.
+
+Another approach is blocked cross-validation, where the series is divided into non-overlapping contiguous blocks, each block is used once as a validation set. This method avoids temporal leakage but may be less efficient in utilizing the full dataset compared to rolling schemes \cite{time_series_cv}.
+
+Hyperparameter tuning for RNNs typically involve exploring architectural and training parameters. Important hyperparameter categories and examples include:
+
+\begin{itemize}
+    \item \textbf{Network Architecture}: Number of hidden layers, number of neurons per layer.
+    \item \textbf{Training Parameters}: Learning rate, optimizer type, batch size, sequence length, gradient clipping thresholds.
+    \item \textbf{Regularization}: Dropout probability, weight decay.
+\end{itemize}
+
+Strategies such as grid search or random search using cross-validation can be used to explore the hyperparameter space and determine the best combination. The accuracy metrics used to evaluate the models during the cross-validation process is entirely problem dependent, e.g. MSE used for regression, and accuracy for classification
+
+\subsection{\textbf{RNN Limitations}}
+
+While RNNs are powerful tools for time series problems, they suffer from critical limitations, especially when faced with long sequences. The main issue is known as the Vanishing/Exploding Gradient Problem. During backpropagation through time, gradients can either shrink to near zero or grow excessively. This makes it difficult for the network to capture long-term dependencies and can lead to unstable learning. As a result, RNNs often struggle when context from distant time steps is needed to accurately predict the current time step. Mitigations include, gradient clipping, selection of problem appropriate activation functions, better weight initialization, learning rate control, and the use of more advanced architectures like LSTM \cite{rnn_problems}.
+
 \subsection{\textbf{Datasets}}
 
-The recurrent neural networks were trained and evaluated across five distinct datasets to provide a comprehensive assessment of their performance across diverse tasks.
+The recurrent neural networks were trained and evaluated across five distinct regression time series datasets to provide a comprehensive assessment of their performance across diverse tasks.
 
 \subsubsection{\textbf{AMD Stock Data}}
 
@@ -151,8 +179,8 @@ The AMD dataset records AMD (Advanced Micro Devices) stock data over a period of
     \item \texttt{High}: The highest price the stock reached during the trading day.
     \item \texttt{Low}: The lowest price the stock reached during the trading day.
     \item \texttt{Close}: The final price of the stock when the market closed on that day.
-    \item \texttt{Adj Close}: The closing price adjusted for corporate actions like stock splits or dividends.
-    \item \texttt{Volume}: The total number of shares traded on that day.
+    \item \texttt{Adj Close}: The closing price adjusted for actions like stock splits or dividends.
+    \item \texttt{Volume}: The total number of shares traded on the trading day.
 \end{itemize}
 
 This is a regression problem, with \texttt{Adj Close} as the response, instead of \texttt{Close}, because it reflects the true economic value of the stock by incorporating adjustments, these adjustments ensure the data more accurately reflects the stock market trends.
@@ -172,20 +200,20 @@ The series also exhibits no clear periodic seasonal structure, which is visually
 
 \subsubsection{\textbf{Air Quality}}
 
-The Air Quality dataset records hourly averaged responses of a gas multi-sensor device deployed in an Italian city between March 2004 to February 2005. The dataset records 9358 instances with multiple variables including pollutants ($CO$, $NMHC$, $C_6H_6$, $NO_x$, $NO_2$), sensor responses from five metal oxide sensors,as well as temperature, relative humidity, and absolute humidity.
+The Air Quality dataset records hourly averaged responses of a gas multi-sensor device deployed in an Italian city between March 2004 to February 2005. The dataset records 9358 instances with multiple variables including pollutant concentrations ($CO$, $NMHC$, $C_6H_6$, $NO_x$, $NO_2$), sensor responses from five metal oxide sensors,as well as temperature, relative humidity, and absolute humidity.
 
-For this study the focus is on \texttt{CO(GT)}, concentration of carbon monoxide in $mg/m^3$, making this a regression problem.
+For this study the response is  \texttt{CO(GT)}, concentration of carbon monoxide in $mg/m^3$.
 
 \begin{figure}[H]
 \centering
 \includegraphics[width=0.5\textwidth]{images/air_q_over_time.pdf}
-\caption{Air Quality Over Time: CO(GT) with 24h and 7d rolling means}
+\caption{Air Quality (CO(GT)) Over Time with 24h and 7d Rolling Means}
 \label{fig:air_q_over_time}
 \end{figure}
 
-Figure~\ref{fig:air_q_over_time} shows the hourly CO(GT) values along with 24-hour and 7-day rolling averages. The raw series is highly volatile, with frequent spikes while the rolling means reveal drifts in the $CO$ concentration. These shifts indicate that although the hourly data are noisy, there are underlying patterns driven by human activity and environmental causes.
+Figure~\ref{fig:air_q_over_time} shows the hourly CO(GT) values along with 24-hour and 7-day rolling averages, to see the overall trend more clearly. The raw series is highly volatile, with frequent spikes while the rolling means reveal drifts in the $CO$ concentration over time. These shifts indicate that although the hourly data are noisy, there are underlying patterns driven by human activity and environmental causes.
 
-The dataset is missing some pollutant measurement entries, recorded as placeholder value \textbf{-200}, this leads to visible gaps in the series.
+The dataset is missing some pollutant measurement entries, recorded as placeholder value \textit{-200}, this leads to visible gaps in the series.
 
 \begin{figure}[H]
 \centering
@@ -194,7 +222,7 @@ The dataset is missing some pollutant measurement entries, recorded as placehold
 \label{fig:air_q_seasonal}
 \end{figure}
 
-Figure~\ref{fig:air_q_seasonal} shows the seasonal decomposition of the \texttt{CO(GT)} series. The trend component highlights longer-term fluctuations, where the average $CO$ levels decrease during mid 2004 and increase again toward late 2004 and early 2005. The seasonal component reveals clear short-term periods, consistent with daily and weekly cycles, possibly linked to human activity.
+Figure~\ref{fig:air_q_seasonal} shows the weekly seasonal decomposition of the \texttt{CO(GT)} series. The trend component highlights longer-term fluctuations, where the average $CO$ levels decrease during mid 2004 and increase again toward late 2004 and early 2005. The seasonal component reveals clear short-term periods, consistent with weekly cycles, possibly linked to human activity.
 
 To assess stationarity an ADF test was done. The test yielded a p-value of $2.498 \times 10^{-16}$, meaning the null hypothesis of the unit root is rejected and the \texttt{CO(GT)} series can be considered stationary. Although the data exhibits short term cycles and noisy behavior, the statistical properties remain stable over time.
 
@@ -237,7 +265,7 @@ An ADF test was conducted to formally investigate stationarity. The test returne
 
 \subsubsection{\textbf{Electric Production}}
 
-The Electric Production time series is the US Federal Reserve industrial production index for the US electric power sector (series code: IPG2211A2N). It records monthly output of electric power generation, transmission, and distribution. The dataset contains a single feature, \texttt{IPG2211A2N}, recorded at monthly intervals from January 1985 to January 2018.
+The Electric Production time series records the US Federal Reserve industrial production index for the US electric power sector (series code: IPG2211A2N) over time. It records monthly output of electric power generation, transmission, and distribution. The dataset contains a single feature, \texttt{IPG2211A2N}, recorded at monthly intervals from January 1985 to January 2018.
 
 \begin{figure}[H]
     \centering
@@ -246,7 +274,7 @@ The Electric Production time series is the US Federal Reserve industrial product
     \label{fig:ep_over_time}
 \end{figure}
 
-Figure~\ref{fig:ep_over_time} indicates the monthly electric production along with 12-month and 36-month rolling means. The series shows an overall upward trend from the mid 1980s to the mid 2000s, with an stagnant period thereafter containing some minor dips.
+Figure~\ref{fig:ep_over_time} indicates the monthly electric production along with 12-month and 36-month rolling means. The series shows an overall upward trend from the mid 1980s to the mid 2000s, with an stagnant period thereafter.
 
 \begin{figure}[H]
     \centering
@@ -255,7 +283,7 @@ Figure~\ref{fig:ep_over_time} indicates the monthly electric production along wi
     \label{fig:ep_seasonal}
 \end{figure}
 
-Figure~\ref{fig:ep_seasonal} shows the seasonal decomposition of the electric production series. It confirms that there is an upward trend from the mid 1980s to mid 2000s with a plateau thereafter. There also appears to be yearly seasonality present in the series, as can be seen in the within-year oscillations, reflecting seasonal demand in electricity.
+Figure~\ref{fig:ep_seasonal} shows the yearly seasonal decomposition of the electric production series. It confirms that there is an upward trend from the mid 1980s to mid 2000s with a plateau thereafter. There also appears to be yearly seasonality present in the series, as can be seen in the within-year oscillations in the seasonal component, reflecting seasonal demand in electricity.
 
 And ADF test was conducted that yielded a p-value of 0.1862, which is greater than 0.05. The null hypothesis is rejected hence the series is non-stationary \cite{electric_production}.
 
@@ -278,33 +306,6 @@ An ADF test was conducted, and yielded a p-value of $2.149e-13$, which is well b
 
 In summary, the dataset provides a comprehensive representation of atmospheric conditions and demonstrates the dynamics of meteorological processes, where the response variable (temperature) is influenced by multiple interacting environmental factors \cite{weather_dataset}.
 
-\subsection{\textbf{RNN Training \& Hyperparameter Tuning}}
-
-Unlike traditional data, time series data contains temporal dependencies between observations. This means that traditional k-fold cross-validation cannot be used to evaluate models trained on time series data. Randomly partitioning a time series into folds can result in information leakage between future and past observations.
-
-A more suitable cross-validation strategy that can be used with time series data and RNNs is cross-validation on a rolling basis.
-
-\begin{figure}[H]
-  \centering
-  \includegraphics[width=0.65\linewidth]{images/rolling_cv.png}
-  \caption{Cross-validation on a Rolling Basis (\cite{time_series_cv}).}
-  \label{fig:rolling_cv}
-\end{figure}
-
-Figure~\ref{fig:rolling_cv} illustrates the basic idea of cross-validation on a rolling basis. The process starts with a small subset of the data used for training, with the subsequent subset used for testing. The data tested on is then used for the next training set and the subsequent subset is then used for testing. This procedure repeats until the end of the series.
-
-Another approach is blocked cross-validation, where the series is divided into non-overlapping contiguous blocks, each block is used once as a validation set. This method avoids temporal leakage but may be less efficient in utilizing the full dataset compared to rolling schemes \cite{time_series_cv}.
-
-Hyperparameter tuning for RNNs typically involve exploring architectural and training parameters. Important hyperparameter categories and examples include:
-
-\begin{itemize}
-    \item \textbf{Network Architecture}: Number of hidden layers, number of neurons per layer, choice of RNN variant.
-    \item \textbf{Training Parameters}: Learning rate, optimizer type, batch size, sequence length, gradient clipping thresholds.
-    \item \textbf{Regularization}: Dropout probability, weight decay.
-\end{itemize}
-
-Strategies such as grid search or random search using cross-validation can be used to explore the hyperparameter space and determine the best combination. The accuracy metric used to evaluate the models during the cross-validation process is entirely problem dependent, e.g. MSE used for regression, and accuracy for classification
-
 \section{\textbf{Implementation}}
 
 \subsection{\textbf{Technology Stack}}
@@ -319,24 +320,25 @@ All code was implemented in Python 3.12 using the following stack:
 \end{itemize}
 
 \subsection{\textbf{RNN Architectures}}
-The RNNs investigated in this study were implemented using the PyTorch API. PyTorch is a highly customizable open-source deep learning framework. Each RNN type was defined as a custom \texttt{nn.Module} class, with a forward pass implementation tailored to the recurrence formula of the different architectures.
+The RNNs investigated in this study were implemented using the PyTorch API. PyTorch is a highly customizable open-source deep learning framework. Each RNN type was defined as a custom \texttt{nn.Module} class, with a forward pass implementation tailored to the recurrence formula of the relevant architecture.
 \begin{itemize}
-    \item \textbf{ElmanRNN}: A tanh RNN cell (\texttt{nn.RNN}) followed by a linear output layer.
-    \item \textbf{JordanRNN}: Forward pass implements the output-hidden state recurrence. The previous output is passed through an activation (\texttt{identity}/\texttt{sigmoid}/\texttt{softmax}/\texttt{tanh}) and then fed into the hidden layer at the current time step via a learned projection.
+    \item \textbf{ElmanRNN}: A tanh PyTorch default RNN cell (\texttt{nn.RNN}) followed by a linear output layer.
+    \item \textbf{JordanRNN}: Forward pass implements the output-hidden state recurrence. The previous output is passed through an activation function (\texttt{identity}/\texttt{sigmoid}/\texttt{softmax}/\texttt{tanh}) and then fed into the hidden layer at the current time step via a learned projection.
     \item \textbf{MultiRNN}: Implemented as a hybrid of the Elman and Jordan architectures, combining hidden-to-hidden and output-to-hidden recurrence.
 \end{itemize}
+Implementations were parameterized, which allows users to choose hidden layer size, output activation function, and output type (sequence-to-one vs. sequence-to-sequence). The implementations also included gradient clipping to prevent the exploding/vanishing gradient problem.
+
 All model implementations use the \texttt{tanh} hidden activation function and a final linear layer for regression outputs.
-Implementations were also parameterized, which allows users to choose hidden layer size, output activation function, and output type (sequence-to-one vs. sequence-to-sequence). The implementations also included gradient clipping to prevent the exploding/vanishing gradient problem.
 
 \subsection{\textbf{Training Utilities \& Pipeline}}
 To keep code modular and compact, a set of utilities that encapsulates the steps in the model training pipeline were implemented:
 \begin{itemize}
-    \item \textbf{Sequence building}: \texttt{make\_sequences} converts $(X,y)$ into fixed-length windows and forecast horizon aligned targets with a configurable stride.
+    \item \textbf{Sequence building}: \texttt{make\_sequences} converts $(X,y)$ into fixed-length windows and forecast horizon aligned targets.
     \item \textbf{Datasets \& loaders}: \texttt{TimeSeriesDataset} wraps sequences as tensors. \texttt{DataLoaders} are created without shuffling (respecting temporal order) and without dropping tail batches.
     \item \textbf{Model factory}: \texttt{create\_model} constructs the requested model with the required architecture and parameters and moves it to the selected device (CPU/GPU).
-    \item \textbf{Epoch routines}: \texttt{train\_one\_epoch} and \texttt{evaluate\_one\_epoch} standardize the train/validation passes, apply gradient clipping, and accumulate loss in a size-weighted manner across a single epoch.
+    \item \textbf{Epoch routines}: \texttt{train\_one\_epoch} and \texttt{evaluate\_one\_epoch} standardize the train/validation passes, apply gradient clipping, and accumulate loss in an epoch size weighted manner across a single epoch.
     \item \textbf{Early stopping}: \texttt{fit\_early\_stopping} tracks the best validation loss, snapshots weights, and halts on \texttt{patience}. The best state dict is restored before evaluation.
-    \item \textbf{Scaling helpers}: \texttt{fit\_seq\_scalers} and \texttt{transform\_seq} fit \texttt{MinMaxScalers} on the training data only and then transforms descriptive features and targets.
+    \item \textbf{Scaling helpers}: \texttt{fit\_seq\_scalers} and \texttt{transform\_seq} fit \texttt{MinMaxScalers} on the training data only and then transforms relevant descriptive features and targets.
     \item \textbf{Prediction}: \texttt{predict\_all} performs batched inference.
 \end{itemize}
 
@@ -345,22 +347,21 @@ The cross-validation process for hyperparameter tuning is handled by:
 \begin{itemize}
     \item \textbf{Windowing}: \texttt{rolling\_windows} yields chronological (train, val) index slices with a user-defined train size, validation size, and step.
     \item \textbf{Hyperparameter config scoring}: \texttt{ts\_cv\_score} takes a model, fits scalers on each train slice, performs training with early stopping, inverse-transforms predictions, and returns per-fold scores and their summary stats.
-    \item \textbf{Grid search}: \texttt{grid\_search\_ts\_cv} iterates over hyperparameter configuration grid for a given architecture, invokes \texttt{ts\_cv\_score}, and selects the configuration with minimal mean CV error.
+    \item \textbf{Grid search}: \texttt{grid\_search\_ts\_cv} iterates over a hyperparameter configuration grid for a given architecture, invokes \texttt{ts\_cv\_score}, and selects the configuration with minimal mean CV error.
 \end{itemize}
-This separation ensures no data is leaked from future time steps to past time steps.
 
 \subsection{\textbf{Final Model Training}}
 Final model training and evaluation logic is encapsulated in:
 \begin{itemize}
-    \item \textbf{fit\_best}: given the selected hyperparameter configuration, it carves a small tail for internal early stopping, fits scalers on the remaining training sequences, restores best weights, performs test inference, and inverse-transforms outputs.
-    \item \textbf{Metrics}: pluggable metric functions (\texttt{RMSE}, \texttt{MAE}, \texttt{R2}) are passed as a dictionary, computed on original units, and returned alongside predictions for downstream plotting or tables.
-    \item \textbf{Experiment driver}: \texttt{run\_experiments} loops over horizons and architectures, applies grid search + \texttt{fit\_best}, and collects results.
+    \item \textbf{fit\_best}: given the selected hyperparameter configuration and training data, it creates a small validation dataset for internal early stopping, fits scalers on the remaining training sequences, restores best weights, performs test inference, and inverse-transforms outputs.
+    \item \textbf{Metrics}: metric functions (\texttt{RMSE}, \texttt{MAE}, \texttt{R2}) are passed as a dictionary, computed on original response units, and returned alongside predictions for downstream plotting or tables.
+    \item \textbf{Experiment driver}: \texttt{run\_experiments} loops over horizons and architectures, applies grid search and \texttt{fit\_best}, and collects results.
 \end{itemize}
 
 \section{\textbf{Empirical process}}
 
 \subsection{\textbf{Objective}}
-The objective of this study was to compare three simple recurrent neural network architectures, namely the Elman RNN, Jordan RNN and Multi-RNN, in the context of five different time series forecasting problems. Five real-world regression time series datasets were selected that represent a diverse range of temporal patterns, stationarity, and application domains.
+The objective of this study was to compare three simple recurrent neural network architectures, namely the Elman, Jordan and Multi-RNN, in the context of five different time series forecasting problems. Five real-world regression time series datasets were selected that represent a diverse range of temporal patterns, stationarity, and application domains.
 The central aim of the study was to evaluate the relative strengths and weaknesses of the Elman, Jordan, and Multi-RNN architectures across different forecasting horizons, and to test whether the performance ranking of these models is consistent across various datasets or whether certain architectures are better suited to specific types of time series.
 Feature standardization, sequence construction, training setup, and evaluation procedures ensure the empirical process was designed to isolate the effect of model architecture as the key property of interest under investigation.
 
@@ -374,6 +375,7 @@ Feature standardization, sequence construction, training setup, and evaluation p
 \subsubsection{\textbf{Air Quality}}
 \begin{itemize}
     \item Several fields use the place holder value \textit{-200} to indicate sensor failures. These values were treated as missing entries.
+    \item Records missing an observation for the response \texttt{CO(GT)} were completely dropped.
     \item The dataset contains five sensor readings \texttt{PT08.S1(CO)}, \texttt{PT08.S2(NMHC)}, \texttt{PT08.S3(NOx)}, \texttt{PT08.S4(NO2)}, \texttt{PT08.S5(O3)}, and three meteorological variables \texttt{T}, \texttt{RH}, \texttt{AH}. It was found that the missing entries in these features were co-located. These rows were entirely removed from the dataset as they contained mostly missing values.
     \item Other missing values were interpolated using time-based interpolation, using the timestamp index to interpolate values between the nearest known points in time.
 \end{itemize}
@@ -386,21 +388,26 @@ Feature standardization, sequence construction, training setup, and evaluation p
 \end{itemize}
 
 \subsubsection{\textbf{Electric Production}}
-No preprocessing needed to be done on the Electric Production dataset. It contains only a single feature measured over time.
+No preprocessing needed to be done on the Electric Production dataset as it is a complete dataset containing no missing values or invalid entries.
 
 \subsubsection{\textbf{Max Planck Institute Weather Data}}
-No preprocessing was needed for this dataset, as it is a complete dataset containing no missing values or invalid entries.
+No preprocessing was needed for this dataset either.
 
 \subsection{\textbf{Dataset Agnostic Preprocessing}}
 \subsubsection{\textbf{Scaling}}
-For all datasets, the descriptive and response features were normalized using scikit-learn's \texttt{MinMaxScaler}. During cross-validation and final model training, the scalers were fit on the training data only and then applied to the corresponding test and/or validation sets. This was done to prevent information from future time steps to leak into past time steps.
-The \texttt{MinMaxScaler} was used because the RNN implementations use the tanh activation function, which outputs values in the range [-1, 1]. By scaling inputs and outputs into compatible ranges, the model training process was more stable, reducing the risk of vanishing or exploding gradients.
+For all datasets, the descriptive and response features were normalized using scikit-learn's \texttt{MinMaxScaler}. During cross-validation and final model training, the scalers were fit on the training data only and then applied to the corresponding training, test and/or validation sets. This was done to prevent information from future time steps to leak into past time steps.
+
+The \texttt{MinMaxScaler} was used because the RNN implementations use the tanh hidden activation function, which outputs values in the range [-1, 1]. By scaling inputs and outputs into compatible ranges, the model training process was more stable, which reduced the risk of vanishing or exploding gradients.
 
 \subsubsection{\textbf{Sequence Construction}}
 Each dataset was transformed into sequences of fixed length. This allowed the recurrent neural networks to receive a window of past observations as inputs and predict future values at specified horizons.
+
 A sliding window procedure was used to construct the sequences. First the datasets were sorted by time stamp, and then for a given window length \texttt{L}, a contiguous block of \texttt{L} timesteps was extracted as an input sequence, and a value at a specified horizon was selected as the target. By moving the window forward one step at a time, multiple overlapping sequences were generated.
+
 A moderate sequence length of 30 items was selected as this effectively balances temporal context while keeping compute costs manageable. The earlier items in longer sequences would be wastefully included, as their temporal information will be lost by overly extensive recurrence.
+
 The study considered multiple horizons to evaluate the models' short-term and long-term predictive performance. Specifically predictions were made for horizons of 1, 3, 5, and 7 time steps ahead.
+
 To clarify:
 \begin{itemize}
     \item \textbf{Horizon = 1}: If the sequence length is 3 and the time series is \texttt{[1, 2, 3, 4, 5, 6, 7]}, then the input sequence is \texttt{[1, 2, 3]} and the target is \texttt{4}. This is simple next-item prediction.
@@ -445,11 +452,11 @@ A hyperparameter grid was used to tune the hyperparameters of each of the models
 \subsubsection{\textbf{Cross-Validation and Model Selection}}
 Time series cross-validation was used to select optimal hyperparameters while respecting temporal order. After sequence construction the data was chronologically split (80/20) into a training portion and a test portion. The training portion was used to form rolling windows comprising of (train, validation) slices:
 \begin{enumerate}
-    \item For each window, \texttt{MinMaxScalers} were fit on the train slice only, and then applied to the validation slice to prevent look-ahead leakage.
+    \item For each window, \texttt{MinMaxScalers} were fit on the train slice only, and then applied to the validation slice to prevent data leakage.
     \item For each RNN architecture and hyperparameter configuration from the grid, a model was trained on the train slice and evaluated on the validation slice using RMSE computed on the original response scale.
     \item The cross-validation score for a model configuration was calculated as the mean RMSE across all rolling windows (folds).
 \end{enumerate}
-For each dataset, model and forecast horizon ([1, 3, 5, 7]), the hyperparameter configuration with the lowest mean CV RMSE was selected as the best hyperparameter configuration for that architecture. This process ensured a fair comparison driven only in difference between model architecture.
+For each dataset, model and forecast horizon ([1, 3, 5, 7]), the hyperparameter configuration with the lowest mean CV RMSE was selected as the best hyperparameter configuration for that architecture, dataset, and forecast horizon. This process ensured a fair comparison driven only in difference between model architecture.
 
 \subsubsection{\textbf{Final Model Training}}
 Given the optimal hyperparameter set for a model architecture, forecast horizon, and dataset, final model training proceeded as follows:
@@ -460,7 +467,7 @@ Given the optimal hyperparameter set for a model architecture, forecast horizon,
 \end{enumerate}
 
 \subsection{\textbf{Final Model Evaluation}}
-To provide an representative view of model accuracy and fit, three complementary metrics were calculated for each model on the test data set:
+To provide an representative view of model performance and fit, three regression metrics were calculated for each model on the test data set:
 \begin{itemize}
     \item \textbf{RMSE}: Squared error.
     \item \textbf{MAE} Average absolute deviation.
@@ -479,7 +486,7 @@ Root Mean Squared Error (RMSE) is used during cross-validation as the primary mo
 On the test set, model performance is evaluated with RMSE, MAE, and $R^2$. RMSE reflects variance weighted accuracy, MAE captures the average magnitude of error and $R^2$ measures how well the model explains the variability of the response.
 
 \subsection{\textbf{AMD Stock Data}}
-The first problem concerns forecasting AMD's adjusted closing stock price from open, high, low, and volume values. Stock price data are inherently non-stationary, which makes prediction challenging.
+The first problem concerns forecasting AMD's adjusted closing stock price from open, high, low, and volume observations. Stock price data are inherently non-stationary, which makes prediction challenging.
 
 The RNN models were trained to predict the adjusted closing price $h$ steps ahead, for forecast horizons in $h \in [1,3,5,7]$.
 
@@ -547,11 +554,9 @@ For short to medium horizons ($h$ = 1 \& $h$ = 3), the Elman model overall perfo
 
 For medium to longer horizons ($h$ = 5 \& $h$ = 7), the Multi-RNN model becomes the best performing model. It maintains the lowest RMSE, MAE and highest $R^2$ values relative to the other two models, while also still maintaining the lowest CV RMSE score. This suggest that the inclusion of both hidden state and output recurrence allows the Multi-RNN model to more accurately capture medium-to-long range dependencies in temporal data, causing the model to have more accurate predictions as the target moves further away from the immediate next step.
 
-All models attain very high $R^2$ at short horizons, which gradually declines as the forecast horizon increases, consistent with error accumulation and weak predictability of stock price data. The deterioration is least for the Multi-RNN model, which aligns with its advantage at longer horizons as compared to the Elman and Jordan RNN variants.
-
 For all model architectures, as the forecast horizon increases, RMSE and MAE increase and $R^2$ declines, reflecting error accumulation as forecast horizon increases. The Elman RNN dominates at short horizons, but the Multi-RNN performs best as the horizon increases, suggesting that the inclusion of the Jordan recurrence becomes helpful once short-term patterns fade and models need to rely on longer-term trends. The Jordan architecture remains competitive but does not provide any clear advantage.
 
-Since stock price levels are usually non-stationary, future improvements can focus on forecasting returns, which would make the data more stable, strengthen short-term signals, and slow down performance degradation at longer horizons. The results obtained in the current setup of predicting raw price levels highlights the trade-off between simple models that generalize well at short-horizons and more complex models that capture long-range patterns.  
+The results obtained in the setup of predicting raw price levels highlights the trade-off between simple models that generalize well at short-horizons and more complex models that capture long-range patterns.  
 
 \subsection{\textbf{Air Quality}}
 The focus of the Air Quality problem is to predict \texttt{CO(GT)} pollutant concentration at different forecast horizons given an input sequence of sensor measurements and meteorological metric data at contiguous time steps.
@@ -624,13 +629,13 @@ At short to medium horizons ($h=1$ \& $h=3$), the Jordan model performs the best
 
 For medium horizons $h=5$, Jordan still remains the top performing model on the test set. Notably, $R^2$ drops sharply as the forecast horizon increases from $h=1$ to $h=3$, and hovers around zero when increased to $h=5$, with negative $R^2$ values for the Elman and Multi-RNN models. This indicates that simple mean predictions become difficult to outperform as the horizon grows.
 
-At the longest horizon $h=7$, the Multi-RNN model performs significantly better than both the Elman and Jordan RNN models, achieving lowest RMSE, MAE and highest $R^2$. This aligns with previous findings that including both Elman and Jordan recurrences to create a more complex model better captures long-term temporal relations.
+At the longest horizon $h=7$, the Multi-RNN model performs significantly better than both the Elman and Jordan RNN models. This aligns with previous findings that including both Elman and Jordan recurrences to create a more complex model better captures long-term temporal relations.
 
 The models attain relatively high $R^2$ for immediate next-item prediction, which degrades as the forecast horizon increases, consistent with reduced predictability of pollutant concentration at longer horizons. From short to medium  horizons $R^2$ falls sharply, with a modest rebound at longer horizons for the Multi-RNN model suggesting that more complex architectures can mitigate long horizon degradation.
 
 The Jordan RNN performs best at short and medium horizons, with the Multi-RNN model performing best at longer horizons. The Elman architecture remains competitive but provides no distinct advantage.
 
-Air quality time series data typically exhibit strong short term correlation, pollutant levels between contiguous time steps are highly related. This means that at short forecast horizons, like next-step prediction, the local persistence of pollutant levels make prediction comparatively easy. As horizons grow, uncertainty compounds and prediction becomes harder. It might be possible to increase model performance by including more exogenous meteorological data, and explicitly modeling weekly seasonality, as is present in the dataset. 
+Air quality time series data typically exhibit strong short term correlation, pollutant levels between contiguous time steps are highly related. This means that at short forecast horizons, like next-step prediction, the local persistence of pollutant levels make prediction comparatively easy. As horizons grow, uncertainty compounds and prediction becomes harder.
 
 \subsection{\textbf{Garment Productivity}}
 The Garment Productivity problem concerns forecasting worker productivity from shop floor signals. The models were trained and evaluated across multiple forecast horizons, $h \in [1,3,5,7]$.
@@ -707,11 +712,11 @@ All models perform poorly, the model's predictions are off on average by 0.125 u
 
 For short forecast horizons the Elman RNN performs best, for medium horizons, there is no real difference between the performance of the Elman and Jordan RNN, but at long forecast horizons the Jordan model performs best, although it is important to note that no RNN model actually performs well in an absolute sense. The Multi-RNN model provides no distinct advantage for this problem.
 
-Garment productivity is hard to forecast because the garment manufacturing process is driver by short-memory, and regime changes (style switches, SMV shifts, incentives) that cause abrupt jumps rather than smooth trends. This means the RNN models are not able to accurately capture any temporal patterns present in the data.
+Garment productivity is hard to forecast because the garment manufacturing process is driven by short-memory, and regime changes (style switches, SMV shifts, incentives) that cause abrupt jumps rather than smooth trends. This means the RNN models are not able to accurately capture any temporal patterns present in the data.
 
 \subsection{\textbf{Electric Production}}
 
-The Electric Production problem concerns predicting US industrial electric power production based on an input sequence of previous electric production measurements. This is the simplest problem investigated as it contains measurements of only a single variable. Like the RNN models before, the RNN models trained on the Electric Production dataset were evaluated at horizons $h \in [1,3,5,7]$.
+The Electric Production problem concerns predicting US industrial electric power production based on an input sequence of previous electric production measurements. This is the simplest problem investigated as it contains measurements of only a single variable. Like the models before, the RNN models trained on the Electric Production dataset were evaluated at horizons $h \in [1,3,5,7]$.
 
 \begin{table}[H]
 \centering
@@ -851,13 +856,13 @@ For medium horizons ($h=3$), all models remain competitive, with Mulit-RNN still
 
 For $h=5$ the trend shifts, the Elman model performs best at a forecast horizon of 5. All models deteriorate from $h=3$ to $h=5$, but the Elman model has the least severe degradation in performance. All RNN models still explain $> 97.7\%$ of the variance in the dataset and maintain RMSE and MAE scores less than one unit.
 
-At the longest horizon ($h=7$), the MUlit-RNN model again performs the best, with Jordan following, and Elman performing the worst. Again all models degrade in performance as the forecast horizon increases, but Elman degrades the most.
+At the longest horizon ($h=7$), the Multi-RNN model again performs the best, with Jordan following, and Elman performing the worst. Again all models degrade in performance as the forecast horizon increases, but Elman degrades the most.
 
 Overall the Multi-RNN dominates at very short and long horizons due to its two memory pathways (internal state that preserves seasonal phase and trend \& correction loop incorporating recent outputs), while Elman exhibits strong performance at medium horizons, but lacks the corrective pathway to excel at longer horizons. Jordan is competitive for next-item prediction, but tends to underperform consistently over longer horizons as errors compound.
 
 As horizon increases, RMSE and MAE generally grow and $R^2$ declines, reflecting the expected accumulation of uncertainty. Nonetheless, all models retain very high $R^2$ at short horizons ($>0.99$ at $h{=}1$) and remain strong even at $h{=}7$, indicating a predictable signal at the 10-minute cadence.
 
-Temperature at 10-minute measurement intervals exhibit strong short-range correlation, this means that output-to-hidden feedback in Jordan and Multi-RNN models effectively leverage persistence, but the Multi-RNN maintains hidden context which aids it as the forecast horizon grows. The Multi-RNN's complexity is well matched to the data volume (> 50000 observations), allowing it to learn richer dynamics, like the seasonality and overall trend.
+Temperature at 10-minute measurement intervals exhibit strong short-range correlation, this means that output-to-hidden feedback in Jordan and Multi-RNN models effectively leverage persistence, but the Multi-RNN maintains hidden context which aids it as the forecast horizon grows. The Multi-RNN's complexity is well matched to the data volume ($> 50000$ observations), allowing it to learn richer dynamics, like the seasonality and overall trend.
 
 In summary for short and long horizons the Multi-RNN model performs best, while the Elman RNN can be more reliable at medium horizons.
 
@@ -867,7 +872,7 @@ This study set out to compare three simple recurrent neural network architecture
 
 The results show that no single RNN variant is universally superior. The best model depends on both dataset characteristics, and the forecast horizon to be predicted. For short forecast horizons with strong local persistence, the Elman RNN often performed best. The Jordan RNN, which feeds back past outputs to the current hidden state, can excel when past predictions carry strong signal, but tends to degrade at longer horizons as error compound.
 
-When the problems are more complex and richer dynamics matter - seasonality, trend, long range dependencies - the Mulit-RNN model consistently outperformed competition. Blending hidden-to-hidden and output-to-hidden recurrences allow the model to capture richer temporal patterns by allowing the model to maintain seasonal/trend/long range context while correcting from previous outputs. It is important to note the trade-off in computational complexity, training Multi-RNN models on complex datasets take significantly longer than simple Elman/Jordan models. Multi-RNN models are also more prone to overfitting than the others, a few cases exposed mild train/test metric discrepancies, highlighting the importance of guarding against overfitting.
+When the problems are more complex and richer dynamics matter - seasonality, trend, long range dependencies - the Mulit-RNN model consistently outperformed competition. Blending hidden-to-hidden and output-to-hidden recurrences allow the model to capture richer temporal patterns by allowing the model to maintain seasonal/trend/long-range context while correcting from previous outputs. It is important to note the trade-off in computational complexity, training Multi-RNN models on complex datasets take significantly longer than simple Elman/Jordan models. Multi-RNN models are also more prone to overfitting than the others, a few cases exposed mild train/test metric discrepancies, highlighting the importance of guarding against overfitting.
 
 Across all datasets the usual performance metric pattern holds: as horizons increase, RMSE/MAE rise and $R^2$ falls. However, the rate of deterioration varies between models and datasets.
 
@@ -875,7 +880,7 @@ Series with clear seasonal cycles benefit more from models that can capture mult
 
 In summary, model choice should be data and horizon aware. While Elman and Jordan models remain viable for short-range predictions, the hybrid Multi-RNN model is preferable when forecasting longer horizons on time series with richer dynamics.
 
-Several extensions could strengthen the findings in this study. Comparing the three RNN models against gated and attention based models, like LSTM, GRU, and Transformers, can quantify gains from adding gating and attention mechanisms over simple RNNs. Explicit seasonal encodings could potentially improve model performance, e.g. for financial data it might be more beneficial to predict returns rather than raw prices. 
+Several extensions could strengthen the findings in this study. Comparing the three RNN models against gated and attention based models, like LSTM, GRU, and Transformers, can quantify gains from adding gating and attention mechanisms over simple RNNs. Explicit seasonal encodings, and feature engineering could potentially improve model performance, e.g. for financial data it might be more beneficial to predict returns rather than raw prices. 
 
 \bibliographystyle{plain}
 \bibliography{references}
