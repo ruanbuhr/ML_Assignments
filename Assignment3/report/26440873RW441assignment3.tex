@@ -27,10 +27,32 @@ Stellenbosch, South Africa \\
 \maketitle
 
 \begin{abstract}
+This study benchmarks three simple recurrent neural network architectures - Elman, Jordan, Multi-RNN - across five time series tasks and varying forecast horizons. The goal is to understand how architectural differences affect model performance as horizons and data characteristics vary.
 
+A uniform Python implemented pipeline applies dataset specific preprocessing, data sequencing, time series cross-validation for hyperparameter selection, and model training. Final models were trained with early stopping and were evaluated on held-out test sets using standard regression metrics: RMSE, MAE and $R^2$.
+
+Results show there is no universal winner. Elman performs best for next-item forecasts where local persistence dominates, while Jordan remains competitive at short horizons where recent model predictions carry signal. Multi-RNN excels at longer horizons and on time series with more complex dynamics (seasonality/trend/long-range dependencies).
+
+Overall model selection should be data- and forecast horizon aware. Elman \& Jordan models suit short-range forecasts while Multi-RNN suits cases with long-range dependencies or complex dynamics.
 \end{abstract}
 
 \section{\textbf{Introduction}}
+
+Time series forecasting is important for decision making in many domains, such as finance, manufacturing, energy production and environmental monitoring. Models that exploit temporal structure of data, such as recurrent neural networks (RNNs), offer a simple yet expressive approach for sequence modeling by maintaining context that evolves over time. Despite the emergence of gated and attention based models, plain RNNs remain important and practical baselines, especially when computational simplicity and interpretability of the recurrence pattern are desirable.
+
+This study examines the performance of three simple RNN architectures - Elman, Jordan, and Multi-RNN - across five real-world regression time series problems, of varying complexity. The goals of this study are to evaluate how architectural differences in the models affect short and long forecast horizon accuracy, and identify conditions under which each variant is desirable. These goals are pursued by standardized data preprocessing, sequence construction, time series cross validation to tune model hyperparameters, and evaluation of models at multiple forecast horizons using appropriate regression metrics.
+
+The concrete objectives of this study are to: compare Elman, Jordan, and Multi-RNN models on five diverse datasets using uniform training regimes, assess horizon sensitivity by evaluating next-item and multi-step forecasting, quantify performance with RMSE, MAE,a and $R^2$ on test datasets, and derive key takeaways on model selection as a function of data properties and horizon length. To meet these objectives, the models were implemented in PyTorch, each dataset was transformed into fixed length input sequences with defined forecast horizons, time series cross-validation identified the optimal hyperparameter configuration for each model, and the best configuration was subsequently evaluated on a held-out test set.
+
+The rest of the report is structured as follows:
+
+\begin{itemize}
+    \item \textbf{Background}: RNN and dataset descriptions
+    \item \textbf{Implementation}: Details of software stack and programming decisions.
+    \item \textbf{Empirical Process}: Covers dataset preprocessing, sequence construction, cross-validation, training- and evaluation protocol.
+    \item \textbf{Results \& Discussion}: Presents per-data set results, highlights architectural trade-offs and interprets performance patterns.
+    \item \textbf{Conclusion}: Summarizes insights, practical guidelines for choosing among RNN variants.
+\end{itemize}
 
 \section{\textbf{Background}}
 
